@@ -95,7 +95,7 @@ export default function JobManagePage() {
 
   const columns = [
     {
-      title: col(<FileTextOutlined style={{ color: '#7c3aed' }} />, '任务名'), key: 'jobName',
+      title: col(<FileTextOutlined style={{ color: '#7c3aed' }} />, '任务名', 'left'), key: 'jobName',
       render: (_: any, r: Job) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
           <div style={{

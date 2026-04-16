@@ -182,7 +182,7 @@ const CouponListPage: React.FC = () => {
 
   const columns: ColumnsType<Coupon> = [
     {
-      title: col(<GiftOutlined style={{ color: '#f59e0b' }} />, '优惠券名称'),
+      title: col(<GiftOutlined style={{ color: '#f59e0b' }} />, '优惠券名称', 'left'),
       key: 'name',
       render: (_, r) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>

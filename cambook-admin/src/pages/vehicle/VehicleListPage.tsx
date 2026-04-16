@@ -192,7 +192,7 @@ export default function VehicleListPage() {
       ),
     },
     {
-      title: col(<CarOutlined style={{ color: '#10b981' }} />, '品牌/型号'),
+      title: col(<CarOutlined style={{ color: '#10b981' }} />, '品牌/型号', 'left'),
       key: 'brand',
       width: 160,
       render: (_, r) => (

@@ -104,7 +104,7 @@ export default function NoticePage() {
 
   const columns = [
     {
-      title: col(<BellOutlined style={{ color: '#6366f1' }} />, '标题'), dataIndex: 'title', key: 'title',
+      title: col(<BellOutlined style={{ color: '#6366f1' }} />, '标题', 'left'), dataIndex: 'title', key: 'title',
       render: (v: string, r: Notice) => {
         const cfg = TYPE_CFG[r.type]
         return (

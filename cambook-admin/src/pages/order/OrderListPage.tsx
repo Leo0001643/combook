@@ -105,7 +105,7 @@ export default function OrderListPage() {
       render: (v: string) => <Text code style={{ fontSize: 11 }}>{v}</Text>,
     },
     {
-      title: col(<UserOutlined style={{ color: '#f97316' }} />, '用户'),
+      title: col(<UserOutlined style={{ color: '#f97316' }} />, '用户', 'left'),
       dataIndex: 'memberNickname',
       width: 130,
       render: (v: string) => (
@@ -117,7 +117,7 @@ export default function OrderListPage() {
       ),
     },
     {
-      title: col(<IdcardOutlined style={{ color: '#8b5cf6' }} />, '技师'),
+      title: col(<IdcardOutlined style={{ color: '#8b5cf6' }} />, '技师', 'left'),
       dataIndex: 'technicianNickname',
       width: 130,
       render: (v: string) => (

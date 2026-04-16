@@ -169,7 +169,7 @@ export default function CategoryPage() {
       ),
     },
     {
-      title: col(<AppstoreOutlined style={{ color: '#0891b2' }} />, '分类名称'), key: 'name',
+      title: col(<AppstoreOutlined style={{ color: '#0891b2' }} />, '分类名称', 'left'), key: 'name',
       render: (_, r) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
           <div style={{

@@ -169,7 +169,7 @@ export default function MerchantStaffPage() {
   // ── 表格列 ───────────────────────────────────────────────────────────────
   const columns: ColumnsType<StaffVO> = [
     {
-      title: col(<UserOutlined style={{ color: '#6366f1' }} />, '员工信息'), key: 'info', width: 220, fixed: 'left',
+      title: col(<UserOutlined style={{ color: '#6366f1' }} />, '员工信息', 'left'), key: 'info', width: 220, fixed: 'left',
       render: (_, r) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
           <Avatar size={46} icon={<UserOutlined />}

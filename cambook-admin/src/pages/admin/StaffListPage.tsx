@@ -121,7 +121,7 @@ export default function StaffListPage() {
 
   const columns: ColumnsType<StaffVO> = [
     {
-      title: col(<UserOutlined style={{ color: '#a855f7' }} />, '员工信息'),
+      title: col(<UserOutlined style={{ color: '#a855f7' }} />, '员工信息', 'left'),
       key: 'info',
       width: 230,
       fixed: 'left',

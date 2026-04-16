@@ -119,7 +119,7 @@ export default function MerchantPositionPage() {
 
   const columns: ColumnsType<PositionVO> = [
     {
-      title: col(<SolutionOutlined style={{ color: '#0891b2' }} />, '职位名称'), dataIndex: 'name', key: 'name',
+      title: col(<SolutionOutlined style={{ color: '#0891b2' }} />, '职位名称', 'left'), dataIndex: 'name', key: 'name',
       render: (name, r, idx) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
           <div style={{

@@ -121,7 +121,7 @@ export default function PositionListPage() {
       ),
     },
     {
-      title: col(<SolutionOutlined style={{ color: '#14b8a6' }} />, '职位信息'),
+      title: col(<SolutionOutlined style={{ color: '#14b8a6' }} />, '职位信息', 'left'),
       key: 'info',
       render: (_, r, i) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>

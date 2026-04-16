@@ -136,7 +136,7 @@ export default function DeptManagePage() {
 
   const columns: ColumnsType<Dept> = [
     {
-      title: col(<ApartmentOutlined style={{ color: '#14b8a6' }} />, '部门名称'),
+      title: col(<ApartmentOutlined style={{ color: '#14b8a6' }} />, '部门名称', 'left'),
       dataIndex: 'name', key: 'name',
       render: (v: string, r: Dept) => {
         const colorIdx = r.id % GRADIENT_COLORS.length

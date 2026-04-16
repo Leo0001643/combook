@@ -140,7 +140,7 @@ export default function MerchantListPage() {
 
   const columns: ColumnsType<Merchant> = [
     {
-      title: col(<ShopOutlined style={{ color: '#722ed1' }} />, '商户信息'),
+      title: col(<ShopOutlined style={{ color: '#722ed1' }} />, '商户信息', 'left'),
       key: 'info',
       fixed: 'left',
       width: 240,

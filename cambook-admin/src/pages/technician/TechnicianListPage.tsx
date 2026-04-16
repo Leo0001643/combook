@@ -190,7 +190,7 @@ export default function TechnicianListPage() {
 
   const columns: ColumnsType<TechnicianVO> = [
     {
-      title: col(<IdcardOutlined style={{ color: '#6366f1' }} />, '技师信息'),
+      title: col(<IdcardOutlined style={{ color: '#6366f1' }} />, '技师信息', 'left'),
       key: 'tech',
       fixed: 'left',
       width: 200,

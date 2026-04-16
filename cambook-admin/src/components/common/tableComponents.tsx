@@ -59,6 +59,7 @@ export const styledTableComponents = {
               height: '100%',
               minHeight: 52,
               boxSizing: 'border-box',
+              textAlign: 'left',
             }}
           >
             {children}
@@ -74,10 +75,12 @@ export const styledTableComponents = {
  *
  * @example col(<UserOutlined style={{ color: '#6366f1' }} />, '会员信息')
  */
-export function col(icon: React.ReactNode, label: string) {
+export function col(icon: React.ReactNode, label: string, align: 'center' | 'left' = 'center') {
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      display: 'flex', alignItems: 'center',
+      justifyContent: align === 'left' ? 'flex-start' : 'center',
+      paddingLeft: align === 'left' ? 4 : 0,
       gap: 5, fontWeight: 600, fontSize: 12, color: '#374151',
     }}>
       {icon}<span>{label}</span>

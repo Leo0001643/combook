@@ -144,7 +144,7 @@ export default function UserListPage() {
 
   const columns: ColumnsType<MemberVO> = [
     {
-      title: col(<UserOutlined style={{ color: '#6366f1' }} />, '会员信息'),
+      title: col(<UserOutlined style={{ color: '#6366f1' }} />, '会员信息', 'left'),
       key: 'info', width: 185, fixed: 'left', align: 'left',
       render: (_, r) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>

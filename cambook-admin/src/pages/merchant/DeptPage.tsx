@@ -133,7 +133,7 @@ export default function MerchantDeptPage() {
 
   const columns: ColumnsType<DeptVO> = [
     {
-      title: col(<ApartmentOutlined style={{ color: '#06b6d4' }} />, '部门名称'), dataIndex: 'name', key: 'name',
+      title: col(<ApartmentOutlined style={{ color: '#06b6d4' }} />, '部门名称', 'left'), dataIndex: 'name', key: 'name',
       render: (name, r) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
           <div style={{

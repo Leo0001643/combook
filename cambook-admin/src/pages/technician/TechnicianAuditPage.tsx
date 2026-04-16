@@ -118,7 +118,7 @@ export default function TechnicianAuditPage() {
 
   const columns: ColumnsType<TechnicianVO> = [
     {
-      title: col(<UserOutlined style={{ color: '#6366f1' }} />, '申请人'),
+      title: col(<UserOutlined style={{ color: '#6366f1' }} />, '申请人', 'left'),
       key: 'applicant',
       width: 220,
       render: (_, r) => (
