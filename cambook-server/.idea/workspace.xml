@@ -4,29 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/hooks/useTableBodyHeight.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/hooks/useTableBodyHeight.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/merchant/DeptPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/merchant/DeptPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/merchant/PositionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/merchant/PositionPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/system/BannerPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/system/BannerPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/system/PermissionTreePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/system/PermissionTreePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/dto/TechnicianQueryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/dto/TechnicianQueryDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/admin/impl/AdminTechnicianService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/admin/impl/AdminTechnicianService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/target/cambook-app-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/target/cambook-app-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/target/classes/com/cambook/app/domain/dto/TechnicianQueryDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/target/classes/com/cambook/app/domain/dto/TechnicianQueryDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/target/classes/com/cambook/app/domain/dto/VehicleDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/target/classes/com/cambook/app/domain/dto/VehicleDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/target/classes/com/cambook/app/domain/vo/VehicleVO.class" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/target/classes/com/cambook/app/domain/vo/VehicleVO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/target/classes/com/cambook/app/service/admin/impl/AdminTechnicianService.class" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/target/classes/com/cambook/app/service/admin/impl/AdminTechnicianService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-common/target/cambook-common-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-common/target/cambook-common-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-common/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-common/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/target/cambook-dao-1.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/target/cambook-dao-1.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/target/classes/com/cambook/dao/entity/CbTechnician.class" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/target/classes/com/cambook/dao/entity/CbTechnician.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/target/classes/com/cambook/dao/entity/CbVehicle.class" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/target/classes/com/cambook/dao/entity/CbVehicle.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/target/classes/com/cambook/dao/mapper/CbMemberMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/target/classes/com/cambook/dao/mapper/CbMemberMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/target/classes/com/cambook/dao/mapper/CbVehicleMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/target/classes/com/cambook/dao/mapper/CbVehicleMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-    </list>
+    <list default="true" id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -110,7 +88,7 @@
       <updated>1776052315282</updated>
       <workItem from="1776052316523" duration="1270000" />
       <workItem from="1776070209993" duration="54286000" />
-      <workItem from="1776360112895" duration="304000" />
+      <workItem from="1776360112895" duration="967000" />
     </task>
     <servers />
   </component>

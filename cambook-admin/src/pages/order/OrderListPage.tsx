@@ -1,15 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   Table, Input, Select, Tag, Avatar, Space, Button,
-  Typography, Drawer, Descriptions, Timeline, DatePicker,
-  Popconfirm, message, Divider, Tooltip,
+  Typography, Drawer, Descriptions, Timeline,
+  Popconfirm, message, Tooltip,
 } from 'antd'
+import DateTimeRangePicker from '../../components/common/DateTimeRangePicker'
 import {
   SearchOutlined, ClockCircleOutlined, CheckCircleOutlined,
   CloseCircleOutlined, CarOutlined, ReloadOutlined, EyeOutlined,
   DollarOutlined, OrderedListOutlined, StopOutlined, DeleteOutlined,
   FileTextOutlined, UserOutlined, IdcardOutlined, AppstoreOutlined,
-  SafetyCertificateOutlined, SettingOutlined, ShopOutlined, CalendarOutlined,
+  SafetyCertificateOutlined, SettingOutlined, ShopOutlined,
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
@@ -22,8 +23,6 @@ import PermGuard from '../../components/common/PermGuard'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
-const { RangePicker } = DatePicker
-
 const STATUS_MAP: Record<number, { color: string; text: string; icon: React.ReactNode }> = {
   0: { color: 'gold',    text: '待支付',  icon: <DollarOutlined /> },
   1: { color: 'blue',    text: '待接单',  icon: <ClockCircleOutlined /> },
@@ -296,17 +295,13 @@ export default function OrderListPage() {
               value: Number(k), label: <Space size={4}>{v.icon}{v.text}</Space>,
             }))}
           />
-          <RangePicker
-            size="middle"
-            placeholder={['开始日期', '结束日期']}
-            suffixIcon={<CalendarOutlined style={{ color: '#6366f1', fontSize: 12 }} />}
+          <DateTimeRangePicker
+            placeholder={['订单开始时间', '订单结束时间']}
             value={dateRange?.[0] && dateRange?.[1] ? [dayjs(dateRange[0]), dayjs(dateRange[1])] : null}
-            style={{ ...INPUT_STYLE, minWidth: 240, flex: '1 1 220px', maxWidth: 320 }}
-            onChange={(_, s) => {
-              const dr: [string, string] | null = s[0] && s[1] ? [s[0], s[1]] : null
-              setDateRange(dr)
+            onChange={(_, strings) => {
+              setDateRange(strings)
               setPage(1)
-              fetchList(1, keyword, status, dr)
+              fetchList(1, keyword, status, strings)
             }}
           />
           <div style={{ flex: 1 }} />

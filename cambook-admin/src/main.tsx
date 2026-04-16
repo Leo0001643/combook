@@ -25,6 +25,7 @@ import App from './App'
 import { ConfigProvider } from 'antd'
 import { StyleProvider } from '@ant-design/cssinjs'
 import zhCN from 'antd/locale/zh_CN'
+import { zhCNPickerLocale } from './utils/datePicker'
 import './index.css'
 
 /**
@@ -42,14 +43,7 @@ import './index.css'
  */
 const zhCNWithDates = {
   ...zhCN,
-  DatePicker: {
-    ...zhCN.DatePicker,
-    lang: {
-      ...zhCN.DatePicker?.lang,
-      shortWeekDays: ['日', '一', '二', '三', '四', '五', '六'],
-      shortMonths: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-    },
-  },
+  DatePicker: zhCNPickerLocale,
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

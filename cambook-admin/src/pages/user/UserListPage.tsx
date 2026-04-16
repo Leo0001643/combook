@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import {
   Table, Input, Select, Space, Tag, Avatar,
   Button, Typography, message, Badge,
-  Divider, Tooltip, DatePicker,
+  Tooltip,
 } from 'antd'
+import DateTimeRangePicker from '../../components/common/DateTimeRangePicker'
 import type { ColumnsType } from 'antd/es/table'
 import {
   SearchOutlined, UserOutlined, StopOutlined, CheckCircleOutlined,
@@ -28,8 +29,6 @@ import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 const { Option } = Select
-const { RangePicker } = DatePicker
-
 // MemberVO 使用统一的 MemberDetailVO 类型，额外加上 wechat 字段
 type MemberVO = MemberDetailVO
 
@@ -106,8 +105,8 @@ export default function UserListPage() {
         lang,
         telegram:  (contactType === 'telegram' && contactValue) ? contactValue : undefined,
         address:   address   || undefined,
-        startDate: dateRange?.[0]?.format('YYYY-MM-DD'),
-        endDate:   dateRange?.[1]?.format('YYYY-MM-DD'),
+        startDate: dateRange?.[0]?.format('YYYY-MM-DD HH:mm:ss'),
+        endDate:   dateRange?.[1]?.format('YYYY-MM-DD HH:mm:ss'),
       })
       const d = res.data?.data
       setData(d?.list ?? [])
@@ -440,12 +439,10 @@ export default function UserListPage() {
           <div style={{ width: 1, height: 22, margin: '0 2px', background: '#e5e7eb', flexShrink: 0 }} />
 
           {/* 注册时间区间 */}
-          <RangePicker
-            placeholder={['注册开始', '注册结束']}
-            size="middle" allowClear value={dateRange}
-            style={{ ...INPUT_STYLE, width: 256, borderRadius: 8 }}
-            suffixIcon={<CalendarOutlined style={{ color: '#6366f1', fontSize: 12 }} />}
-            onChange={dates => { setDateRange(dates as [Dayjs, Dayjs] | null); setPage(1) }}
+          <DateTimeRangePicker
+            placeholder={['注册开始时间', '注册结束时间']}
+            value={dateRange}
+            onChange={dates => { setDateRange(dates); setPage(1) }}
           />
 
           <div style={{ flex: 1 }} />
