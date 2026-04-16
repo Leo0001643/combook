@@ -5,14 +5,15 @@
  */
 import { useEffect, useState } from 'react'
 import {
-  Row, Col, Card, Button, Space, Tag, Typography, Spin,
-  Empty, Collapse, Tooltip, Divider,
+  Button, Space, Tag, Typography, Spin,
+  Empty, Collapse, Tooltip, Row, Col,
 } from 'antd'
 import {
   ApartmentOutlined, SolutionOutlined,
   LockOutlined, UnlockOutlined, EditOutlined,
   TeamOutlined, CheckCircleOutlined, InfoCircleOutlined,
   SafetyCertificateOutlined, SettingOutlined, ReloadOutlined,
+  // LockOutlined kept for DeptPermBadge
 } from '@ant-design/icons'
 import PermDrawer, { type PermTarget, MENU_GROUPS, MENU_OPERATIONS } from '../../components/merchant/PermDrawer'
 import { merchantPortalApi } from '../../api/api'
@@ -123,6 +124,7 @@ export default function MerchantRolePage() {
   return (
     <div style={{ marginTop: -24 }}>
       <div style={{ position: 'sticky', top: 64, zIndex: 88, marginLeft: -24, marginRight: -24, background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(0,0,0,0.07)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+        {/* 第一行：图标 + 标题 + 四项统计徽章 + 刷新 */}
         <div style={{ display: 'flex', alignItems: 'center', padding: '10px 24px 0', gap: 12 }}>
           <div style={{ width: 34, height: 34, borderRadius: 10, background: PAGE_GRADIENT, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(124,58,237,0.35)', flexShrink: 0 }}>
             <SafetyCertificateOutlined style={{ color: '#fff', fontSize: 16 }} />
@@ -131,45 +133,50 @@ export default function MerchantRolePage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>权限体系</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>管理商户权限 · 按部门职位分配</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e9d5ff' }} />
-          <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.25)' }}>
-              <span>🏢</span>
-              <span style={{ fontSize: 12, color: '#6b7280' }}>部门</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#7c3aed' }}>{depts.length}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.25)' }}>
-              <span>💼</span>
-              <span style={{ fontSize: 12, color: '#6b7280' }}>职位</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#7c3aed' }}>{positions.length}</span>
-            </div>
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e9d5ff', flexShrink: 0 }} />
+          {/* 四项统计徽章 */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {[
+              { label: '可分配菜单', value: ALL_MENU_KEYS.length, color: '#6366f1', bg: 'rgba(99,102,241,0.08)',   border: 'rgba(99,102,241,0.22)' },
+              { label: '操作权限数', value: ALL_OP_CODES.length,  color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)',  border: 'rgba(139,92,246,0.22)' },
+              { label: '已启用部门', value: depts.length,          color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)',  border: 'rgba(14,165,233,0.22)' },
+              { label: '职位总数',   value: positions.length,      color: '#10b981', bg: 'rgba(16,185,129,0.08)',  border: 'rgba(16,185,129,0.22)' },
+            ].map(s => (
+              <div key={s.label} style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '3px 10px', borderRadius: 20,
+                background: s.bg, border: `1px solid ${s.border}`,
+              }}>
+                <span style={{ fontSize: 12, color: '#6b7280' }}>{s.label}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: s.color }}>{s.value}</span>
+              </div>
+            ))}
           </div>
-          <div style={{ flex: 1 }} />
-        </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', padding: '10px 24px 12px' }}>
           <div style={{ flex: 1 }} />
           <Tooltip title="刷新权限数据">
             <Button icon={<ReloadOutlined />} size="middle" loading={keysLoading} style={{ borderRadius: 8, color: '#7c3aed', borderColor: '#e9d5ff' }} onClick={() => loadPermKeys(depts, positions)} />
           </Tooltip>
         </div>
+        {/* 第二行：权限继承链说明（内联紧凑版） */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 24px 10px', flexWrap: 'wrap' }}>
+          <InfoCircleOutlined style={{ color: '#a78bfa', fontSize: 13, flexShrink: 0 }} />
+          <Text style={{ fontSize: 12, color: '#6b7280' }}>
+            权限按
+          </Text>
+          <Tag color="purple"  style={{ margin: 0, fontSize: 11, padding: '0 6px' }}>部门</Tag>
+          <Text style={{ fontSize: 12, color: '#94a3b8' }}>→</Text>
+          <Tag color="blue"    style={{ margin: 0, fontSize: 11, padding: '0 6px' }}>职位</Tag>
+          <Text style={{ fontSize: 12, color: '#94a3b8' }}>→</Text>
+          <Tag color="cyan"    style={{ margin: 0, fontSize: 11, padding: '0 6px' }}>员工</Tag>
+          <Text style={{ fontSize: 12, color: '#6b7280' }}>逐级继承，支持</Text>
+          <Tag color="orange"  style={{ margin: 0, fontSize: 11, padding: '0 6px' }}>菜单权限</Tag>
+          <Text style={{ fontSize: 12, color: '#6b7280' }}>和</Text>
+          <Tag color="red"     style={{ margin: 0, fontSize: 11, padding: '0 6px' }}>操作权限</Tag>
+          <Text style={{ fontSize: 12, color: '#6b7280' }}>独立配置，下级未配置时自动继承上级。</Text>
+        </div>
       </div>
 
       <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#f8fafc', padding: 24 }}>
-        {/* ── 权限模型说明 ── */}
-        <Card variant="borderless" style={{ marginBottom: 16, borderRadius: 14, boxShadow: '0 1px 8px rgba(0,0,0,0.05)' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <InfoCircleOutlined style={{ color: '#6366f1', fontSize: 18, marginTop: 2 }} />
-            <div>
-              <Title level={5} style={{ margin: '0 0 4px', color: '#4c1d95' }}>权限继承链</Title>
-              <Text type="secondary" style={{ fontSize: 13, lineHeight: 1.8 }}>
-                权限按 <Tag color="purple">部门</Tag> → <Tag color="blue">职位</Tag> → <Tag color="cyan">员工</Tag> 逐级继承。
-                未单独配置时，下级自动继承上级权限。每级均可覆盖或进一步限制。
-                同时支持 <Tag color="orange">菜单权限</Tag>（控制侧边栏可见性）和 <Tag color="red">操作权限</Tag>（控制新增/编辑/删除等按钮）。
-              </Text>
-            </div>
-          </div>
-        </Card>
-
         {/* ── 部门列表 ── */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <Title level={5} style={{ margin: 0 }}>
@@ -266,27 +273,6 @@ export default function MerchantRolePage() {
           )}
         </Spin>
 
-        {/* ── 配置信息统计 ── */}
-        <Card variant="borderless" style={{ marginTop: 16, borderRadius: 14, boxShadow: '0 1px 8px rgba(0,0,0,0.05)' }}>
-          <Row gutter={16} style={{ textAlign: 'center' }}>
-            <Col span={6}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#6366f1' }}>{ALL_MENU_KEYS.length}</div>
-              <div style={{ fontSize: 12, color: '#9ca3af' }}>可分配菜单总数</div>
-            </Col>
-            <Col span={6}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#8b5cf6' }}>{ALL_OP_CODES.length}</div>
-              <div style={{ fontSize: 12, color: '#9ca3af' }}>可分配操作权限数</div>
-            </Col>
-            <Col span={6}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#0ea5e9' }}>{depts.length}</div>
-              <div style={{ fontSize: 12, color: '#9ca3af' }}>已启用部门</div>
-            </Col>
-            <Col span={6}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#10b981' }}>{positions.length}</div>
-              <div style={{ fontSize: 12, color: '#9ca3af' }}>职位总数</div>
-            </Col>
-          </Row>
-        </Card>
       </div>
 
       {/* ── 权限分配抽屉 ── */}

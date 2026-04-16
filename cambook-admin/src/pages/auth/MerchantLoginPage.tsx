@@ -280,7 +280,7 @@ export default function MerchantLoginPage() {
           </Form.Item>
         </Form>
 
-        <Space direction="vertical" size={6} style={{ width: '100%', textAlign: 'center' }}>
+        <Space orientation="vertical" size={6} style={{ width: '100%', textAlign: 'center' }}>
           <Text type="secondary" style={{ fontSize: 11, color: '#bbb' }}>
             © 2026 CamBook. All rights reserved.
           </Text>

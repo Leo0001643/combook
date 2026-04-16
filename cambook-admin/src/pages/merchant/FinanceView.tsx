@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Statistic, Typography, Progress, Spin, Space, Divider } from 'antd'
+import { Row, Col, Card, Statistic, Typography, Progress, Spin, Space } from 'antd'
 import {
   DollarOutlined, BarChartOutlined, RiseOutlined,
   WalletOutlined, PercentageOutlined,
@@ -69,7 +69,7 @@ export default function MerchantFinanceView() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>财务概览</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>商户收入分析 · 资金流水 · 余额管理</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8 }}>
             {[
               { label: '总收入', value: `$${totalRevenue.toFixed(0)}`, color: '#10b981', bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.25)', icon: '💰' },

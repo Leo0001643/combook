@@ -315,7 +315,7 @@ export default function TechnicianListPage() {
         const cur = ONLINE_MAP[v ?? 0]
         const featured = r.isFeatured === 1
         return (
-          <Space size={4} direction="vertical" style={{ gap: 4 }}>
+          <Space size={4} orientation="vertical" style={{ gap: 4 }}>
             {/* 在线状态 Dropdown */}
             <Dropdown
               trigger={['click']}
@@ -620,7 +620,7 @@ export default function TechnicianListPage() {
               {isMerchant ? '管理本店技师团队 · 新增技师 · 监控状态' : '管理平台全部认证技师 · 审核申请 · 监控状态'}
             </div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {statBadges.map((s, i) => (
               <div key={i} style={{

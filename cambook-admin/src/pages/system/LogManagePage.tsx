@@ -171,7 +171,7 @@ export default function LogManagePage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>操作日志</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>记录系统操作行为 · 审计追踪</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)' }}>
               <span>📋</span><span style={{ fontSize: 12, color: '#6b7280' }}>总数</span><span style={{ fontSize: 13, fontWeight: 700, color: '#6366f1' }}>{total}</span>

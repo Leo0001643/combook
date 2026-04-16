@@ -234,7 +234,7 @@ export default function MerchantPositionPage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>职位管理</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>管理商户职位体系 · 分配权限范围</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#bae6fd' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#bae6fd', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.25)' }}>
               <span>💼</span>

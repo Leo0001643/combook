@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Table, Space, Button, Tag, Typography,
   Select, InputNumber, message, Badge, Popconfirm, Drawer, Descriptions, Rate, Input, Form,
-  Divider, Tooltip,
+  Tooltip,
 } from 'antd';
 import {
   StarOutlined, EyeOutlined, EyeInvisibleOutlined, DeleteOutlined, StopOutlined,
@@ -13,7 +13,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { usePortalScope } from '../../hooks/usePortalScope';
 import PermGuard from '../../components/common/PermGuard';
-import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents';
+import { col, styledTableComponents } from '../../components/common/tableComponents';
 import PagePagination from '../../components/common/PagePagination';
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
@@ -233,7 +233,7 @@ const ReviewPage: React.FC = () => {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>评价管理</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>审核用户评价 · 管理评分</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)' }}>
               <span>💬</span><span style={{ fontSize: 12, color: '#6b7280' }}>总数</span><span style={{ fontSize: 13, fontWeight: 700, color: '#6366f1' }}>{total}</span>
@@ -260,14 +260,16 @@ const ReviewPage: React.FC = () => {
               { value: 0, label: <Space size={4}><EyeInvisibleOutlined style={{ color: '#ef4444' }} />屏蔽</Space> },
             ]}
           />
-          <InputNumber
-            placeholder="技师ID"
-            addonBefore={<IdcardOutlined style={{ color: '#6366f1', fontSize: 12 }} />}
-            value={techId}
-            onChange={v => setTechId(v ?? undefined)}
-            style={{ width: 140 }}
-            min={1}
-          />
+          <Space.Compact style={{ width: 140 }}>
+            <Button style={{ pointerEvents: 'none', paddingInline: 8, color: '#6366f1', borderRight: 0 }} icon={<IdcardOutlined style={{ fontSize: 12 }} />} />
+            <InputNumber
+              placeholder="技师ID"
+              value={techId}
+              onChange={v => setTechId(v ?? undefined)}
+              style={{ flex: 1 }}
+              min={1}
+            />
+          </Space.Compact>
           <div style={{ flex: 1 }} />
           <Button icon={<ReloadOutlined />} size="middle" style={{ borderRadius: 8 }} onClick={handleReset}>重置</Button>
           <Tooltip title="刷新"><Button icon={<ReloadOutlined />} size="middle" loading={loading} style={{ borderRadius: 8, color: '#6366f1', borderColor: '#c7d2fe' }} onClick={() => fetchData(current)} /></Tooltip>

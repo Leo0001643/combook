@@ -343,7 +343,7 @@ export default function UserListPage() {
             </div>
           </div>
 
-          <Divider type="vertical" style={{ height: 28, margin: '0 4px', borderColor: '#e5e7eb' }} />
+          <div style={{ width: 1, height: 28, margin: '0 4px', background: '#e5e7eb', flexShrink: 0 }} />
 
           <div style={{ display: 'flex', gap: 8, flex: 1, flexWrap: 'wrap', alignItems: 'center' }}>
             {stats.map(s => (
@@ -394,7 +394,7 @@ export default function UserListPage() {
             onPressEnter={() => setPage(1)}
           />
 
-          <Divider type="vertical" style={{ height: 22, margin: '0 2px', borderColor: '#e5e7eb' }} />
+          <div style={{ width: 1, height: 22, margin: '0 2px', background: '#e5e7eb', flexShrink: 0 }} />
 
           {/* 账号状态 */}
           <Select placeholder={<Space size={4}><SafetyCertificateOutlined style={{ color: '#6366f1', fontSize: 12 }} />账号状态</Space>} allowClear size="middle"
@@ -437,7 +437,7 @@ export default function UserListPage() {
             ))}
           </Select>
 
-          <Divider type="vertical" style={{ height: 22, margin: '0 2px', borderColor: '#e5e7eb' }} />
+          <div style={{ width: 1, height: 22, margin: '0 2px', background: '#e5e7eb', flexShrink: 0 }} />
 
           {/* 注册时间区间 */}
           <RangePicker
@@ -514,7 +514,7 @@ export default function UserListPage() {
         variant={banVariant}
         title={isBanning ? '确认封禁该会员账号？' : '确认解封该会员账号？'}
         description={banTarget && (
-          <Space direction="vertical" size={6} style={{ width: '100%' }}>
+          <Space orientation="vertical" size={6} style={{ width: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <Avatar size={36} icon={<UserOutlined />}
                 style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', flexShrink: 0 }} />

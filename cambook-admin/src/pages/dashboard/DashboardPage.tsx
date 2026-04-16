@@ -195,7 +195,7 @@ export default function DashboardPage() {
               {isAdmin ? '平台核心数据 · 实时运营概览' : '商户运营数据 · 今日概览'}
             </div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {(isAdmin
               ? [
@@ -321,7 +321,7 @@ export default function DashboardPage() {
                     percent={service.percent}
                     showInfo={false}
                     strokeColor={service.color}
-                    trailColor="#f3f4f6"
+                    railColor="#f3f4f6"
                     size={['100%', 6] as any}
                     strokeLinecap="round"
                   />

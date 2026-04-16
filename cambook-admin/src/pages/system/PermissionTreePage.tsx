@@ -619,7 +619,7 @@ export default function PermissionTreePage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>权限配置</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>三级权限树：目录 → 菜单 → 操作权限，层级清晰，一目了然</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           {/* 统计徽章 */}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {[
@@ -679,7 +679,7 @@ export default function PermissionTreePage() {
               },
             ]}
           />
-          <Divider type="vertical" style={{ height: 16, borderColor: '#e2e8f0' }} />
+          <div style={{ width: 1, height: 16, background: '#e2e8f0', flexShrink: 0 }} />
           {/* 节点类型图例 */}
           <Space size={10}>
             {Object.entries(NODE_CFG).map(([k, v]) => (

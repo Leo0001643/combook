@@ -1,5 +1,3 @@
-import { Divider } from 'antd'
-
 interface StatBadge {
   label: string
   value: number | string
@@ -90,7 +88,7 @@ export default function ListPageLayout({
           {/* 统计徽章 */}
           {stats && stats.length > 0 && (
             <>
-              <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+              <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {stats.map((s, i) => (
                   <div key={i} style={{

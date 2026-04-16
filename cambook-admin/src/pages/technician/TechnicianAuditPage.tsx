@@ -262,7 +262,7 @@ export default function TechnicianAuditPage() {
               审核技师入驻申请 · 核实资质证件 · 维护平台服务质量
             </div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#ffe7ba' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#ffe7ba', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {statBadges.map((s, i) => (
               <div key={i} style={{

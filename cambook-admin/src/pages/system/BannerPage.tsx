@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   Row, Col, Card, Table, Input, Button, Space, Typography, Tag, Modal,
-  Form, InputNumber, Switch, message, Popconfirm, Tabs, Divider, Tooltip,
+  Form, InputNumber, Switch, message, Popconfirm, Tabs, Tooltip,
 } from 'antd'
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, PictureOutlined,
@@ -296,7 +296,7 @@ export default function BannerPage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>系统设置</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>Banner管理 · 服务类目 · 系统配置</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ flex: 1 }} />
           <Tooltip title="刷新 Banner 列表">
             <Button icon={<ReloadOutlined />} size="middle" loading={loading} style={{ borderRadius: 8, color: '#6366f1', borderColor: '#c7d2fe' }} onClick={fetchBanners} />
@@ -317,6 +317,7 @@ export default function BannerPage() {
         />
       </div>
       <Modal
+        forceRender
         title={
           <div style={{
             background: 'linear-gradient(135deg,#F5A623,#F97316)',

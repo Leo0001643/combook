@@ -188,7 +188,7 @@ export default function MerchantStaffPage() {
     {
       title: col(<PhoneOutlined style={{ color: '#6366f1' }} />, '联系方式'), key: 'contact', width: 200,
       render: (_, r) => (
-        <Space direction="vertical" size={2}>
+        <Space orientation="vertical" size={2}>
           <Space size={4}><PhoneOutlined style={{ color: '#3b82f6', fontSize: 11 }} /><Text style={{ fontSize: 12 }}>{r.mobile || <Text type="secondary">未填写</Text>}</Text></Space>
           {r.telegram && <Space size={4}><SendOutlined style={{ color: '#229ED9', fontSize: 11 }} /><Text style={{ fontSize: 12, color: '#229ED9' }}>@{r.telegram}</Text></Space>}
           <Space size={4}><MailOutlined style={{ color: '#8b5cf6', fontSize: 11 }} /><Text style={{ fontSize: 12 }}>{r.email || <Text type="secondary">未填写</Text>}</Text></Space>
@@ -285,7 +285,7 @@ export default function MerchantStaffPage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>员工管理</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>管理商户员工账号 · 分配部门职位</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)' }}>
               <span>👥</span>
@@ -404,7 +404,10 @@ export default function MerchantStaffPage() {
             {/* ── Telegram ── */}
             <Col span={8}>
               <Form.Item name="telegram" label={<Space size={4}><SendOutlined style={{ color: '#229ED9' }} /><span>Telegram</span></Space>}>
-                <Input addonBefore={<span style={{ color: '#229ED9', fontWeight: 600 }}>@</span>} placeholder="不含@，如：username" />
+                <Space.Compact style={{ width: '100%' }}>
+                  <Button style={{ pointerEvents: 'none', paddingInline: 10, color: '#229ED9', fontWeight: 700, borderRight: 0 }}>@</Button>
+                  <Input placeholder="不含@，如：username" style={{ flex: 1 }} />
+                </Space.Compact>
               </Form.Item>
             </Col>
 

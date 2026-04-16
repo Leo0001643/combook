@@ -228,7 +228,7 @@ export default function PositionListPage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>职位管理</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>管理系统职位体系 · 配置职责说明</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0f2fe' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0f2fe', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(8,145,178,0.1)', border: '1px solid rgba(8,145,178,0.25)' }}>
               <span style={{ fontSize: 13 }}>📋</span>

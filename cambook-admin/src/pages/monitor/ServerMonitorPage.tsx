@@ -62,7 +62,7 @@ export default function ServerMonitorPage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>服务监控</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>实时监控服务器 CPU、内存、JVM、磁盘状态</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8 }}>
             {[
               { label: 'CPU', value: `${toFixed(os.cpuUsedPercent)}%`, color: '#4facfe', bg: 'rgba(79,172,254,0.1)', border: 'rgba(79,172,254,0.25)', icon: '⚡' },

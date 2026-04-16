@@ -450,7 +450,7 @@ export default function VehicleListPage() {
               {isMerchant ? '商户车辆档案 · 管理本店车辆状态与年检信息' : '管理平台车辆档案 · 实时跟踪车辆状态与年检信息'}
             </div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {headerStats.map((s, i) => (
               <div key={i} style={{

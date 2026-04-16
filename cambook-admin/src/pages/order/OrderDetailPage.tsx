@@ -113,7 +113,7 @@ const OrderDetailPage: React.FC = () => {
           >
             返回订单列表
           </Button>
-          <Divider type="vertical" />
+          <div style={{ width: 1, height: 20, margin: "0 4px", background: "#e5e7eb", flexShrink: 0 }} />
           <Text strong style={{ fontSize: 16 }}>订单详情</Text>
           <Tag color={statusInfo.color} style={{ fontSize: 13, padding: '2px 10px' }}>
             {statusInfo.text}

@@ -38,7 +38,7 @@ export default function MerchantProfilePage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>商户设置</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>{data.merchantNameZh || data.merchantNameEn || '商户'} · 商户号 {data.merchantNo || ''}</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8 }}>
             {[
               { label: '账户余额', value: `¥${Number(data.balance ?? 0).toFixed(0)}`, color: '#10b981', bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.25)', icon: '💰' },

@@ -166,7 +166,7 @@ export default function MerchantDeptPage() {
     {
       title: col(<UserOutlined style={{ color: '#06b6d4' }} />, '负责人'), key: 'leader',
       render: (_, r) => r.leader ? (
-        <Space direction="vertical" size={0}>
+        <Space orientation="vertical" size={0}>
           <Space size={4}><UserOutlined style={{ color: '#6366f1' }} /><Text>{r.leader}</Text></Space>
           {r.phone && <Space size={4}><PhoneOutlined style={{ color: '#52c41a', fontSize: 11 }} /><Text type="secondary" style={{ fontSize: 11 }}>{r.phone}</Text></Space>}
           {r.email && <Space size={4}><MailOutlined style={{ color: '#1677ff', fontSize: 11 }} /><Text type="secondary" style={{ fontSize: 11 }}>{r.email}</Text></Space>}
@@ -245,7 +245,7 @@ export default function MerchantDeptPage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>部门管理</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>管理商户组织架构 · 配置部门权限</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#cffafe' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#cffafe', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)' }}>
               <span>🏢</span>

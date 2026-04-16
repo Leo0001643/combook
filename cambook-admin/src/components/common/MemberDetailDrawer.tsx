@@ -246,7 +246,7 @@ export default function MemberDetailDrawer({ open, detail, isAdmin, onClose, onB
           <Progress
             percent={pct}
             strokeColor={{ '0%': level.start, '100%': level.end }}
-            trailColor="#f0f0f0"
+            railColor="#f0f0f0"
             strokeLinecap="round"
             size={{ height: 7 }}
             showInfo={false}

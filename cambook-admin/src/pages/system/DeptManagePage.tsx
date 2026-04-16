@@ -236,7 +236,7 @@ export default function DeptManagePage() {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>部门管理</div>
             <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>管理组织架构 · 配置部门负责人</div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#cffafe' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#cffafe', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)' }}>
               <span style={{ fontSize: 13 }}>🏢</span>

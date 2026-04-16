@@ -296,7 +296,7 @@ const CouponListPage: React.FC = () => {
               {isMerchant ? '管理本店优惠券 · 配置满减折扣 · 吸引更多客户' : '创建和管理平台优惠券 · 配置满减折扣 · 追踪发放数量'}
             </div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {headerStats.map((s, i) => (
               <div key={i} style={{

@@ -581,7 +581,7 @@ export default function MenuManagePage() {
               {portalTab === 'admin' ? '管理系统导航菜单结构与功能权限节点，支持移动与排序' : '管理商户端导航菜单结构，控制商户可见功能范围'}
             </div>
           </div>
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e0e4ff', flexShrink: 0 }} />
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(79,172,254,0.1)', border: '1px solid rgba(79,172,254,0.25)' }}>
               <span style={{ fontSize: 13 }}>📋</span>
@@ -611,7 +611,7 @@ export default function MenuManagePage() {
             ]}
             style={{ borderRadius: 10 }}
           />
-          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e5e7eb' }} />
+          <div style={{ width: 1, height: 20, margin: '0 4px', background: '#e5e7eb', flexShrink: 0 }} />
           <Input placeholder="菜单名称" allowClear value={searchName} onChange={e => setSearchName(e.target.value)} style={{ width: 180, ...INPUT_STYLE }} prefix={<MenuOutlined style={{ color: '#9ca3af', fontSize: 12 }} />} size="middle" />
           <Select placeholder={<Space size={4}><EyeOutlined style={{ color: '#6366f1', fontSize: 12 }} />可见性</Space>} allowClear style={{ width: 100 }} size="middle" value={searchVisible} onChange={v => setSearchVisible(v)}>
             <Option value={1}><Space><EyeOutlined style={{ color: '#52c41a' }} />显示</Space></Option>
