@@ -54,6 +54,9 @@ public class VehicleDTO {
     @Schema(description = "车辆图片 URL")
     private String photo;
 
+    @Schema(description = "车辆多图（JSON 数组）")
+    private String photos;
+
     @NotNull(message = "状态不能为空")
     @Schema(description = "状态：0=空闲 1=使用中 2=维修中")
     private Integer status;

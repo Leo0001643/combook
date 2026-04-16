@@ -18,6 +18,8 @@ import request from '../../api/request'
 import RichTextInput from '../../components/common/RichTextInput'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import PagePagination from '../../components/common/PagePagination'
 
 const { Text } = Typography
 
@@ -82,7 +84,10 @@ function buildTreeData(nodes: PermissionVO[]): DataNode[] {
 }
 
 export default function RoleListPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight(46)
   const [list, setList]               = useState<RoleVO[]>([])
+  const [page, setPage]               = useState(1)
+  const [pageSize, setPageSize]       = useState(20)
   const [loading, setLoading]         = useState(false)
   const [modalOpen, setModalOpen]     = useState(false)
   const [editing, setEditing]         = useState<RoleVO | null>(null)
@@ -272,16 +277,24 @@ export default function RoleListPage() {
         </div>
       </div>
 
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           rowKey="id"
           loading={loading}
           columns={columns}
-          dataSource={list}
+          dataSource={list.slice((page - 1) * pageSize, page * pageSize)}
           pagination={false}
           size="middle"
           components={styledTableComponents}
-          scroll={{ x: 'max-content' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
+        />
+        <PagePagination
+          total={list.length}
+          current={page}
+          pageSize={pageSize}
+          onChange={setPage}
+          onSizeChange={s => { setPageSize(s); setPage(1) }}
+          countLabel="个角色"
         />
       </div>
 

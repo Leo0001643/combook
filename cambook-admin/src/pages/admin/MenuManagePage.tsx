@@ -16,6 +16,8 @@ import {
 import { permissionApi, type PermissionVO } from '../../api/api'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import PagePagination from '../../components/common/PagePagination'
 
 const { Text } = Typography
 const { Option } = Select
@@ -340,6 +342,7 @@ function MoveModal({ open, node, tree, onCancel, onOk, moving }: MoveModalProps)
 type PortalTab = 'admin' | 'merchant'
 
 export default function MenuManagePage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight(46)
   const [rawTree,       setRawTree]       = useState<PermissionVO[]>([])
   const [loading,       setLoading]       = useState(false)
   const [expandedKeys,  setExpandedKeys]  = useState<(number | string)[]>([])
@@ -638,7 +641,7 @@ export default function MenuManagePage() {
       </div>
 
       {/* Tree table - full width */}
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           columns={columns}
           dataSource={displayTree}
@@ -647,14 +650,23 @@ export default function MenuManagePage() {
           pagination={false}
           size="small"
           components={styledTableComponents}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           expandable={{
             expandedRowKeys: expandedKeys as string[],
-            onExpandedRowsChange: keys => setExpandedKeys(keys as number[]),
+            onExpandedRowsChange: (keys) => setExpandedKeys(keys as number[]),
             indentSize: 22,
           }}
           rowClassName={(r: PermissionVO) =>
             r.type === 1 ? 'menu-row-dir' : r.type === 2 ? 'menu-row-menu' : 'menu-row-op'
           }
+        />
+        <PagePagination
+          total={allKeys.length}
+          current={1}
+          pageSize={Math.max(allKeys.length, 1)}
+          onChange={() => {}}
+          showSizeChanger={false}
+          countLabel="个节点"
         />
       </div>
 

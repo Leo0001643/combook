@@ -17,10 +17,12 @@ import { technicianApi, type TechnicianVO } from '../../api/api'
 import PermGuard from '../../components/common/PermGuard'
 import PagePagination from '../../components/common/PagePagination'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text, Paragraph } = Typography
 
 export default function TechnicianAuditPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [loading, setLoading]         = useState(false)
   const [data, setData]               = useState<TechnicianVO[]>([])
   const [total, setTotal]             = useState(0)
@@ -299,7 +301,7 @@ export default function TechnicianAuditPage() {
         </div>
       </div>
 
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         {data.length === 0 && !loading ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -314,7 +316,7 @@ export default function TechnicianAuditPage() {
             loading={loading}
             size="middle"
             components={styledTableComponents}
-            scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+            scroll={{ x: 'max-content', y: tableBodyH }}
             pagination={false}
             rowClassName={(r) => {
               if (!r.createTime) return ''

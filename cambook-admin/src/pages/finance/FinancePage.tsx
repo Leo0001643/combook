@@ -12,6 +12,7 @@ import { usePortalScope } from '../../hooks/usePortalScope';
 import MerchantFinanceView from '../merchant/FinanceView';
 import PagePagination from '../../components/common/PagePagination';
 import { styledTableComponents } from '../../components/common/tableComponents';
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight';
 
 const { Text } = Typography;
 
@@ -55,6 +56,8 @@ const userTypeMap: Record<number, { text: string; color: string }> = {
 const PAGE_GRADIENT = 'linear-gradient(135deg,#10b981,#059669)';
 
 const AdminFinancePage: React.FC = () => {
+  const { ref: refRecords, height: recordsH } = useTableBodyHeight()
+  const { ref: refWallets, height: walletsH } = useTableBodyHeight()
   const [overview, setOverview] = useState<any>(null);
   const [records, setRecords] = useState<WalletRecord[]>([]);
   const [wallets, setWallets] = useState<WalletVO[]>([]);
@@ -268,7 +271,7 @@ const AdminFinancePage: React.FC = () => {
             key: 'records',
             label: <Space><WalletOutlined />资金流水</Space>,
             children: (
-              <div style={{
+              <div ref={refRecords} style={{
                 marginLeft: -24, marginRight: -24, marginBottom: -24,
                 background: '#fff', borderTop: '1px solid #eef0f8',
               }}>
@@ -291,7 +294,7 @@ const AdminFinancePage: React.FC = () => {
                     dataSource={records}
                     rowKey="id"
                     components={styledTableComponents}
-                    scroll={{ x: 'max-content', y: 'calc(100vh - 320px)' }}
+                    scroll={{ x: 'max-content', y: recordsH }}
                     pagination={false}
                   />
                 </Spin>
@@ -310,7 +313,7 @@ const AdminFinancePage: React.FC = () => {
             key: 'wallets',
             label: <Space><DollarOutlined />钱包列表</Space>,
             children: (
-              <div style={{
+              <div ref={refWallets} style={{
                 marginLeft: -24, marginRight: -24, marginBottom: -24,
                 background: '#fff', borderTop: '1px solid #eef0f8',
               }}>
@@ -332,7 +335,7 @@ const AdminFinancePage: React.FC = () => {
                   dataSource={wallets}
                   rowKey="id"
                   components={styledTableComponents}
-                  scroll={{ x: 'max-content', y: 'calc(100vh - 320px)' }}
+                  scroll={{ x: 'max-content', y: walletsH }}
                   pagination={false}
                 />
                 <PagePagination

@@ -18,6 +18,7 @@ import { merchantApi } from '../../api/api';
 import PermGuard from '../../components/common/PermGuard';
 import PagePagination from '../../components/common/PagePagination';
 import { col, INPUT_STYLE, styledTableComponents } from '../../components/common/tableComponents';
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography;
 
@@ -44,6 +45,7 @@ const typeMap: Record<number, { text: string; color: string }> = {
 const PAGE_GRADIENT = 'linear-gradient(135deg,#f59e0b,#d97706)';
 
 const CouponListPage: React.FC = () => {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const { isMerchant, couponList, couponAdd, couponEdit, couponUpdateStatus, couponDelete } = usePortalScope();
   const [data, setData]               = useState<Coupon[]>([]);
   const [loading, setLoading]         = useState(false);
@@ -390,7 +392,7 @@ const CouponListPage: React.FC = () => {
         </div>
       </div>
 
-      <div style={{
+      <div ref={ref} style={{
         marginLeft: -24, marginRight: -24, marginBottom: -24,
         background: '#fff', borderTop: '1px solid #eef0f8',
       }}>
@@ -400,7 +402,7 @@ const CouponListPage: React.FC = () => {
           rowKey="id"
           loading={loading}
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           pagination={false}
         />
         <PagePagination

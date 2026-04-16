@@ -15,6 +15,7 @@ import { type BannerVO } from '../../api/api'
 import { usePortalScope } from '../../hooks/usePortalScope'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 
@@ -55,6 +56,7 @@ function BannerPreview({ title, gradient }: { title: string; gradient: string })
 }
 
 export default function BannerPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const { bannerAdd, bannerEdit, bannerDelete } = usePortalScope()
   const [data, setData]           = useState<BannerVO[]>(MOCK_BANNERS)
   const [loading, setLoading]     = useState(false)
@@ -209,7 +211,7 @@ export default function BannerPage() {
             pagination={false}
             size="middle"
             components={styledTableComponents}
-            scroll={{ x: 'max-content', y: 'calc(100vh - 320px)' }}
+            scroll={{ x: 'max-content', y: tableBodyH }}
           />
         </div>
       ),
@@ -300,7 +302,7 @@ export default function BannerPage() {
           </Tooltip>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <div style={{ padding: '12px 24px 24px' }}>
           <Tabs items={tabItems} />
         </div>

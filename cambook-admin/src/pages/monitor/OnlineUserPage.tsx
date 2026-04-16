@@ -11,6 +11,7 @@ import request from '../../api/request'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const PAGE_GRADIENT = 'linear-gradient(135deg,#10b981,#059669)'
 
@@ -46,6 +47,7 @@ const BROWSER_COLORS: Record<string, string> = {
 }
 
 export default function OnlineUserPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [users, setUsers] = useState<OnlineUser[]>([])
   const [loading, setLoading] = useState(false)
   const [searchName, setSearchName] = useState('')
@@ -231,7 +233,7 @@ export default function OnlineUserPage() {
           <Button type="primary" icon={<SearchOutlined />} style={{ borderRadius: 8, border: 'none', background: PAGE_GRADIENT }} onClick={handleSearch}>搜索</Button>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           columns={columns}
           dataSource={pagedUsers}
@@ -239,7 +241,7 @@ export default function OnlineUserPage() {
           loading={loading}
           pagination={false}
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           size="middle"
         />
         <PagePagination

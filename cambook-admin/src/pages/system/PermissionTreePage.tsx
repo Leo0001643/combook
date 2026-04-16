@@ -5,6 +5,7 @@
  * 每一层在视觉上完全隔离，层次一目了然。
  */
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 import {
   Button, Space, Tag, Typography,
   Form, Input, InputNumber, message, Tooltip, Switch,
@@ -16,7 +17,7 @@ import {
   FolderOutlined, AppstoreOutlined, ThunderboltOutlined,
   ShopOutlined, DesktopOutlined, SearchOutlined, ReloadOutlined,
   CodeOutlined, LinkOutlined, SortAscendingOutlined,
-  ApiOutlined, MenuOutlined, LockOutlined, NodeIndexOutlined,
+  ApiOutlined, MenuOutlined, LockOutlined,
   EyeOutlined, EyeInvisibleOutlined, CheckCircleOutlined,
   FolderOpenOutlined, TagOutlined,
   RightOutlined,
@@ -36,7 +37,7 @@ import type React from 'react'
 import { permissionApi, type PermissionVO } from '../../api/api'
 import PermGuard from '../../components/common/PermGuard'
 
-const { Text, Title } = Typography
+const { Text } = Typography
 
 // ── 图标映射 ──────────────────────────────────────────────────────────────────
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -586,128 +587,126 @@ export default function PermissionTreePage() {
   }
 
   const isAdmin = portal === 'admin'
+  const { ref: treeRef, height: treeH } = useTableBodyHeight(0)
+
+  const GRADIENT = isAdmin
+    ? 'linear-gradient(135deg,#667eea,#764ba2)'
+    : 'linear-gradient(135deg,#4facfe,#00f2fe)'
 
   return (
-    <div>
-      {/* ── 页头 ── */}
-      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+    <div style={{ marginTop: -24 }}>
+      {/* ── 粘性页头 ── */}
+      <div style={{
+        position: 'sticky', top: 64, zIndex: 88,
+        marginLeft: -24, marginRight: -24,
+        background: 'rgba(255,255,255,0.97)',
+        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(0,0,0,0.07)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+      }}>
+        {/* 第一行：图标 + 标题 + 统计徽章 + 新增按钮 */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '10px 24px 0', gap: 12 }}>
           <div style={{
-            width: 52, height: 52, borderRadius: 14,
-            background: 'linear-gradient(135deg,#667eea,#764ba2)',
+            width: 34, height: 34, borderRadius: 10,
+            background: GRADIENT,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 8px 24px rgba(102,126,234,0.4)',
+            boxShadow: isAdmin ? '0 4px 12px rgba(102,126,234,0.35)' : '0 4px 12px rgba(79,172,254,0.35)',
+            flexShrink: 0,
           }}>
-            <LockOutlined style={{ color: '#fff', fontSize: 22 }} />
+            <LockOutlined style={{ color: '#fff', fontSize: 16 }} />
           </div>
           <div>
-            <Title level={4} style={{ margin: 0, fontSize: 20 }}>权限配置</Title>
-            <Text type="secondary" style={{ fontSize: 13 }}>
-              三级权限树：目录 → 菜单 → 操作权限，层级清晰，一目了然
-            </Text>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#1e293b', lineHeight: 1.2 }}>权限配置</div>
+            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>三级权限树：目录 → 菜单 → 操作权限，层级清晰，一目了然</div>
           </div>
-        </div>
-
-        {/* 统计卡片 */}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {[
-            { label: '节点总数', value: stats.total, gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: <NodeIndexOutlined /> },
-            { label: '目录',     value: stats.dirs,  gradient: 'linear-gradient(135deg,#a78bfa,#8b5cf6)', icon: <FolderOutlined /> },
-            { label: '菜单',     value: stats.menus, gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: <MenuOutlined /> },
-            { label: '操作',     value: stats.ops,   gradient: 'linear-gradient(135deg,#f6d365,#fda085)', icon: <ApiOutlined /> },
-          ].map(s => (
-            <div key={s.label} style={{
-              background: '#fff', borderRadius: 12, padding: '8px 14px',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)',
-              display: 'flex', alignItems: 'center', gap: 10, minWidth: 80,
-            }}>
-              <div style={{ width: 30, height: 30, borderRadius: 8, background: s.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13 }}>{s.icon}</div>
-              <div>
-                <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.2 }}>{s.value}</div>
-                <div style={{ fontSize: 11, color: '#94a3b8' }}>{s.label}</div>
+          <Divider type="vertical" style={{ height: 20, margin: '0 4px', borderColor: '#e0e4ff' }} />
+          {/* 统计徽章 */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {[
+              { label: '节点总数', value: stats.total, color: '#6366f1', bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.2)' },
+              { label: '目录',     value: stats.dirs,  color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)', border: 'rgba(139,92,246,0.2)' },
+              { label: '菜单',     value: stats.menus, color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)', border: 'rgba(14,165,233,0.2)' },
+              { label: '操作',     value: stats.ops,   color: '#f59e0b', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.2)' },
+            ].map(s => (
+              <div key={s.label} style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '3px 10px', borderRadius: 20,
+                background: s.bg, border: `1px solid ${s.border}`,
+              }}>
+                <span style={{ fontSize: 12, color: '#6b7280' }}>{s.label}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: s.color }}>{s.value}</span>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── 工具栏 ── */}
-      <div style={{
-        background: '#fff', borderRadius: 14, padding: '14px 20px',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.04)',
-        marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
-      }}>
-        {/* 门户切换 */}
-        <Segmented
-          value={portal}
-          onChange={v => { setPortal(v as Portal); setKeyword('') }}
-          options={[
-            {
-              value: 'admin',
-              label: (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 6px' }}>
-                  <DesktopOutlined />
-                  <span style={{ fontSize: 13 }}>管理端权限</span>
-                  {portal === 'admin' && <Badge count={stats.total} color="#6366f1" size="small" />}
-                </div>
-              ),
-            },
-            {
-              value: 'merchant',
-              label: (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 6px' }}>
-                  <ShopOutlined />
-                  <span style={{ fontSize: 13 }}>商户端菜单</span>
-                  {portal === 'merchant' && <Badge count={stats.total} color="#0ea5e9" size="small" />}
-                </div>
-              ),
-            },
-          ]}
-        />
-
-        {/* 图例 */}
-        <Space size={12}>
-          {Object.entries(NODE_CFG).map(([k, v]) => (
-            <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <div style={{ width: 18, height: 18, borderRadius: 4, background: v.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff' }}>
-                {v.icon(false)}
-              </div>
-              <Text style={{ fontSize: 12, color: '#64748b' }}>{v.label}</Text>
-            </div>
-          ))}
-        </Space>
-
-        <Space>
-          <Input
-            ref={searchRef}
-            placeholder="搜索名称 / 路径 / 权限码…"
-            prefix={<SearchOutlined style={{ color: '#cbd5e1' }} />}
-            value={keyword}
-            onChange={e => setKeyword(e.target.value)}
-            allowClear
-            style={{ width: 210, borderRadius: 10 }}
-          />
-          <Tooltip title="刷新">
-            <Button icon={<ReloadOutlined />} onClick={() => fetchTree(portal)} style={{ borderRadius: 10 }} />
-          </Tooltip>
+            ))}
+          </div>
+          <div style={{ flex: 1 }} />
           <PermGuard code="permission:add">
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => openAdd(null)}
-              style={{
-                background: isAdmin ? 'linear-gradient(135deg,#667eea,#764ba2)' : 'linear-gradient(135deg,#4facfe,#00f2fe)',
-                border: 'none', borderRadius: 10,
-              }}
+              style={{ background: GRADIENT, border: 'none', borderRadius: 8 }}
             >
               新增根节点
             </Button>
           </PermGuard>
-        </Space>
+        </div>
+
+        {/* 第二行：门户切换 + 图例 + 搜索 + 刷新 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 24px 12px', flexWrap: 'wrap' }}>
+          <Segmented
+            value={portal}
+            onChange={v => { setPortal(v as Portal); setKeyword('') }}
+            options={[
+              {
+                value: 'admin',
+                label: (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '1px 4px' }}>
+                    <DesktopOutlined />
+                    <span style={{ fontSize: 13 }}>管理端权限</span>
+                    {portal === 'admin' && <Badge count={stats.total} color="#6366f1" size="small" />}
+                  </div>
+                ),
+              },
+              {
+                value: 'merchant',
+                label: (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '1px 4px' }}>
+                    <ShopOutlined />
+                    <span style={{ fontSize: 13 }}>商户端菜单</span>
+                    {portal === 'merchant' && <Badge count={stats.total} color="#0ea5e9" size="small" />}
+                  </div>
+                ),
+              },
+            ]}
+          />
+          <Divider type="vertical" style={{ height: 16, borderColor: '#e2e8f0' }} />
+          {/* 节点类型图例 */}
+          <Space size={10}>
+            {Object.entries(NODE_CFG).map(([k, v]) => (
+              <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ width: 16, height: 16, borderRadius: 4, background: v.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff' }}>
+                  {v.icon(false)}
+                </div>
+                <Text style={{ fontSize: 12, color: '#64748b' }}>{v.label}</Text>
+              </div>
+            ))}
+          </Space>
+          <div style={{ flex: 1 }} />
+          <Input
+            ref={searchRef}
+            placeholder="搜索名称 / 路径 / 权限码…"
+            prefix={<SearchOutlined style={{ color: '#bbb' }} />}
+            value={keyword}
+            onChange={e => setKeyword(e.target.value)}
+            allowClear
+            style={{ width: 200, borderRadius: 8 }}
+          />
+          <Button icon={<ReloadOutlined />} style={{ borderRadius: 8 }} onClick={() => fetchTree(portal)}>刷新</Button>
+        </div>
       </div>
 
       {/* ── 权限树 ── */}
-      <div>
+      <div ref={treeRef} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, overflowY: 'auto', height: treeH, padding: '16px 24px' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <Spin size="large" />

@@ -2,24 +2,28 @@ import { useState, useEffect } from 'react'
 import {
   Row, Col, Table, Input, Select, Space, Tag, Button,
   Typography, message, Modal, Form, Tooltip, Popconfirm, Dropdown,
-  Divider,
+  Divider, Upload,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { MenuProps } from 'antd'
+import type { UploadFile, UploadProps } from 'antd'
 import {
   CarOutlined, CarFilled, PlusOutlined, EditOutlined, DeleteOutlined,
   SearchOutlined, ReloadOutlined, ShopOutlined,
   ToolOutlined, InfoCircleOutlined, CarryOutOutlined, CalendarOutlined,
   FileTextOutlined, DownOutlined, TagOutlined, BgColorsOutlined,
   SafetyCertificateOutlined, ClockCircleOutlined, SettingOutlined,
+  PictureOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { usePortalScope } from '../../hooks/usePortalScope'
-import { merchantApi } from '../../api/api'
+import { merchantApi, uploadApi } from '../../api/api'
 import RichTextInput from '../../components/common/RichTextInput'
 import PagePagination from '../../components/common/PagePagination'
 import { col, INPUT_STYLE, styledTableComponents } from '../../components/common/tableComponents'
 import PermGuard from '../../components/common/PermGuard'
+import ImageLightbox from '../../components/common/ImageLightbox'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 const { Option } = Select
@@ -34,9 +38,19 @@ interface VehicleVO {
   inspectionCode: string
   inspectionExpiry: string
   photo: string
+  photos?: string
   status: number
   remark: string
   createTime: string
+}
+
+function parsePhotos(photos: string | undefined | null): string[] {
+  if (!photos) return []
+  try {
+    const raw = String(photos).trim()
+    if (raw.startsWith('[')) return JSON.parse(raw).filter(Boolean)
+    return raw.split(',').map(s => s.trim()).filter(Boolean)
+  } catch { return [] }
 }
 
 const STATUS_CFG: Record<number, { label: string; color: string; icon: React.ReactNode; bg: string }> = {
@@ -54,6 +68,7 @@ const BRAND_COLORS: Record<string, string> = {
 const PAGE_GRADIENT = 'linear-gradient(135deg,#10b981,#059669)'
 
 export default function VehicleListPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const { isMerchant, vehicleList, vehicleAdd, vehicleEdit, vehicleDelete, vehicleStatus } = usePortalScope()
   const [data, setData]               = useState<VehicleVO[]>([])
   const [total, setTotal]             = useState(0)
@@ -68,6 +83,10 @@ export default function VehicleListPage() {
   const [drawerOpen, setDrawer]       = useState(false)
   const [editing, setEditing]         = useState<VehicleVO | null>(null)
   const [form] = Form.useForm()
+  const [photoList, setPhotoList]     = useState<UploadFile[]>([])
+  const [lbOpen, setLbOpen]           = useState(false)
+  const [lbIdx, setLbIdx]             = useState(0)
+  const [lbUrls, setLbUrls]           = useState<string[]>([])
 
   useEffect(() => {
     if (!isMerchant) {
@@ -96,27 +115,51 @@ export default function VehicleListPage() {
     } catch { setData([]) } finally { setLoading(false) }
   }
 
+  const handlePhotoUpload: UploadProps['customRequest'] = async ({ file, onSuccess, onError }) => {
+    try {
+      const res = await uploadApi.image(file as File)
+      const url: string = res.data?.data?.url ?? res.data?.data
+      ;(onSuccess as any)?.({ url })
+    } catch (e) {
+      ;(onError as any)?.(e)
+      message.error('图片上传失败')
+    }
+  }
+
   const openAdd = () => {
     setEditing(null)
     form.resetFields()
     form.setFieldsValue({ status: 0, seats: 5 })
+    setPhotoList([])
     setDrawer(true)
   }
 
   const openEdit = (r: VehicleVO) => {
     setEditing(r)
     form.setFieldsValue({ ...r })
+    const existingPhotos = parsePhotos(r.photos)
+    setPhotoList(existingPhotos.map((url, i) => ({
+      uid: `-${i}`,
+      name: `photo-${i}`,
+      status: 'done' as const,
+      url,
+      response: { url },
+    })))
     setDrawer(true)
   }
 
   const handleSubmit = async () => {
     const values = await form.validateFields()
+    const photoUrls = photoList
+      .filter(f => f.status === 'done' && (f.response?.url || f.url))
+      .map(f => f.response?.url || f.url)
+    const photosJson = photoUrls.length ? JSON.stringify(photoUrls) : undefined
     try {
       if (editing) {
-        await vehicleEdit({ ...values, id: editing.id })
+        await vehicleEdit({ ...values, id: editing.id, photos: photosJson })
         message.success('车辆信息已更新')
       } else {
-        await vehicleAdd(values)
+        await vehicleAdd({ ...values, photos: photosJson })
         message.success('车辆已添加')
       }
       setDrawer(false)
@@ -212,6 +255,44 @@ export default function VehicleListPage() {
           </div>
         </div>
       ),
+    },
+    {
+      title: col(<PictureOutlined style={{ color: '#6366f1' }} />, '车辆图片'),
+      key: 'photos',
+      width: 90,
+      render: (_, r) => {
+        const firstPhoto = parsePhotos(r.photos)[0]
+        return firstPhoto ? (
+          <img
+            src={firstPhoto}
+            alt="vehicle"
+            onClick={() => {
+              const urls = parsePhotos(r.photos)
+              if (urls.length) { setLbUrls(urls); setLbIdx(0); setLbOpen(true) }
+            }}
+            style={{
+              width: 56, height: 42,
+              objectFit: 'cover',
+              borderRadius: 7,
+              cursor: 'pointer',
+              border: '1.5px solid #e5e7eb',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.10)',
+              transition: 'transform 0.18s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.08)')}
+            onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+          />
+        ) : (
+          <div style={{
+            width: 56, height: 42, borderRadius: 7,
+            background: '#f3f4f6',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: '1.5px dashed #d1d5db',
+          }}>
+            <CarOutlined style={{ color: '#9ca3af', fontSize: 18 }} />
+          </div>
+        )
+      },
     },
     {
       title: col(<BgColorsOutlined style={{ color: '#f97316' }} />, '颜色/座位'),
@@ -466,7 +547,7 @@ export default function VehicleListPage() {
         </div>
       </div>
 
-      <div style={{
+      <div ref={ref} style={{
         marginLeft: -24, marginRight: -24, marginBottom: -24,
         background: '#fff', borderTop: '1px solid #eef0f8',
       }}>
@@ -476,7 +557,7 @@ export default function VehicleListPage() {
           dataSource={data}
           loading={loading}
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           size="middle"
           pagination={false}
           rowClassName={() => 'table-row-hover'}
@@ -599,8 +680,36 @@ export default function VehicleListPage() {
           <Form.Item name="remark" label={<><FileTextOutlined style={{ color: '#8b5cf6' }} /> 备注说明</>}>
             <RichTextInput placeholder="车辆用途说明，如：金边主城区运营专用，负责VIP客户接送..." minHeight={110} />
           </Form.Item>
+          <Divider style={{ margin: '4px 0 16px' }} />
+          <Form.Item label={<><PictureOutlined style={{ color: '#6366f1' }} /> 车辆图片（最多 9 张）</>}>
+            <Upload
+              listType="picture-card"
+              fileList={photoList}
+              customRequest={handlePhotoUpload}
+              onChange={({ fileList }) => setPhotoList(fileList)}
+              accept="image/*"
+              maxCount={9}
+              multiple
+            >
+              {photoList.length < 9 && (
+                <div>
+                  <PlusOutlined style={{ color: '#6366f1' }} />
+                  <div style={{ marginTop: 4, fontSize: 12, color: '#6366f1' }}>上传图片</div>
+                </div>
+              )}
+            </Upload>
+          </Form.Item>
         </Form>
       </Modal>
+
+      {/* 图片灯箱 */}
+      <ImageLightbox
+        images={lbUrls}
+        current={lbIdx}
+        open={lbOpen}
+        onClose={() => setLbOpen(false)}
+        onChange={setLbIdx}
+      />
     </div>
   )
 }

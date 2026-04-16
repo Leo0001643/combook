@@ -12,6 +12,7 @@ import { sysConfigApi } from '../../api/api'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 
@@ -36,6 +37,7 @@ const GROUP_NAMES: Record<string, string> = {
 const PAGE_GRADIENT = 'linear-gradient(135deg,#f5576c,#f093fb)'
 
 export default function SysParamPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [configs, setConfigs]     = useState<SysConfig[]>([])
   const [loading, setLoading]     = useState(false)
   const [current, setCurrent]     = useState(1)
@@ -250,12 +252,12 @@ export default function SysParamPage() {
       </div>
 
       {/* ── 表格区域 ── */}
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           columns={columns} dataSource={configs} rowKey="id" loading={loading}
           size="middle" pagination={false}
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
         />
         <PagePagination
           total={total} current={current} pageSize={pageSize}

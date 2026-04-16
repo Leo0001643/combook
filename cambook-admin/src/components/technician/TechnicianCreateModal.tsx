@@ -379,6 +379,7 @@ export default function TechnicianCreateModal({ open, onClose, onSuccess, create
             onChange={({ fileList }) => setPhotoList(fileList)}
             accept="image/*"
             maxCount={9}
+            multiple
           >
             {photoList.length < 9 && (
               <div>

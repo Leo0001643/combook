@@ -18,6 +18,7 @@ import { staffApi, positionApi, roleApi, type StaffVO, type PositionVO, type Rol
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 const { Option } = Select
@@ -33,6 +34,7 @@ const AVATAR_COLORS = [
 ]
 
 export default function StaffListPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [data, setData]               = useState<StaffVO[]>([])
   const [total, setTotal]             = useState(0)
   const [loading, setLoading]         = useState(false)
@@ -318,7 +320,7 @@ export default function StaffListPage() {
           <Button type="primary" icon={<SearchOutlined />} style={{ borderRadius: 8, border: 'none', background: GRADIENT }} onClick={handleSearch}>搜索</Button>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           rowKey="id"
           columns={columns}
@@ -327,7 +329,7 @@ export default function StaffListPage() {
           size="middle"
           pagination={false}
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
         />
         <PagePagination
           total={total}

@@ -13,6 +13,8 @@ import {
 import { deptApi } from '../../api/api'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import PagePagination from '../../components/common/PagePagination'
 
 const { Text } = Typography
 
@@ -63,6 +65,7 @@ const GRADIENT_COLORS = [
 ]
 
 export default function DeptManagePage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight(46)
   const [list, setList] = useState<Dept[]>([])
   const [tree, setTree] = useState<Dept[]>([])
   const [loading, setLoading] = useState(false)
@@ -271,7 +274,7 @@ export default function DeptManagePage() {
         </div>
       </div>
 
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           columns={columns}
           dataSource={tree}
@@ -282,7 +285,15 @@ export default function DeptManagePage() {
           size="middle"
           rowClassName={() => 'dept-row'}
           components={styledTableComponents}
-          scroll={{ x: 'max-content' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
+        />
+        <PagePagination
+          total={list.length}
+          current={1}
+          pageSize={Math.max(list.length, 1)}
+          onChange={() => {}}
+          showSizeChanger={false}
+          countLabel="个部门"
         />
       </div>
 

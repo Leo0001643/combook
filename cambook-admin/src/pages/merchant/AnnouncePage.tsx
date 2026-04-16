@@ -25,6 +25,7 @@ import dayjs from 'dayjs'
 import PermGuard from '../../components/common/PermGuard'
 import { styledTableComponents, col, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 
@@ -43,6 +44,7 @@ const STATUS_MAP: Record<number, { label: string; color: string }> = {
 }
 
 export default function AnnouncePage({ type }: Props) {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const isInternal  = type === 1
   const pageTitle   = isInternal ? '内部公告' : '客户公告'
   const pageSubtitle = isInternal
@@ -285,8 +287,8 @@ export default function AnnouncePage({ type }: Props) {
         </div>
       </div>
       {/* Table area */}
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
-        <Table<AnnouncementVO> rowKey="id" columns={columns} dataSource={list} loading={loading} size="middle" pagination={false} components={styledTableComponents} scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }} />
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+        <Table<AnnouncementVO> rowKey="id" columns={columns} dataSource={list} loading={loading} size="middle" pagination={false} components={styledTableComponents} scroll={{ x: 'max-content', y: tableBodyH }} />
         <PagePagination total={total} current={page} pageSize={pageSize} onChange={p => setPage(p)} onSizeChange={s => { setPageSize(s); setPage(1) }} countLabel="条公告" pageSizeOptions={[15, 20, 50, 100]} />
       </div>
 

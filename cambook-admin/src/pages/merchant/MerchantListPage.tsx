@@ -19,6 +19,7 @@ import PagePagination from '../../components/common/PagePagination'
 import { merchantApi } from '../../api/api'
 import MerchantCreateModal from '../../components/merchant/MerchantCreateModal'
 import PermGuard from '../../components/common/PermGuard'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 
@@ -50,6 +51,7 @@ const AUDIT_MAP: Record<number, { label: string; color: string; bg: string }> = 
 const CITIES = ['金边', '暹粒', '西哈努克', '贡布', '白马']
 
 export default function MerchantListPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [data, setData]               = useState<Merchant[]>([])
   const [loading, setLoading]         = useState(false)
   const [total, setTotal]             = useState(0)
@@ -415,7 +417,7 @@ export default function MerchantListPage() {
         </div>
       </div>
 
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           rowKey="id"
           columns={columns}
@@ -423,7 +425,7 @@ export default function MerchantListPage() {
           loading={loading}
           size="middle"
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           rowClassName={(_, idx) => idx % 2 === 1 ? 'table-row-stripe' : ''}
           pagination={false}
         />

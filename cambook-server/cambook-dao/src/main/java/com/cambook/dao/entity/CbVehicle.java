@@ -22,6 +22,8 @@ public class CbVehicle extends BaseEntity {
     private String  inspectionCode;
     private String  inspectionExpiry;
     private String  photo;
+    /** 车辆多图（JSON 数组，如 ["url1","url2"]） */
+    private String  photos;
     /** 状态：0空闲 1使用中 2维修中 */
     private Integer status;
     private String  remark;
@@ -52,6 +54,9 @@ public class CbVehicle extends BaseEntity {
 
     public String  getPhoto()                             { return photo; }
     public void    setPhoto(String photo)                 { this.photo = photo; }
+
+    public String  getPhotos()                            { return photos; }
+    public void    setPhotos(String photos)               { this.photos = photos; }
 
     public Integer getStatus()                            { return status; }
     public void    setStatus(Integer status)              { this.status = status; }

@@ -14,6 +14,7 @@ import { operLogApi } from '../../api/api'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 
@@ -39,6 +40,7 @@ const METHOD_COLORS: Record<string, string> = {
 }
 
 export default function LogManagePage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [logs, setLogs] = useState<OperLog[]>([])
   const [loading, setLoading] = useState(false)
   const [current, setCurrent] = useState(1)
@@ -205,8 +207,8 @@ export default function LogManagePage() {
           <Button type="primary" icon={<SearchOutlined />} style={{ borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }} onClick={handleSearch}>搜索</Button>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
-        <Table columns={columns} dataSource={logs} rowKey="id" loading={loading} pagination={false} components={styledTableComponents} scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }} size="small" />
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+        <Table columns={columns} dataSource={logs} rowKey="id" loading={loading} pagination={false} components={styledTableComponents} scroll={{ x: 'max-content', y: tableBodyH }} size="small" />
         <PagePagination
           total={total}
           current={current}

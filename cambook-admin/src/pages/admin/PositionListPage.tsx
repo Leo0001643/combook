@@ -16,6 +16,8 @@ import { positionApi, type PositionVO } from '../../api/api'
 import RichTextInput from '../../components/common/RichTextInput'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import PagePagination from '../../components/common/PagePagination'
 
 const { Text } = Typography
 const { Option } = Select
@@ -28,8 +30,11 @@ const POSITION_COLORS = [
 ]
 
 export default function PositionListPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight(46)
   const [allData, setAllData]     = useState<PositionVO[]>([])
   const [data, setData]           = useState<PositionVO[]>([])
+  const [page, setPage]           = useState(1)
+  const [pageSize, setPageSize]   = useState(20)
   const [loading, setLoading]     = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing]     = useState<PositionVO | null>(null)
@@ -44,6 +49,7 @@ export default function PositionListPage() {
     if (keyword) filtered = filtered.filter(p => p.name.includes(keyword) || p.code.includes(keyword.toUpperCase()))
     if (status !== undefined) filtered = filtered.filter(p => p.status === status)
     setData(filtered)
+    setPage(1)
   }, [allData, keyword, status])
 
   const loadData = async () => {
@@ -268,36 +274,44 @@ export default function PositionListPage() {
           <Button type="primary" icon={<SearchOutlined />} style={{ borderRadius: 8, border: 'none', background: GRADIENT }} onClick={handleSearch}>搜索</Button>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
-        {allData.filter(p => p.status === 1).length > 0 && (
-          <div style={{ padding: '12px 24px', borderBottom: '1px solid #f0f4ff', background: '#fafbff' }}>
-            <Space size={8} wrap>
-              <Text type="secondary" style={{ fontSize: 12 }}>启用职位：</Text>
-              {allData.filter(p => p.status === 1).map((p, i) => (
-                <Tag key={p.id} style={{
-                  borderRadius: 20, padding: '3px 12px',
-                  background: `${POSITION_COLORS[i % POSITION_COLORS.length]}12`,
-                  border: `1px solid ${POSITION_COLORS[i % POSITION_COLORS.length]}30`,
-                  color: POSITION_COLORS[i % POSITION_COLORS.length],
-                  fontWeight: 600, cursor: 'pointer',
-                }}
-                  onClick={() => setStatus(1)}>
-                  <ApartmentOutlined style={{ marginRight: 4 }} />{p.name}
-                </Tag>
-              ))}
-            </Space>
-          </div>
-        )}
+      {allData.filter(p => p.status === 1).length > 0 && (
+        <div style={{ marginLeft: -24, marginRight: -24, padding: '10px 24px', borderBottom: '1px solid #f0f4ff', background: '#fafbff' }}>
+          <Space size={8} wrap>
+            <Text type="secondary" style={{ fontSize: 12 }}>启用职位：</Text>
+            {allData.filter(p => p.status === 1).map((p, i) => (
+              <Tag key={p.id} style={{
+                borderRadius: 20, padding: '3px 12px',
+                background: `${POSITION_COLORS[i % POSITION_COLORS.length]}12`,
+                border: `1px solid ${POSITION_COLORS[i % POSITION_COLORS.length]}30`,
+                color: POSITION_COLORS[i % POSITION_COLORS.length],
+                fontWeight: 600, cursor: 'pointer',
+              }}
+                onClick={() => setStatus(1)}>
+                <ApartmentOutlined style={{ marginRight: 4 }} />{p.name}
+              </Tag>
+            ))}
+          </Space>
+        </div>
+      )}
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           rowKey="id"
           columns={columns}
-          dataSource={data}
+          dataSource={data.slice((page - 1) * pageSize, page * pageSize)}
           loading={loading}
           pagination={false}
           size="middle"
           components={styledTableComponents}
-          scroll={{ x: 'max-content' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           locale={{ emptyText: '暂无职位数据，点击右上角新增职位' }}
+        />
+        <PagePagination
+          total={data.length}
+          current={page}
+          pageSize={pageSize}
+          onChange={setPage}
+          onSizeChange={s => { setPageSize(s); setPage(1) }}
+          countLabel="个职位"
         />
       </div>
 

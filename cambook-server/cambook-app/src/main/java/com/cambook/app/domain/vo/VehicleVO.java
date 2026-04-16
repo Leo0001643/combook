@@ -41,6 +41,9 @@ public class VehicleVO {
     @Schema(description = "车辆图片")
     private String photo;
 
+    @Schema(description = "车辆多图（JSON 数组）")
+    private String photos;
+
     @Schema(description = "状态：0=空闲 1=使用中 2=维修中")
     private Integer status;
 
@@ -64,6 +67,7 @@ public class VehicleVO {
         vo.setInspectionCode(v.getInspectionCode());
         vo.setInspectionExpiry(v.getInspectionExpiry());
         vo.setPhoto(v.getPhoto());
+        vo.setPhotos(v.getPhotos());
         vo.setStatus(v.getStatus());
         vo.setRemark(v.getRemark());
         vo.setCreateTime(v.getCreateTime());

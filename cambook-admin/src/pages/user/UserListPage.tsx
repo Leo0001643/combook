@@ -24,6 +24,7 @@ import MemberDetailDrawer, { type MemberDetailVO } from '../../components/common
 import DangerModal from '../../components/common/DangerModal'
 import { styledTableComponents, col as colHelper } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 const { Option } = Select
@@ -63,6 +64,7 @@ const INPUT_STYLE: React.CSSProperties = {
 const col = colHelper  // shared column title helper
 
 export default function UserListPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const { isAdmin, memberList, memberUpdateStatus } = usePortalScope()
 
   const [loading,      setLoading]      = useState(false)
@@ -473,7 +475,7 @@ export default function UserListPage() {
       </div>
 
       {/* ── 数据表格 ─────────────────────────────────────────────────────── */}
-      <div style={{
+      <div ref={ref} style={{
         marginLeft: -24, marginRight: -24, marginBottom: -24,
         background: '#fff', borderTop: '1px solid #eef0f8',
         /* overflow:hidden 不能设置，否则会破坏 Ant Design sticky 固定列 */
@@ -484,7 +486,7 @@ export default function UserListPage() {
           columns={columns}
           loading={loading}
           size="middle"
-          scroll={{ x: 1440, y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 1440, y: tableBodyH }}
           pagination={false}
           components={styledTableComponents}
         />

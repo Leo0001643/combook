@@ -15,6 +15,7 @@ import RichTextInput from '../../components/common/RichTextInput'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 interface Notice {
   id: number
@@ -35,6 +36,7 @@ const TYPE_CFG: Record<number, { label: string; color: string; icon: React.React
 }
 
 export default function NoticePage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const { noticeList, noticeAdd, noticeEdit, noticeDelete } = usePortalScope()
   const [notices, setNotices] = useState<Notice[]>([])
   const [loading, setLoading] = useState(false)
@@ -200,8 +202,8 @@ export default function NoticePage() {
           <Button type="primary" icon={<SearchOutlined />} style={{ borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }} onClick={handleSearch}>搜索</Button>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
-        <Table columns={columns} dataSource={notices} rowKey="id" loading={loading} pagination={false} components={styledTableComponents} scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }} size="middle" />
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+        <Table columns={columns} dataSource={notices} rowKey="id" loading={loading} pagination={false} components={styledTableComponents} scroll={{ x: 'max-content', y: tableBodyH }} size="middle" />
         <PagePagination total={total} current={current} pageSize={pageSize} onChange={p => setCurrent(p)} onSizeChange={setPageSize} countLabel="条公告" pageSizeOptions={[10, 20, 50, 100]} />
       </div>
 

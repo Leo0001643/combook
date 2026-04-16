@@ -22,6 +22,9 @@ import TechnicianCreateModal from '../../components/technician/TechnicianCreateM
 import PermGuard from '../../components/common/PermGuard'
 import PagePagination from '../../components/common/PagePagination'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
+import ContactFilter, { type ContactFilterType } from '../../components/common/ContactFilter'
+import ImageLightbox from '../../components/common/ImageLightbox'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 
@@ -53,6 +56,7 @@ function parsePhotos(photos: string | undefined | null): string[] {
 }
 
 export default function TechnicianListPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const { isAdmin, isMerchant, technicianList, technicianCreate, technicianAudit, technicianUpdateStatus, technicianUpdateOnlineStatus, technicianSetFeatured, technicianDelete } = usePortalScope()
   const [loading, setLoading]     = useState(false)
   const [data, setData]           = useState<TechnicianVO[]>([])
@@ -65,7 +69,8 @@ export default function TechnicianListPage() {
   const [serviceCity, setServiceCity] = useState<string | undefined>()
   const [gender, setGender]       = useState<number | undefined>()
   const [nationality, setNationality] = useState<string | undefined>()
-  const [telegram, setTelegram]   = useState('')
+  const [contactType, setContactType]   = useState<ContactFilterType>('telegram')
+  const [contactValue, setContactValue] = useState('')
   const [detail, setDetail]       = useState<TechnicianVO | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [rejectTarget, setRejectTarget] = useState<TechnicianVO | null>(null)
@@ -75,6 +80,9 @@ export default function TechnicianListPage() {
   const [createOpen, setCreateOpen]     = useState(false)
   const [merchantId, setMerchantId]     = useState<number | undefined>()
   const [merchantOptions, setMerchantOptions] = useState<{ value: number; label: string }[]>([])
+  const [lbOpen, setLbOpen]             = useState(false)
+  const [lbIdx, setLbIdx]               = useState(0)
+  const [lbUrls, setLbUrls]             = useState<string[]>([])
 
   // 仅管理员加载商户下拉选项
   useEffect(() => {
@@ -91,6 +99,7 @@ export default function TechnicianListPage() {
       const res = await technicianList({
         page: pg, size: pageSize, keyword, auditStatus, onlineStatus, serviceCity, gender, nationality,
         ...(isAdmin && merchantId != null ? { merchantId } : {}),
+        ...(contactValue ? { contactType, contactValue } : {}),
       })
       const d = res.data?.data
       setData(d?.list ?? [])
@@ -106,7 +115,7 @@ export default function TechnicianListPage() {
   const handleReset = () => {
     setKeyword(''); setAuditStatus(undefined); setOnlineStatus(undefined)
     setServiceCity(undefined); setGender(undefined); setNationality(undefined)
-    setTelegram(''); setMerchantId(undefined)
+    setContactType('telegram'); setContactValue(''); setMerchantId(undefined)
     setPage(1); fetchList(1)
   }
 
@@ -649,15 +658,13 @@ export default function TechnicianListPage() {
             onPressEnter={handleSearch}
             style={{ ...INPUT_STYLE, width: 172 }}
           />
-          <Input
-            size="middle"
-            placeholder="🔵 Telegram账号"
-            prefix={<SendOutlined style={{ color: '#229ED9' }} />}
-            allowClear
-            value={telegram}
-            onChange={e => setTelegram(e.target.value)}
-            onPressEnter={handleSearch}
-            style={{ ...INPUT_STYLE, width: 172 }}
+          <ContactFilter
+            contactType={contactType}
+            value={contactValue}
+            onTypeChange={t => { setContactType(t); setContactValue('') }}
+            onChange={setContactValue}
+            onSearch={handleSearch}
+            style={INPUT_STYLE}
           />
           <Select
             size="middle"
@@ -765,7 +772,7 @@ export default function TechnicianListPage() {
         </div>
       </div>
 
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           rowKey="id"
           dataSource={data}
@@ -773,7 +780,7 @@ export default function TechnicianListPage() {
           loading={loading}
           size="middle"
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           pagination={false}
           rowClassName={(_, idx) => idx % 2 === 0 ? '' : 'table-row-alt'}
         />
@@ -901,24 +908,24 @@ export default function TechnicianListPage() {
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {parsePhotos(detail.photos).map((url, idx) => (
-                    <a key={idx} href={url} target="_blank" rel="noreferrer">
-                      <img
-                        src={url}
-                        alt={`photo-${idx}`}
-                        style={{
-                          width: 80, height: 100,
-                          objectFit: 'cover',
-                          borderRadius: 10,
-                          border: '2px solid #f0f0f0',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-                          transition: 'transform 0.2s',
-                          cursor: 'pointer',
-                          display: 'block',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
-                        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                      />
-                    </a>
+                    <img
+                      key={idx}
+                      src={url}
+                      alt={`photo-${idx}`}
+                      onClick={() => { setLbUrls(parsePhotos(detail.photos)); setLbIdx(idx); setLbOpen(true) }}
+                      style={{
+                        width: 80, height: 100,
+                        objectFit: 'cover',
+                        borderRadius: 10,
+                        border: '2px solid #f0f0f0',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                        transition: 'transform 0.2s',
+                        cursor: 'pointer',
+                        display: 'block',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
+                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                    />
                   ))}
                 </div>
               </div>
@@ -987,6 +994,15 @@ export default function TechnicianListPage() {
         onClose={() => setCreateOpen(false)}
         onSuccess={() => { setPage(1); fetchList(1) }}
         createFn={technicianCreate}
+      />
+
+      {/* 相册灯箱 */}
+      <ImageLightbox
+        images={lbUrls}
+        current={lbIdx}
+        open={lbOpen}
+        onClose={() => setLbOpen(false)}
+        onChange={setLbIdx}
       />
 
       {/* 拒绝原因弹窗 */}

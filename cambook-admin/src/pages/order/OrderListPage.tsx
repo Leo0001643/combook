@@ -19,6 +19,7 @@ import { usePortalScope } from '../../hooks/usePortalScope'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
 import PermGuard from '../../components/common/PermGuard'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 const { RangePicker } = DatePicker
@@ -33,6 +34,7 @@ const STATUS_MAP: Record<number, { color: string; text: string; icon: React.Reac
 }
 
 export default function OrderListPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const { orderList, orderCancel, orderDelete, isMerchant } = usePortalScope()
   const [loading, setLoading]         = useState(false)
   const [data, setData]               = useState<OrderVO[]>([])
@@ -331,7 +333,7 @@ export default function OrderListPage() {
         </div>
       </div>
 
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           rowKey="id"
           dataSource={data}
@@ -339,7 +341,7 @@ export default function OrderListPage() {
           loading={loading}
           size="middle"
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           pagination={false}
         />
         <PagePagination

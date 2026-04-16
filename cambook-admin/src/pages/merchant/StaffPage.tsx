@@ -19,6 +19,7 @@ import RichTextInput from '../../components/common/RichTextInput'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 const { Text } = Typography
 
@@ -52,6 +53,7 @@ interface DeptOption { id: number; name: string }
 interface PositionOption { id: number; name: string; deptId?: number }
 
 export default function MerchantStaffPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [data, setData]           = useState<StaffVO[]>([])
   const [total, setTotal]         = useState(0)
   const [loading, setLoading]     = useState(false)
@@ -328,11 +330,11 @@ export default function MerchantStaffPage() {
           <Button type="primary" icon={<SearchOutlined />} style={{ borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }} onClick={() => { setPage(1); loadData() }}>搜索</Button>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           rowKey="id" columns={columns} dataSource={data}
           loading={loading} pagination={false} components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }} size="middle"
+          scroll={{ x: 'max-content', y: tableBodyH }} size="middle"
         />
         <PagePagination total={total} current={page} pageSize={pageSize} onChange={p => setPage(p)} onSizeChange={s => { setPageSize(s); setPage(1) }} countLabel="位员工" />
       </div>

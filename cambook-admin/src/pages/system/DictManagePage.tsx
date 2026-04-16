@@ -11,6 +11,7 @@ import {
   CheckCircleOutlined, StopOutlined,
 } from '@ant-design/icons'
 import { dictApi } from '../../api/api'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
@@ -43,6 +44,7 @@ interface DictData {
 const CSS_COLORS = ['default', 'blue', 'green', 'red', 'orange', 'purple', 'cyan', 'pink', 'gold', 'lime', 'magenta', 'volcano', 'geekblue']
 
 export default function DictManagePage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [types, setTypes] = useState<DictType[]>([])
   const [loading, setLoading] = useState(false)
   const [current, setCurrent] = useState(1)
@@ -286,7 +288,7 @@ export default function DictManagePage() {
           <Button type="primary" icon={<SearchOutlined />} style={{ borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)' }} onClick={handleSearch}>搜索</Button>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           columns={typeColumns}
           dataSource={types}
@@ -294,7 +296,7 @@ export default function DictManagePage() {
           loading={loading}
           pagination={false}
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           size="middle"
         />
         <PagePagination total={total} current={current} pageSize={pageSize} onChange={p => setCurrent(p)} onSizeChange={setPageSize} countLabel="条字典" pageSizeOptions={[10, 20, 50, 100]} />

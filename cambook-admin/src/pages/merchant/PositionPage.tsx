@@ -15,6 +15,7 @@ import PermDrawer, { type PermTarget } from '../../components/merchant/PermDrawe
 import RichTextInput from '../../components/common/RichTextInput'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
+import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 
 interface DeptOption { id: number; name: string }
 
@@ -31,6 +32,7 @@ const STATUS_CFG: Record<number, { label: string; badge: 'success' | 'default' }
 }
 
 export default function MerchantPositionPage() {
+  const { ref, height: tableBodyH } = useTableBodyHeight()
   const [data, setData]           = useState<PositionVO[]>([])
   const [loading, setLoading]     = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -254,7 +256,7 @@ export default function MerchantPositionPage() {
           <Tooltip title="刷新"><Button icon={<ReloadOutlined />} size="middle" loading={loading} style={{ borderRadius: 8, color: '#0891b2', borderColor: '#bae6fd' }} onClick={loadData} /></Tooltip>
         </div>
       </div>
-      <div style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
+      <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
         <Table
           rowKey="id"
           columns={columns}
@@ -262,7 +264,7 @@ export default function MerchantPositionPage() {
           loading={loading}
           pagination={false}
           components={styledTableComponents}
-          scroll={{ x: 'max-content', y: 'calc(100vh - 272px)' }}
+          scroll={{ x: 'max-content', y: tableBodyH }}
           size="middle"
           rowClassName={() => 'table-row-hover'}
         />
