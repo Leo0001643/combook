@@ -17,6 +17,7 @@ import RichTextInput from '../../components/common/RichTextInput'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import PagePagination from '../../components/common/PagePagination'
 
 const { Text } = Typography
 const { Option } = Select
@@ -45,7 +46,7 @@ const STATUS_CFG: Record<number, { label: string; color: string; badge: 'success
 }
 
 export default function MerchantDeptPage() {
-  const { ref, height: tableBodyH } = useTableBodyHeight()
+  const { ref, height: tableBodyH } = useTableBodyHeight(46)
   const [data, setData]           = useState<DeptVO[]>([])
   const [loading, setLoading]     = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -278,6 +279,14 @@ export default function MerchantDeptPage() {
           scroll={{ x: 'max-content', y: tableBodyH }}
           size="middle"
           rowClassName={() => 'table-row-hover'}
+        />
+        <PagePagination
+          total={data.length}
+          current={1}
+          pageSize={Math.max(data.length, 1)}
+          onChange={() => {}}
+          showSizeChanger={false}
+          countLabel="个部门"
         />
       </div>
 

@@ -16,6 +16,7 @@ import { usePortalScope } from '../../hooks/usePortalScope'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import PagePagination from '../../components/common/PagePagination'
 
 const { Text } = Typography
 
@@ -303,9 +304,17 @@ export default function BannerPage() {
         </div>
       </div>
       <div ref={ref} style={{ marginLeft: -24, marginRight: -24, marginBottom: -24, background: '#fff', borderTop: '1px solid #eef0f8' }}>
-        <div style={{ padding: '12px 24px 24px' }}>
+        <div style={{ padding: '12px 24px 0' }}>
           <Tabs items={tabItems} />
         </div>
+        <PagePagination
+          total={data.length}
+          current={1}
+          pageSize={Math.max(data.length, 1)}
+          onChange={() => {}}
+          showSizeChanger={false}
+          countLabel="个 Banner"
+        />
       </div>
       <Modal
         title={

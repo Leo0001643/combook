@@ -60,22 +60,8 @@ public class AdminTechnicianService
                         .or().like(CbTechnician::getMobile,   query.getKeyword()))
                 .like(StringUtils.isNotBlank(query.getRealName()),  CbTechnician::getRealName,    query.getRealName())
                 .like(StringUtils.isNotBlank(query.getMobile()),    CbTechnician::getMobile,      query.getMobile())
-                // 联系方式模糊查：有 contactType 则精确字段，否则 OR 匹配全部三个字段
-                .and(StringUtils.isNotBlank(query.getContactValue()), w -> {
-                    String v    = query.getContactValue();
-                    String type = query.getContactType();
-                    if ("wechat".equals(type)) {
-                        w.like(CbTechnician::getWechat, v);
-                    } else if ("facebook".equals(type)) {
-                        w.like(CbTechnician::getFacebook, v);
-                    } else if ("telegram".equals(type)) {
-                        w.like(CbTechnician::getTelegram, v);
-                    } else {
-                        w.like(CbTechnician::getTelegram, v)
-                         .or().like(CbTechnician::getWechat, v)
-                         .or().like(CbTechnician::getFacebook, v);
-                    }
-                })
+                // 联系方式模糊查（当前仅支持 telegram 字段）
+                .like(StringUtils.isNotBlank(query.getContactValue()), CbTechnician::getTelegram, query.getContactValue())
                 .eq(query.getAuditStatus() != null,                 CbTechnician::getAuditStatus, query.getAuditStatus())
                 .eq(query.getOnlineStatus() != null,                CbTechnician::getOnlineStatus,query.getOnlineStatus())
                 .eq(StringUtils.isNotBlank(query.getServiceCity()), CbTechnician::getServiceCity, query.getServiceCity())

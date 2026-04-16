@@ -587,7 +587,7 @@ export default function PermissionTreePage() {
   }
 
   const isAdmin = portal === 'admin'
-  const { ref: treeRef, height: treeH } = useTableBodyHeight(0)
+  const { ref: treeRef, height: treeH } = useTableBodyHeight(0, 0)
 
   const GRADIENT = isAdmin
     ? 'linear-gradient(135deg,#667eea,#764ba2)'

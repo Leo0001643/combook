@@ -33,6 +33,12 @@ public class TechnicianQueryDTO {
     @Schema(description = "Telegram账号（模糊）")
     private String telegram;
 
+    @Schema(description = "联系方式关键词（contactType 为空则全字段搜索）")
+    private String contactValue;
+
+    @Schema(description = "联系方式类型：telegram（目前仅支持 telegram）")
+    private String contactType;
+
     @Schema(description = "真实姓名（模糊）")
     private String realName;
 
