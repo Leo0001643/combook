@@ -21,42 +21,57 @@ import AnnouncementBell from '../common/AnnouncementBell'
 const { Sider, Header, Content } = Layout
 const { Text } = Typography
 
-// ── 图标映射 ──────────────────────────────────────────────────────────────────
+// ── 彩色图标映射 ───────────────────────────────────────────────────────────────
+// 颜色策略：明亮的宝石色系，在深色侧边栏上高对比度，语义化分类
+const ic = (node: React.ReactNode, color: string) => (
+  <span style={{ color, fontSize: 15, display: 'inline-flex', alignItems: 'center', lineHeight: 1 }}>
+    {node}
+  </span>
+)
+
 const ICON_MAP: Record<string, React.ReactNode> = {
-  DashboardOutlined:   <DashboardOutlined />,
-  UserOutlined:        <UserOutlined />,
-  TeamOutlined:        <TeamOutlined />,
-  ShopOutlined:        <ShopOutlined />,
-  OrderedListOutlined: <OrderedListOutlined />,
-  DollarOutlined:      <DollarOutlined />,
-  TagsOutlined:        <TagsOutlined />,
-  SettingOutlined:     <SettingOutlined />,
-  CarOutlined:         <CarOutlined />,
-  PictureOutlined:     <PictureOutlined />,
-  AppstoreOutlined:    <AppstoreOutlined />,
-  FileTextOutlined:    <FileTextOutlined />,
-  KeyOutlined:         <KeyOutlined />,
-  AuditOutlined:       <AuditOutlined />,
-  SafetyOutlined:      <SafetyOutlined />,
-  IdcardOutlined:      <IdcardOutlined />,
-  BankOutlined:        <BankOutlined />,
-  MenuOutlined:        <MenuOutlined />,
-  LockOutlined:        <LockOutlined />,
-  ApartmentOutlined:   <ApartmentOutlined />,
-  BookOutlined:        <BookOutlined />,
-  BellOutlined:        <BellOutlined />,
-  NotificationOutlined: <NotificationOutlined />,
-  DesktopOutlined:     <DesktopOutlined />,
-  ClockCircleOutlined: <ClockCircleOutlined />,
-  DatabaseOutlined:    <DatabaseOutlined />,
-  StarOutlined:        <StarOutlined />,
-  SolutionOutlined:    <SolutionOutlined />,
-  RocketOutlined:      <RocketOutlined />,
-  SoundOutlined:       <SoundOutlined />,
-  GiftOutlined:        <GiftOutlined />,
-  HomeOutlined:        <HomeOutlined />,
-  ReadOutlined:        <ReadOutlined />,
-  MessageOutlined:     <MessageOutlined />,
+  // ── 核心功能 ──
+  DashboardOutlined:    ic(<DashboardOutlined />,    '#818cf8'),  // 靛紫 — 仪表盘
+  HomeOutlined:         ic(<HomeOutlined />,          '#93c5fd'),  // 天蓝 — 首页
+  // ── 用户体系 ──
+  UserOutlined:         ic(<UserOutlined />,          '#38bdf8'),  // 亮蓝 — 会员
+  TeamOutlined:         ic(<TeamOutlined />,          '#c084fc'),  // 紫罗兰 — 技师团队
+  IdcardOutlined:       ic(<IdcardOutlined />,        '#a78bfa'),  // 紫色 — 员工/身份
+  SolutionOutlined:     ic(<SolutionOutlined />,      '#d8b4fe'),  // 淡紫 — 人员方案
+  // ── 商业核心 ──
+  ShopOutlined:         ic(<ShopOutlined />,          '#fb923c'),  // 橙色 — 商户
+  OrderedListOutlined:  ic(<OrderedListOutlined />,   '#34d399'),  // 翠绿 — 订单
+  DollarOutlined:       ic(<DollarOutlined />,        '#4ade80'),  // 绿色 — 财务
+  BankOutlined:         ic(<BankOutlined />,          '#86efac'),  // 浅绿 — 银行/提现
+  // ── 运营营销 ──
+  TagsOutlined:         ic(<TagsOutlined />,          '#f472b6'),  // 亮粉 — 优惠券
+  GiftOutlined:         ic(<GiftOutlined />,          '#f0abfc'),  // 洋红 — 礼物/活动
+  RocketOutlined:       ic(<RocketOutlined />,        '#f97316'),  // 橙红 — 推广
+  StarOutlined:         ic(<StarOutlined />,          '#fcd34d'),  // 金黄 — 评价/收藏
+  // ── 内容与通知 ──
+  PictureOutlined:      ic(<PictureOutlined />,       '#e879f9'),  // 品红 — 横幅/图片
+  NotificationOutlined: ic(<NotificationOutlined />,  '#fdba74'),  // 橙黄 — 公告
+  BellOutlined:         ic(<BellOutlined />,          '#fbbf24'),  // 蜂蜜黄 — 通知铃
+  MessageOutlined:      ic(<MessageOutlined />,       '#67e8f9'),  // 青色 — 消息
+  SoundOutlined:        ic(<SoundOutlined />,         '#22d3ee'),  // 青蓝 — 广播
+  ReadOutlined:         ic(<ReadOutlined />,          '#6ee7b7'),  // 薄荷 — 阅读/内容
+  BookOutlined:         ic(<BookOutlined />,          '#86efac'),  // 淡绿 — 文章
+  // ── 资源管理 ──
+  CarOutlined:          ic(<CarOutlined />,           '#7dd3fc'),  // 天蓝 — 车辆
+  AppstoreOutlined:     ic(<AppstoreOutlined />,      '#fba4a4'),  // 珊瑚 — 分类/应用
+  ClockCircleOutlined:  ic(<ClockCircleOutlined />,   '#6ee7b7'),  // 薄荷绿 — 时间/排班
+  FileTextOutlined:     ic(<FileTextOutlined />,      '#bfdbfe'),  // 浅蓝 — 文档/报告
+  // ── 系统管理 ──
+  ApartmentOutlined:    ic(<ApartmentOutlined />,     '#818cf8'),  // 靛蓝 — 部门组织
+  MenuOutlined:         ic(<MenuOutlined />,          '#93c5fd'),  // 天蓝 — 菜单配置
+  DesktopOutlined:      ic(<DesktopOutlined />,       '#7dd3fc'),  // 蓝色 — 监控/桌面
+  DatabaseOutlined:     ic(<DatabaseOutlined />,      '#60a5fa'),  // 中蓝 — 数据管理
+  // ── 权限安全 ──
+  KeyOutlined:          ic(<KeyOutlined />,           '#fbbf24'),  // 金黄 — 权限/密钥
+  LockOutlined:         ic(<LockOutlined />,          '#f87171'),  // 红色 — 锁定/安全
+  SafetyOutlined:       ic(<SafetyOutlined />,        '#2dd4bf'),  // 青绿 — 安全证书
+  AuditOutlined:        ic(<AuditOutlined />,         '#fb7185'),  // 玫瑰 — 审核日志
+  SettingOutlined:      ic(<SettingOutlined />,       '#94a3b8'),  // 灰蓝 — 系统设置
 }
 
 const getIcon = (name?: string | null): React.ReactNode | undefined =>
@@ -306,6 +321,25 @@ export default function MainLayout() {
             .ant-menu-dark .ant-menu-item-selected,
             .ant-menu-dark .ant-menu-item-selected > span {
               font-weight: 700;
+            }
+
+            /* ── 彩色图标：hover 时轻微提亮 ── */
+            .ant-menu-dark .ant-menu-item:not(.ant-menu-item-selected):hover .anticon > span,
+            .ant-menu-dark .ant-menu-submenu-title:hover .anticon > span {
+              filter: brightness(1.25);
+              transition: filter 0.2s;
+            }
+            /* ── 选中项图标改为白色，保证橙色背景上清晰可读 ── */
+            .ant-menu-dark .ant-menu-item-selected .anticon > span {
+              color: rgba(255,255,255,0.95) !important;
+              filter: drop-shadow(0 0 4px rgba(255,255,255,0.4));
+            }
+            /* ── 子菜单展开箭头也用柔和颜色 ── */
+            .ant-menu-dark .ant-menu-submenu-arrow {
+              opacity: 0.5;
+            }
+            .ant-menu-dark .ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
+              opacity: 0.85;
             }
 
             /* ── 侧边栏细滚动条（粉色主题） ── */
