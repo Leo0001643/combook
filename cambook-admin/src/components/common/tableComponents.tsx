@@ -94,4 +94,5 @@ export const INPUT_STYLE: React.CSSProperties = {
   background: '#f5f7fa',
   border: '1px solid #eaecf0',
   fontSize: 13,
+  fontWeight: 500,
 }

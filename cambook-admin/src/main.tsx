@@ -23,6 +23,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { ConfigProvider } from 'antd'
+import { StyleProvider } from '@ant-design/cssinjs'
 import zhCN from 'antd/locale/zh_CN'
 import './index.css'
 
@@ -53,30 +54,38 @@ const zhCNWithDates = {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ConfigProvider
-      locale={zhCNWithDates}
-      theme={{
-        token: {
-          // CamBook 品牌色：温暖的橙金色
-          colorPrimary: '#F5A623',
-          colorLink: '#F5A623',
-          borderRadius: 8,
-          fontFamily: "'PingFang SC', 'Helvetica Neue', Arial, sans-serif",
-        },
-        components: {
-          Menu: {
-            darkItemBg: '#1a1f2e',
-            darkSubMenuItemBg: '#141824',
-            darkItemSelectedBg: '#F5A623',
+    {/*
+      StyleProvider hashPriority="low"：antd CSS-in-JS 使用 :where() 选择器
+      使其特异性降为 0，index.css 中的普通选择器即可无需 !important 直接覆盖。
+    */}
+    <StyleProvider hashPriority="low">
+      <ConfigProvider
+        locale={zhCNWithDates}
+        theme={{
+          token: {
+            // CamBook 品牌色：温暖的橙金色
+            colorPrimary:          '#F5A623',
+            colorLink:             '#F5A623',
+            borderRadius:          8,
+            fontFamily:            "'PingFang SC', 'Helvetica Neue', Arial, sans-serif",
+            // 全局 placeholder 颜色
+            colorTextPlaceholder:  '#9ca3af',
           },
-          Layout: {
-            siderBg: '#1a1f2e',
-            triggerBg: '#141824',
+          components: {
+            Menu: {
+              darkItemBg:        '#1a1f2e',
+              darkSubMenuItemBg: '#141824',
+              darkItemSelectedBg:'#F5A623',
+            },
+            Layout: {
+              siderBg:    '#1a1f2e',
+              triggerBg:  '#141824',
+            },
           },
-        },
-      }}
-    >
-      <App />
-    </ConfigProvider>
+        }}
+      >
+        <App />
+      </ConfigProvider>
+    </StyleProvider>
   </React.StrictMode>
 )

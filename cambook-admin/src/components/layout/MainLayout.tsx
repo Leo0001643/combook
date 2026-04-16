@@ -287,13 +287,46 @@ export default function MainLayout() {
           borderBottom: '1px solid rgba(255,255,255,0.06)',
           boxShadow: '0 2px 20px rgba(0,0,0,0.35)',
         }}>
-          {/* 动画：icon 呼吸光效 */}
+          {/* 动画 + 侧边栏菜单字重 + 粉色细滚动条 */}
           <style>{`
             @keyframes icon-breathe {
               0%,100% { box-shadow: 0 0 8px rgba(99,102,241,0.5); }
               50%      { box-shadow: 0 0 18px rgba(139,92,246,0.85), 0 0 36px rgba(99,102,241,0.3); }
             }
             .merchant-icon-pulse { animation: icon-breathe 3s ease-in-out infinite; }
+
+            /* ── 侧边栏菜单字重 ── */
+            .ant-menu-dark .ant-menu-item,
+            .ant-menu-dark .ant-menu-submenu-title,
+            .ant-menu-dark .ant-menu-item > span,
+            .ant-menu-dark .ant-menu-submenu-title > span {
+              font-weight: 600;
+              letter-spacing: 0.2px;
+            }
+            .ant-menu-dark .ant-menu-item-selected,
+            .ant-menu-dark .ant-menu-item-selected > span {
+              font-weight: 700;
+            }
+
+            /* ── 侧边栏细滚动条（粉色主题） ── */
+            .ant-layout-sider .ant-menu::-webkit-scrollbar {
+              width: 3px;
+            }
+            .ant-layout-sider .ant-menu::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .ant-layout-sider .ant-menu::-webkit-scrollbar-thumb {
+              background: linear-gradient(180deg, #f472b6 0%, #ec4899 50%, #db2777 100%);
+              border-radius: 3px;
+            }
+            .ant-layout-sider .ant-menu::-webkit-scrollbar-thumb:hover {
+              background: linear-gradient(180deg, #fb7bb8 0%, #f472b6 100%);
+            }
+            /* Firefox */
+            .ant-layout-sider .ant-menu {
+              scrollbar-width: thin;
+              scrollbar-color: #ec4899 transparent;
+            }
           `}</style>
 
           {/* ── 折叠按钮 ── */}

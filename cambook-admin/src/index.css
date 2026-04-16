@@ -242,6 +242,63 @@ body {
 }
 
 
+/*
+ * ── 全局输入框 / 下拉框 / 按钮 文字字重 ──────────────────────────────────────
+ * StyleProvider injectFirst 已将 antd CSS-in-JS 注入到最前方，
+ * 以下规则来自静态 CSS 文件，优先级高于 antd 默认样式，无需 !important。
+ */
+
+/* 1. Input / InputNumber / DatePicker placeholder */
+.ant-input::placeholder,
+.ant-input-affix-wrapper .ant-input::placeholder,
+.ant-input-number .ant-input-number-input::placeholder,
+.ant-picker .ant-picker-input > input::placeholder,
+.ant-mentions::placeholder {
+  font-weight: 500;
+  color: #9ca3af;
+  letter-spacing: 0.1px;
+}
+
+/* 2. Select placeholder（含带 icon 的 JSX placeholder） */
+.ant-select-selection-placeholder {
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+/* 3. Select 已选中项文字 */
+.ant-select-selection-item {
+  font-weight: 600;
+}
+
+/* 4. Select 下拉列表选项文字 */
+.ant-select-item-option-content {
+  font-weight: 500;
+}
+.ant-select-item-option-selected .ant-select-item-option-content {
+  font-weight: 700;
+}
+
+/* 5. Select 搜索框 placeholder */
+.ant-select-selection-search input::placeholder {
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+/* 6. TreeSelect / Cascader placeholder */
+.ant-tree-select .ant-select-selection-placeholder,
+.ant-cascader .ant-select-selection-placeholder {
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+/* 7. 全局按钮文字字重 */
+.ant-btn {
+  font-weight: 600;
+}
+.ant-btn > span {
+  font-weight: 600;
+}
+
 /* 在线状态小圆点脉冲动画 */
 @keyframes pulse-dot {
   0%   { box-shadow: 0 0 0 0 rgba(82,196,26,0.55); }
