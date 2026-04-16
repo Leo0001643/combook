@@ -1,0 +1,3 @@
+class TechnicianListState {
+  TechnicianListState();
+}

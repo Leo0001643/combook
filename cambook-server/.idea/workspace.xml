@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="3CHpO54AqIOuwhtRgAC7MO5ZuEh" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.cambook-server [clean].executor": "Run",
+    "Maven.cambook-server [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Spring Boot.CamBookApplication (1).executor": "Run",
+    "Spring Boot.CamBookApplication.executor": "Run",
+    "last_opened_file_path": "/Users/leo/Documents/cambook/cambook-server/cambook-app/src/main/java/com/cambook/app/domain/dto",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "two.files.diff.last.used.folder": "/Users/leo/Documents/cambook/cambook-server/cambook-app/src/main/java/com/cambook/app/domain/voi",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/dto" />
+      <recent name="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/app/impl" />
+      <recent name="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/app" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.cambook.app.domain.vo" />
+      <recent name="com.cambook.app.service.app.impl" />
+      <recent name="com.cambook.app.service.app" />
+      <recent name="com.cambook.app.controller.app" />
+      <recent name="com.cambook.app.controller.admin" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="CamBookApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="cambook-app" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.cambook.app.CamBookApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26927.53" />
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-IU-251.26927.53" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="" />
+      <created>1776052315282</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1776052315282</updated>
+      <workItem from="1776052316523" duration="1270000" />
+      <workItem from="1776070209993" duration="54286000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

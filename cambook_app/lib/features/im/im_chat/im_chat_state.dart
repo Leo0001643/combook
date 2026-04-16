@@ -1,0 +1,3 @@
+class ImChatState {
+  ImChatState();
+}

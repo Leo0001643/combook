@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <property name="APP_NAME" value="cambook"/>
+    <property name="LOG_HOME" value="logs"/>
+    <property name="PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%F:%L] - %msg%n"/>
+
+    <!-- 控制台 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan([%F:%L]) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 全量滚动文件（按天切割，保留 30 天） -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/${APP_NAME}.log</file>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/archive/${APP_NAME}-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 异步包装，避免 I/O 阻塞业务线程 -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>2048</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <!-- ─── 屏蔽框架噪音（所有 profile 通用） ────────────────────────── -->
+    <logger name="com.baomidou"                                    level="WARN"/>
+    <logger name="org.springdoc"                                   level="WARN"/>
+    <logger name="com.zaxxer.hikari"                               level="WARN"/>
+    <logger name="org.mybatis"                                     level="WARN"/>
+    <logger name="org.redisson"                                    level="WARN"/>
+    <logger name="io.netty"                                        level="WARN"/>
+    <logger name="io.lettuce"                                      level="WARN"/>
+    <logger name="org.springframework.context"                     level="WARN"/>
+    <logger name="org.springframework.beans"                       level="WARN"/>
+    <logger name="org.springframework.boot.autoconfigure"          level="WARN"/>
+    <logger name="org.springframework.boot.actuate"                level="WARN"/>
+    <logger name="org.springframework.data"                        level="WARN"/>
+    <logger name="org.springframework.web"                         level="WARN"/>
+    <logger name="org.springframework.aop"                         level="WARN"/>
+    <logger name="org.springframework.validation"                  level="WARN"/>
+    <logger name="org.springframework.jmx"                         level="WARN"/>
+    <logger name="org.hibernate.validator"                         level="WARN"/>
+    <logger name="io.micrometer"                                   level="WARN"/>
+    <logger name="reactor"                                         level="WARN"/>
+
+    <!-- ─── 业务代码保留 INFO（dev 下可按需调 DEBUG） ────────────────── -->
+    <logger name="com.cambook" level="DEBUG"/>
+
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!dev &amp; !prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>

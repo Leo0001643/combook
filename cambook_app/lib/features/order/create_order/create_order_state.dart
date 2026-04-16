@@ -1,0 +1,3 @@
+class CreateOrderState {
+  CreateOrderState();
+}

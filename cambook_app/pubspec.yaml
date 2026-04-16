@@ -1,0 +1,86 @@
+name: cambook_app
+description: CamBook 上门按摩SPA平台 - 多端App（会员/技师/商户）
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # 状态管理（GetX）
+  get: ^4.6.6
+
+  # 网络请求
+  dio: ^5.4.3+1
+  retrofit: ^4.1.0
+
+  # 本地存储
+  shared_preferences: ^2.2.3
+  flutter_secure_storage: ^9.0.0
+
+  # Google Maps（技师定位/用户定位）
+  google_maps_flutter: ^2.6.0
+
+  # Firebase（推送通知）
+  firebase_core: ^3.1.0
+  firebase_messaging: ^15.0.1
+
+  # 图片处理
+  cached_network_image: ^3.3.1
+  image_picker: ^1.1.2
+
+  # UI 组件
+  flutter_svg: ^2.0.10+1
+  lottie: ^3.1.0             # 动画
+  shimmer: ^3.0.0            # 骨架屏
+  flutter_rating_bar: ^4.0.1 # 评分组件
+  pinput: ^5.0.0             # 验证码输入框
+  google_fonts: ^6.2.1       # 谷歌字体
+
+  # 地图与位置
+  geolocator: ^11.0.0
+  geocoding: ^3.0.0
+
+  # 支付
+  crypto: ^3.0.3             # USDT 加密相关
+
+  # 工具类
+  intl: ^0.19.0
+  uuid: ^4.3.3
+  url_launcher: ^6.3.0
+  share_plus: ^9.0.0
+  permission_handler: ^11.3.1
+  connectivity_plus: ^6.0.3
+  package_info_plus: ^8.0.0
+  device_info_plus: ^10.1.0
+  pull_to_refresh: ^2.0.0
+
+  # WebSocket（IM实时通讯）
+  web_socket_channel: ^3.0.1
+
+  # 二维码
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^6.0.0
+
+  # 时间选择器
+  table_calendar: ^3.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true             # 启用多语言生成
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
+    - assets/i18n/

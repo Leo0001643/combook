@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/cambook-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-app/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-app/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-dao/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-dao/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-module-driver/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-module-driver/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cambook-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

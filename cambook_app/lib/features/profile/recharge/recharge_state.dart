@@ -1,0 +1,3 @@
+class RechargeState {
+  RechargeState();
+}

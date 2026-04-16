@@ -1,0 +1,71 @@
+# Firebase requires iOS 13.0+, google_maps requires iOS 14.0+, mobile_scanner 6.x requires iOS 15.5+
+platform :ios, '15.5'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks! :linkage => :static
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+    end
+  end
+
+  # firebase_messaging 15.x ships FLTFirebaseMessagingPlugin.h which imports the
+  # non-modular <Firebase/Firebase.h> umbrella. When use_frameworks! wraps the pod
+  # into a Clang framework module, newer Xcode/Clang rejects the non-modular include
+  # as a hard error even with CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES=YES.
+  #
+  # Fix: remove FLTFirebaseMessagingPlugin.h from the generated module umbrella header.
+  # The header is still present in the framework's Headers/ folder and remains importable
+  # via  #import <firebase_messaging/FLTFirebaseMessagingPlugin.h>  (used by
+  # GeneratedPluginRegistrant.m), so plugin registration is unaffected.
+  umbrella = File.join(
+    installer.sandbox.root,
+    'Target Support Files',
+    'firebase_messaging',
+    'firebase_messaging-umbrella.h'
+  )
+  if File.exist?(umbrella)
+    content = File.read(umbrella)
+    patched = content.gsub(
+      '#import "FLTFirebaseMessagingPlugin.h"',
+      '// FLTFirebaseMessagingPlugin.h excluded from Clang module — imports non-modular Firebase.h'
+    )
+    File.write(umbrella, patched) if patched != content
+  end
+end

@@ -1,0 +1,3 @@
+class PaymentState {
+  PaymentState();
+}

@@ -1,0 +1,3 @@
+class UsdtPaymentState {
+  UsdtPaymentState();
+}

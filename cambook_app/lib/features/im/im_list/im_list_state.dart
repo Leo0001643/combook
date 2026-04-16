@@ -1,0 +1,3 @@
+class ImListState {
+  ImListState();
+}

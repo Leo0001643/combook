@@ -1,0 +1,3 @@
+class ReviewState {
+  ReviewState();
+}

@@ -1,0 +1,19 @@
+package com.cambook.dao.entity;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.cambook.dao.entity.base.BaseEntity;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * 字典类型表
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("sys_dict_type")
+public class SysDictType extends BaseEntity {
+    private String dictName;
+    private String dictType;
+    private Integer status;
+    private String remark;
+}

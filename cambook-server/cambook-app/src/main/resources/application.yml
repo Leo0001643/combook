@@ -1,0 +1,81 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: cambook-server
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/cambook?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    username: root
+    password: ${DB_PASSWORD:Root123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: ${REDIS_PASSWORD:NTY5NDkzZDcwMTE4UIDKUL}
+      database: 0
+      lettuce:
+        pool:
+          min-idle: 2
+          max-active: 8
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  # POST/PUT/PATCH 接口默认使用 form-urlencoded，与 @ModelAttribute 匹配
+  default-consumes-media-type: application/x-www-form-urlencoded
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-swagger-models: true
+    enable-document-manage: true
+    swagger-model-name: 实体类列表
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+cambook:
+  jwt:
+    secret: cambook_jwt_secret_key_please_change_in_production
+    expire-seconds: 604800   # 7天
+  upload:
+    # 本地存储路径，默认用户目录下
+    path: ${UPLOAD_PATH:${user.home}/cambook-uploads}
+    # 对外访问前缀（前端访问图片用）
+    url-prefix: http://localhost:8080/uploads

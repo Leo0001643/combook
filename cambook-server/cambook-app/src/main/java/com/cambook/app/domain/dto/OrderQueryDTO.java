@@ -1,0 +1,52 @@
+package com.cambook.app.domain.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+
+/**
+ * 订单查询条件（Admin）
+ *
+ * @author CamBook
+ */
+@Data
+@Schema(description = "订单查询条件")
+public class OrderQueryDTO {
+
+    /**
+     * 商户范围隔离（内部字段，不接受外部绑定）：
+     * - null  → Admin：查全量
+     * - 非null → Merchant 控制器注入，外部参数传入的值会被强制覆盖
+     */
+    @Schema(hidden = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Long merchantId;
+
+    @Pattern(regexp = "^[A-Z0-9]{0,32}$", message = "订单号格式不正确")
+    @Schema(description = "订单号")
+    private String orderNo;
+
+    @Schema(description = "会员 ID")
+    private Long memberId;
+
+    @Schema(description = "技师 ID")
+    private Long technicianId;
+
+    @Min(value = 0) @Max(value = 9)
+    @Schema(description = "订单状态：0-9")
+    private Integer status;
+
+    @Schema(description = "开始日期（yyyy-MM-dd）", example = "2026-01-01")
+    private String startDate;
+
+    @Schema(description = "结束日期（yyyy-MM-dd）", example = "2026-12-31")
+    private String endDate;
+
+    @Min(1) @Schema(description = "页码", defaultValue = "1")
+    private int page = 1;
+
+    @Min(1) @Max(100) @Schema(description = "每页条数", defaultValue = "20")
+    private int size = 20;
+}

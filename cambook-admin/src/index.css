@@ -1,0 +1,250 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  /* 禁止上下/左右回弹效果（macOS trackpad rubber-band） */
+  overscroll-behavior: none;
+  /*
+   * 彻底禁用页面级别纵向滚动。
+   *
+   * 根因分析：antd Table 的表头通过 position:sticky + top:0 吸附在
+   * ant-table-container 内部，而非相对视口。当页面（html/body）
+   * 哪怕只能滚动 1~2px，表头就会随整个 table 容器向上移动，被
+   * 吸顶的筛选栏遮挡。
+   *
+   * 解决方案：令 html/body 严格等于视口高度且禁止溢出滚动。
+   * - overflow: hidden 创建新的滚动容器，但 html/body 本身不滚动。
+   * - position:sticky 的吸顶逻辑仍相对视口正确生效（body≈viewport）。
+   * - position:fixed 的弹窗/抽屉不受 overflow:hidden 影响。
+   * - 各列表页的 Table 通过 scroll.y 在 ant-table-body 内独立滚动。
+   * - 仪表盘等非列表页的内容区已设置 overflow-y:auto 独立滚动。
+   */
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  background: #f0f2f5;
+  color: #1a1a2e;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* React 根节点也要等于视口，让 Ant Design Layout 正确充满并被裁剪 */
+#root {
+  height: 100%;
+}
+
+/* 全局过渡动画 */
+.ant-card,
+.ant-btn,
+.ant-input,
+.ant-select-selector {
+  transition: all 0.2s ease !important;
+}
+
+/* 卡片统一圆角 */
+.ant-card {
+  border-radius: 12px !important;
+}
+
+/* 表格行悬浮 */
+.ant-table-tbody > tr:hover > td {
+  background: #f5f7ff !important;
+}
+
+/* 禁止表格横向滑动回弹（trackpad rubber-band effect） */
+.ant-table-body,
+.ant-table-content {
+  overscroll-behavior-x: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+/* 禁用排序列的背景色差异（让积分/余额等可排序列与普通列背景一致） */
+.ant-table-tbody > tr > td.ant-table-column-sort {
+  background: transparent !important;
+}
+.ant-table-thead > tr > th.ant-table-column-sort {
+  background: linear-gradient(180deg,#f5f7ff 0%,#eef1ff 100%) !important;
+}
+/* 禁用排序触发区 hover 背景 */
+.ant-table-thead th.ant-table-column-has-sorters:hover {
+  background: linear-gradient(180deg,#eef1ff 0%,#e8ecff 100%) !important;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+/* 登录页背景渐变 */
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 50%, #1a1f2e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.15) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+  border-radius: 50%;
+}
+
+.login-container::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.1) 0%, transparent 70%);
+  bottom: -50px;
+  left: -50px;
+  border-radius: 50%;
+}
+
+/* 统计卡片动画 */
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* 数据表格行悬浮 */
+.ant-table-tbody tr:hover > td {
+  background: #f5f7ff !important;
+}
+
+/* 侧边栏品牌区域 */
+.sidebar-logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #141824;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 顶部导航栏 */
+.header-bar {
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 页面容器 */
+.page-container {
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+}
+
+/* 状态徽章颜色 */
+.status-badge-online { color: #52c41a; }
+.status-badge-offline { color: #999; }
+.status-badge-busy { color: #faad14; }
+.status-badge-disabled { color: #ff4d4f; }
+
+/* 弹窗居中于内容区（去除侧边栏宽度偏移） */
+:root {
+  --sidebar-width: 220px;
+}
+.ant-modal-wrap,
+.ant-modal-mask {
+  left: var(--sidebar-width) !important;
+  transition: left 0.2s;
+}
+
+/*
+ * 让弹窗内容区滚动条紧贴弹窗右边缘。
+ * Ant Design v6 的 .ant-modal-content 有 padding: 16px 24px 且 overflow: hidden。
+ * 通过对 body 使用 margin-right: -24px，使 body 宽度自动撑到 modal 右边界，
+ * 同时用 padding-right: 24px 保持表单内容与滚动条之间的留白。
+ * 对非滚动弹窗无视觉影响（overflow:hidden 会裁剪）。
+ */
+.ant-modal .ant-modal-body {
+  margin-right: -24px;
+  padding-right: 24px;
+}
+
+/* 所有弹窗整体上移 28px，避免视觉上被底部遮挡的感觉 */
+.ant-modal {
+  top: 72px; /* Ant Design v6 默认 100px，上移 28px */
+}
+
+/* ── 分页器：移除所有 li 边框，让自定义 itemRender 完全接管样式 ─────────────── */
+.ant-pagination .ant-pagination-item,
+.ant-pagination .ant-pagination-item-active {
+  border: none !important;
+  background: transparent !important;
+  line-height: 1 !important;
+  min-width: unset !important;
+  height: unset !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.ant-pagination .ant-pagination-prev,
+.ant-pagination .ant-pagination-next {
+  min-width: unset !important;
+  height: unset !important;
+}
+.ant-pagination .ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination .ant-pagination-next .ant-pagination-item-link {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+/* 焦点时不出现浏览器默认蓝圈/橙圈 */
+.ant-pagination .ant-pagination-item:focus-visible,
+.ant-pagination .ant-pagination-item-active:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ── 全局表格对齐：水平居中（垂直居中由 styledTableComponents.body.cell 的 flex 方案保障）── */
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td {
+  text-align: center !important;
+}
+
+/*
+ * 防止 antd 给 fixed 列 th 注入内联 height 值（JS 行高同步的副作用），
+ * 导致 fixed 列表头与普通列高度不一致。
+ * !important 优先级高于任何内联 style，可靠覆盖。
+ */
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > th.ant-table-cell-fix-left,
+.ant-table-thead > tr > th.ant-table-cell-fix-right {
+  height: auto !important;
+  min-height: unset !important;
+}
+
+
+/* 在线状态小圆点脉冲动画 */
+@keyframes pulse-dot {
+  0%   { box-shadow: 0 0 0 0 rgba(82,196,26,0.55); }
+  70%  { box-shadow: 0 0 0 6px rgba(82,196,26,0); }
+  100% { box-shadow: 0 0 0 0 rgba(82,196,26,0); }
+}

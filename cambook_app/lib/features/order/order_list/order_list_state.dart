@@ -1,0 +1,3 @@
+class OrderListState {
+  OrderListState();
+}
