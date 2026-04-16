@@ -25,12 +25,14 @@ export function useTableBodyHeight(paginationH = 46, theadH = 40) {
   const [height, setHeight] = useState(500)
 
   useEffect(() => {
-    // SAFETY = 内容区容器 marginBottom:-24 导致分页器被上移 24px + 4px 精度余量
-    const SAFETY = 28
+    // ref div 用 marginBottom:-24 已抵消 Content margin-bottom，内容精确铺满视口，SAFETY = 0
+    const SAFETY = 0
 
     const update = () => {
       if (!ref.current) return
       const top = ref.current.getBoundingClientRect().top
+      // ref div 通过 marginBottom:-24 已抵消 Content 的 margin-bottom，
+      // 可精确延伸至视口底部，无需额外安全余量。
       const available = window.innerHeight - top - theadH - paginationH - SAFETY
       setHeight(Math.max(120, available))
     }
