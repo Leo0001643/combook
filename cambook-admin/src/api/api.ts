@@ -86,8 +86,16 @@ export interface TechnicianVO {
   nickname: string
   avatar?: string
   photos?: string
+  videoUrl?: string
   gender: number
   nationality?: string
+  lang?: string
+  introZh?: string
+  age?: number
+  height?: number
+  weight?: number
+  bust?: string
+  province?: string
   serviceCity?: string
   rating: number
   reviewCount: number
@@ -98,10 +106,16 @@ export interface TechnicianVO {
   auditStatus: number
   rejectReason?: string
   skillTags?: string
+  serviceItemIds?: number[]
   isFeatured: number
   status: number
   merchantId?: number
   merchantName?: string
+  commissionRate?: number
+  settlementMode?: number
+  commissionType?: number
+  commissionRatePct?: number
+  commissionCurrency?: string
   createTime: string
 }
 
@@ -236,6 +250,9 @@ export const memberApi = {
   detail: (id: number) =>
     request.get<any>(`/admin/member/${id}`),
 
+  update: (data: { id: number; nickname?: string; avatar?: string; gender?: number; telegram?: string; address?: string }) =>
+    request.put<any>('/admin/member', null, { params: data }),
+
   updateStatus: (id: number, status: number) =>
     request.patch<any>(`/admin/member/${id}/status`, { status }),
 }
@@ -256,6 +273,9 @@ export const technicianApi = {
 
   create: (data: Record<string, any>) =>
     request.post<any>('/admin/technician/create', null, { params: data }),
+
+  update: (data: Record<string, any>) =>
+    request.put<any>('/admin/technician', null, { params: data }),
 
   audit: (data: { id: number; auditStatus: number; rejectReason?: string }) =>
     request.post<any>('/admin/technician/audit', data),
@@ -278,7 +298,7 @@ export const technicianApi = {
 // ──────────────────────────────────────────────────────────────────────────────
 
 export const orderApi = {
-  list: (params: { page?: number; size?: number; status?: number; keyword?: string; startDate?: string; endDate?: string; merchantId?: number }) =>
+  list: (params: { page?: number; size?: number; status?: number; keyword?: string; startDate?: string; endDate?: string; merchantId?: number; technicianId?: number; memberId?: number }) =>
     request.get<any>('/admin/order/list', { params }),
 
   detail: (id: number) =>
@@ -452,7 +472,7 @@ export const dictApi = {
   deleteType: (id: number) => request.delete<any>(`/admin/dict/type/${id}`),
 
   dataList: (dictType: string, status?: number) =>
-    request.get<any>('/admin/dict/data/list', { params: { dictType, status } }),
+    request.get<any>('/common/dict/data/list', { params: { dictType, status } }),
   addData: (data: any) => request.post<any>('/admin/dict/data', data),
   editData: (data: any) => request.put<any>('/admin/dict/data', data),
   deleteData: (id: number) => request.delete<any>(`/admin/dict/data/${id}`),
@@ -516,6 +536,8 @@ export const categoryApi = {
   add: (data: any) => request.post<any>('/admin/category', data),
   edit: (data: any) => request.put<any>('/admin/category', data),
   delete: (id: number) => request.delete<any>(`/admin/category/${id}`),
+  /** 通用——获取所有启用的一级/子级类目（管理员和商户均可使用） */
+  allEnabled: () => request.get<any>('/admin/category/list', { params: { status: 1, size: 200 } }),
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -539,6 +561,38 @@ export const financeApi = {
   overview: () => request.get<any>('/admin/finance/overview'),
   records: (params?: any) => request.get<any>('/admin/finance/records', { params }),
   wallets: (params?: any) => request.get<any>('/admin/finance/wallets', { params }),
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// 币种管理（Admin 侧）
+// ──────────────────────────────────────────────────────────────────────────────
+
+export const currencyApi = {
+  /** 获取全部币种列表（可按状态过滤） */
+  list: (status?: number) =>
+    request.get<any>('/admin/currency/list', { params: status != null ? { status } : {} }),
+
+  /** 新增币种 */
+  add: (data: any) => request.post<any>('/admin/currency', data),
+
+  /** 编辑币种信息 */
+  update: (data: any) => request.put<any>('/admin/currency', data),
+
+  /** 更新汇率 */
+  updateRate: (code: string, rateToUsd: number) =>
+    request.patch<any>(`/admin/currency/${code}/rate`, null, { params: { rateToUsd } }),
+
+  /** 启用 / 停用 */
+  toggleStatus: (id: number, status: number) =>
+    request.patch<any>(`/admin/currency/${id}/status`, null, { params: { status } }),
+
+  /** 查看指定商户的币种配置 */
+  merchantConfig: (merchantId: number) =>
+    request.get<any>(`/admin/currency/merchant/${merchantId}`),
+
+  /** Admin 为商户批量配置币种 */
+  merchantConfigure: (merchantId: number, configs: any[]) =>
+    request.post<any>(`/admin/currency/merchant/${merchantId}/configure`, configs),
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -570,8 +624,8 @@ export const merchantPortalApi = {
   /** 当前用户操作权限码列表（用于 PermGuard 按钮级控制） */
   permCodes: () => request.get<{ data: string[] }>('/merchant/auth/perm-codes'),
 
-  /** 数据看板 */
-  dashboard: () => request.get<any>('/merchant/dashboard/stats'),
+  /** 数据看板（period: day|week|month|year） */
+  dashboard: (period = 'week') => request.get<any>('/merchant/dashboard/stats', { params: { period } }),
 
   /** 商户自身信息 */
   profile: () => request.get<any>('/merchant/dashboard/profile'),
@@ -582,6 +636,19 @@ export const merchantPortalApi = {
   /** 订单详情 */
   orderDetail: (id: number) => request.get<any>(`/merchant/order/${id}`),
 
+  /** 取消订单 */
+  orderCancel: (id: number, reason?: string) =>
+    request.patch<any>(`/merchant/order/${id}/cancel`, null, { params: { reason: reason ?? '前台取消' } }),
+
+  /** 结算订单（组合支付） */
+  orderSettle: (id: number, paidAmount: number, payRecords?: string) =>
+    request.post<any>(`/merchant/order/${id}/settle`, null, {
+      params: { paidAmount, ...(payRecords ? { payRecords } : {}) },
+    }),
+
+  /** 删除订单 */
+  orderDelete: (id: number) => request.delete<any>(`/merchant/order/${id}`),
+
   /** 技师列表 */
   technicians: (params?: any) => request.get<any>('/merchant/technician/list', { params }),
 
@@ -590,6 +657,9 @@ export const merchantPortalApi = {
 
   /** 新增技师 */
   technicianCreate: (data: any) => request.post<any>('/merchant/technician/create', null, { params: data }),
+
+  /** 编辑技师 */
+  technicianUpdate: (data: any) => request.put<any>('/merchant/technician', null, { params: data }),
 
   /** 启用/停用技师 */
   technicianStatus: (id: number, status: number) =>
@@ -606,8 +676,23 @@ export const merchantPortalApi = {
   /** 删除技师 */
   technicianDelete: (id: number) => request.post<any>(`/merchant/technician/${id}/delete`, null),
 
+  /** 查询技师专属定价列表 */
+  technicianPricingList: (technicianId: number) =>
+    request.get<any>('/merchant/technician/pricing/list', { params: { technicianId } }),
+
+  /** 批量保存技师专属定价（覆盖式，传所有特殊项目价格） */
+  technicianPricingSaveAll: (technicianId: number, items: { serviceItemId: number; price: number }[]) =>
+    request.post<any>('/merchant/technician/pricing/saveAll', items, { params: { technicianId } }),
+
+  /** 删除技师单个专属定价 */
+  technicianPricingDelete: (technicianId: number, serviceItemId: number) =>
+    request.post<any>('/merchant/technician/pricing/delete', null, { params: { technicianId, serviceItemId } }),
+
   /** 会员列表 */
   members: (params?: any) => request.get<any>('/merchant/member/list', { params }),
+
+  /** 编辑会员 */
+  memberUpdate: (data: any) => request.put<any>('/merchant/member', null, { params: data }),
 
   /** 车辆列表 */
   vehicles: (params?: any) => request.get<any>('/merchant/vehicle/list', { params }),
@@ -801,5 +886,117 @@ export const merchantPortalApi = {
   /** 标记已读，返回最新未读数 */
   announceRead: (id: number) =>
     request.post<any>('/merchant/announce/read', null, { params: { id } }),
+
+  // ── 技师结算 ─────────────────────────────────────────────────────────────────
+  /** 结算列表（分页） */
+  settlementList: (params?: any) => request.get<any>('/merchant/settlement/list', { params }),
+
+  /** 结算单详情（含订单明细） */
+  settlementDetail: (id: number) => request.get<any>(`/merchant/settlement/${id}`),
+
+  /** 某技师汇总摘要 */
+  settlementSummary: (technicianId: number) => request.get<any>(`/merchant/settlement/summary/${technicianId}`),
+
+  /** 手动生成结算单 */
+  settlementGenerate: (data: any) => request.post<any>('/merchant/settlement/generate', data),
+
+  /** 标记已打款 */
+  settlementPay: (id: number, data: any) => request.patch<any>(`/merchant/settlement/${id}/pay`, data),
+
+  /** 调整结算金额（奖励/扣款） */
+  settlementAdjust: (id: number, data: any) => request.patch<any>(`/merchant/settlement/${id}/adjust`, data),
+
+  /** 撤销结算 */
+  settlementRevoke: (id: number) => request.patch<any>(`/merchant/settlement/${id}/revoke`, null),
+
+  /** 批量打款 */
+  settlementBatchPay: (data: any) => request.post<any>('/merchant/settlement/batch-pay', data),
+
+  /** 获取结算周期建议 */
+  settlementPeriods: (technicianId: number, settlementMode: number) =>
+    request.get<any[]>('/merchant/settlement/suggest-periods', { params: { technicianId, settlementMode } }),
+
+  // ── 币种配置 ────────────────────────────────────────────────────────────────
+  /** 获取商户币种配置（含全局可选列表） */
+  currencyConfig: () => request.get<any>('/merchant/currency/config'),
+
+  /** 获取商户已启用的币种（支付下拉用） */
+  currencyEnabled: () => request.get<any>('/merchant/currency/enabled'),
+
+  /** 保存商户币种配置 */
+  currencySave: (configs: any[]) => request.post<any>('/merchant/currency/configure', configs),
+
+  // ── 散客接待（Walk-in Session）────────────────────────────────────────────────
+  /**
+   * 散客接待列表（分页）
+   * 字段：id, sessionNo, wristbandNo, memberName, memberMobile,
+   *       technicianId, technicianName, technicianNo, technicianMobile,
+   *       status(0接待中/1服务中/2待结算/3已结算/4已取消),
+   *       totalAmount, paidAmount, checkInTime, checkOutTime,
+   *       orderItems[](serviceId, name, duration, unitPrice, svcStatus, startTime, endTime)
+   */
+  walkinList: (params?: {
+    page?: number; size?: number; keyword?: string; status?: number; date?: string
+  }) => request.get<any>('/merchant/walkin/list', { params }),
+
+  /** 接待详情（含服务项列表） */
+  walkinDetail: (id: number) => request.get<any>(`/merchant/walkin/${id}`),
+
+  /** 新增接待（仅创建 session，不含服务项） */
+  walkinCreate: (data: {
+    wristbandNo: string; memberName?: string; memberMobile?: string;
+    technicianId?: number; technicianName?: string; technicianNo?: string; technicianMobile?: string;
+    remark?: string;
+  }) => request.post<any>('/merchant/walkin/create', null, { params: data }),
+
+  /**
+   * 新增接待（含服务项，原子操作）
+   * 服务项以 JSON 字符串传递，格式：[{"serviceItemId":1,"serviceName":"...","serviceDuration":60,"unitPrice":288}]
+   * 若任一服务项插入失败，整个事务回滚，session 也不会留在库中。
+   */
+  walkinCreateWithItems: (data: {
+    wristbandNo: string; memberName?: string; memberMobile?: string;
+    technicianId?: number; technicianName?: string; technicianNo?: string; technicianMobile?: string;
+    remark?: string; itemsJson?: string;
+  }) => request.post<any>('/merchant/walkin/createWithItems', null, { params: data }),
+
+  /** 修改接待基本信息 */
+  walkinUpdate: (id: number, data: any) =>
+    request.post<any>(`/merchant/walkin/${id}/update`, null, { params: data }),
+
+  /** 添加服务项 */
+  walkinAddItem: (id: number, data: {
+    serviceItemId: number; serviceName: string; serviceDuration: number; unitPrice: number
+  }) => request.post<any>(`/merchant/walkin/${id}/addItem`, null, { params: data }),
+
+  /** 删除服务项 */
+  walkinRemoveItem: (id: number, orderId: number) =>
+    request.delete<any>(`/merchant/walkin/${id}/items/${orderId}`),
+
+  /** 修改服务项单价 */
+  walkinUpdateItemPrice: (id: number, orderId: number, unitPrice: number) =>
+    request.post<any>(`/merchant/walkin/${id}/items/${orderId}/price`, null, { params: { unitPrice } }),
+
+  /**
+   * 开始服务（设置 start_time，order.status → 5服务中）
+   * → 前端 svcStatus 变为 1，进度条开始计时
+   */
+  walkinStartService: (id: number, orderId: number) =>
+    request.post<any>(`/merchant/walkin/${id}/items/${orderId}/start`),
+
+  /**
+   * 结束服务项（order.status → 6已完成）
+   * → 前端 svcStatus 变为 2，进度条停止
+   */
+  walkinFinishService: (id: number, orderId: number) =>
+    request.post<any>(`/merchant/walkin/${id}/items/${orderId}/finish`),
+
+  /** 前台结算（收款，session.status → 3） */
+  walkinSettle: (id: number, paidAmount: number, remark?: string) =>
+    request.post<any>(`/merchant/walkin/${id}/settle`, null, { params: { paidAmount, remark } }),
+
+  /** 取消接待（仅无进行中服务项时允许，session.status → 4） */
+  walkinCancel: (id: number, reason?: string) =>
+    request.post<any>(`/merchant/walkin/${id}/cancel`, null, { params: { reason } }),
 }
 

@@ -64,7 +64,7 @@ export default function LogManagePage() {
         requestMethod: searchMethod || undefined, status: searchStatus,
       })
       const d = res.data?.data
-      setLogs(d?.records ?? [])
+      setLogs(d?.list ?? [])
       setTotal(d?.total ?? 0)
     } finally {
       setLoading(false)

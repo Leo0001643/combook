@@ -32,16 +32,15 @@ interface DictType {
 interface DictData {
   id: number
   dictType: string
-  dictLabel: string
+  labelZh: string
+  labelEn?: string
+  labelVi?: string
+  labelKm?: string
   dictValue: string
   sort: number
-  isDefault: number
-  cssClass?: string
   status: number
   remark?: string
 }
-
-const CSS_COLORS = ['default', 'blue', 'green', 'red', 'orange', 'purple', 'cyan', 'pink', 'gold', 'lime', 'magenta', 'volcano', 'geekblue']
 
 export default function DictManagePage() {
   const { ref, height: tableBodyH } = useTableBodyHeight()
@@ -71,7 +70,7 @@ export default function DictManagePage() {
     try {
       const res = await dictApi.typeList({ current, size: pageSize, dictName: searchName || undefined, dictType: searchType || undefined, status: searchStatus })
       const d = res.data?.data
-      setTypes(d?.records ?? [])
+      setTypes(d?.list ?? [])
       setTotal(d?.total ?? 0)
     } finally {
       setLoading(false)
@@ -124,7 +123,7 @@ export default function DictManagePage() {
       dataForm.setFieldsValue({ ...record })
     } else {
       dataForm.resetFields()
-      dataForm.setFieldsValue({ dictType: selectedType?.dictType, sort: 0, isDefault: 0, status: 1 })
+      dataForm.setFieldsValue({ dictType: selectedType?.dictType, sort: 0, status: 1 })
     }
     setDataModal(true)
   }
@@ -211,19 +210,28 @@ export default function DictManagePage() {
 
   const dataColumns = [
     {
-      title: '显示标签', dataIndex: 'dictLabel', key: 'dictLabel',
-      render: (v: string, r: DictData) => (
-        <Tag color={r.cssClass || 'default'} style={{ borderRadius: 6, fontWeight: 600, fontSize: 13 }}>{v}</Tag>
-      ),
+      title: '显示标签(中文)', dataIndex: 'labelZh', key: 'labelZh',
+      render: (v: string, r: DictData) => {
+        let color = 'default'
+        if (r.remark) {
+          // remark may be a color string like "#hex" or Ant Design color name
+          if (r.remark.startsWith('{')) {
+            try { color = (JSON.parse(r.remark) as any).c ?? 'default' } catch { /* ignore */ }
+          } else if (!r.remark.startsWith('#')) {
+            color = r.remark
+          }
+        }
+        return <Tag color={color} style={{ borderRadius: 6, fontWeight: 600, fontSize: 13 }}>{v}</Tag>
+      },
     },
     {
       title: '数据键值', dataIndex: 'dictValue', key: 'dictValue',
       render: (v: string) => <code style={{ background: '#f0f5ff', padding: '2px 8px', borderRadius: 4, color: '#1890ff' }}>{v}</code>,
     },
-    { title: '排序', dataIndex: 'sort', key: 'sort'},
+    { title: '排序', dataIndex: 'sort', key: 'sort', width: 70 },
     {
-      title: '默认', dataIndex: 'isDefault', key: 'isDefault',
-      render: (v: number) => v === 1 ? <Tag color="success">是</Tag> : <Tag>否</Tag>,
+      title: '备注/颜色', dataIndex: 'remark', key: 'remark',
+      render: (v: string) => v ? <Typography.Text type="secondary" ellipsis={{ tooltip: v }} style={{ maxWidth: 160 }}>{v}</Typography.Text> : <span style={{ color: '#d9d9d9' }}>-</span>,
     },
     {
       title: '状态', dataIndex: 'status', key: 'status',
@@ -384,7 +392,7 @@ export default function DictManagePage() {
           </Form.Item>
           <Row gutter={12}>
             <Col span={12}>
-              <Form.Item name="dictLabel" label="显示标签" rules={[{ required: true, message: '请输入显示标签' }]}>
+              <Form.Item name="labelZh" label="显示标签（中文）" rules={[{ required: true, message: '请输入中文标签' }]}>
                 <Input placeholder="如：男" style={{ borderRadius: 8 }} />
               </Form.Item>
             </Col>
@@ -396,27 +404,39 @@ export default function DictManagePage() {
           </Row>
           <Row gutter={12}>
             <Col span={8}>
-              <Form.Item name="sort" label="排序"><InputNumber style={{ width: '100%', borderRadius: 8 }} /></Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="cssClass" label="标签颜色">
-                <Select placeholder="选择颜色" style={{ borderRadius: 8 }}>
-                  {CSS_COLORS.map(c => <Select.Option key={c} value={c}><Tag color={c}>{c}</Tag></Select.Option>)}
-                </Select>
+              <Form.Item name="labelEn" label="英文标签">
+                <Input placeholder="English label" style={{ borderRadius: 8 }} />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="isDefault" label="是否默认">
-                <Select style={{ borderRadius: 8 }}>
-                  <Select.Option value={1}>是</Select.Option>
-                  <Select.Option value={0}>否</Select.Option>
-                </Select>
+              <Form.Item name="labelVi" label="越南语标签">
+                <Input placeholder="Nhãn tiếng Việt" style={{ borderRadius: 8 }} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="labelKm" label="柬文标签">
+                <Input placeholder="ស្លាក​ភាសា​ខ្មែរ" style={{ borderRadius: 8 }} />
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item name="remark" label="备注">
-            <Input.TextArea rows={2} style={{ borderRadius: 8 }} />
-          </Form.Item>
+          <Row gutter={12}>
+            <Col span={8}>
+              <Form.Item name="sort" label="排序"><InputNumber style={{ width: '100%', borderRadius: 8 }} /></Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="status" label="状态">
+                <Select style={{ borderRadius: 8 }}>
+                  <Select.Option value={1}><Badge status="success" text="正常" /></Select.Option>
+                  <Select.Option value={0}><Badge status="error" text="停用" /></Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="remark" label="备注/颜色标识" tooltip="可填 Ant Design color 名（如 blue、red）、hex 色值（如 #6366f1）或 JSON（如 {&quot;c&quot;:&quot;#6366f1&quot;,&quot;i&quot;:&quot;🚀&quot;}）">
+                <Input placeholder='如：blue / #6366f1 / {"c":"#6366f1","i":"🚀"}' style={{ borderRadius: 8 }} />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </div>

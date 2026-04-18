@@ -46,6 +46,9 @@ public class CategoryController {
                             @RequestParam(required = false) String nameEn,
                             @RequestParam(required = false) String nameKm,
                             @RequestParam(required = false) String icon,
+                            @RequestParam(required = false) java.math.BigDecimal price,
+                            @RequestParam(required = false) Integer duration,
+                            @RequestParam(defaultValue = "0") Integer isSpecial,
                             @RequestParam(defaultValue = "0") Integer sort) {
         CbServiceCategory cat = new CbServiceCategory();
         cat.setParentId(parentId);
@@ -53,6 +56,9 @@ public class CategoryController {
         cat.setNameEn(nameEn);
         cat.setNameKm(nameKm);
         cat.setIcon(icon);
+        cat.setPrice(price);
+        cat.setDuration(duration);
+        cat.setIsSpecial(isSpecial);
         cat.setSort(sort);
         cat.setStatus(1);
         categoryMapper.insert(cat);
@@ -67,6 +73,9 @@ public class CategoryController {
                              @RequestParam(required = false) String nameEn,
                              @RequestParam(required = false) String nameKm,
                              @RequestParam(required = false) String icon,
+                             @RequestParam(required = false) java.math.BigDecimal price,
+                             @RequestParam(required = false) Integer duration,
+                             @RequestParam(required = false) Integer isSpecial,
                              @RequestParam(defaultValue = "0") Integer sort,
                              @RequestParam(required = false) Integer status) {
         CbServiceCategory cat = categoryMapper.selectById(id);
@@ -75,6 +84,9 @@ public class CategoryController {
         cat.setNameEn(nameEn);
         cat.setNameKm(nameKm);
         cat.setIcon(icon);
+        if (price     != null) cat.setPrice(price);
+        if (duration  != null) cat.setDuration(duration);
+        if (isSpecial != null) cat.setIsSpecial(isSpecial);
         cat.setSort(sort);
         if (status != null) cat.setStatus(status);
         categoryMapper.updateById(cat);

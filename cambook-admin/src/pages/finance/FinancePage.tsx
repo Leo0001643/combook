@@ -9,6 +9,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { financeApi } from '../../api/api';
 import { usePortalScope } from '../../hooks/usePortalScope';
+import { useDict } from '../../hooks/useDict';
 import MerchantFinanceView from '../merchant/FinanceView';
 import PagePagination from '../../components/common/PagePagination';
 import { styledTableComponents } from '../../components/common/tableComponents';
@@ -39,7 +40,7 @@ interface WalletVO {
   status: number;
 }
 
-const recordTypeMap: Record<number, { text: string; color: string }> = {
+const recordTypeMap_FB: Record<number, { text: string; color: string }> = {
   1: { text: '充值', color: 'green' },
   2: { text: '消费', color: 'red' },
   3: { text: '提现', color: 'orange' },
@@ -47,7 +48,7 @@ const recordTypeMap: Record<number, { text: string; color: string }> = {
   5: { text: '奖励', color: 'purple' },
 };
 
-const userTypeMap: Record<number, { text: string; color: string }> = {
+const userTypeMap_FB: Record<number, { text: string; color: string }> = {
   1: { text: '会员', color: 'blue' },
   2: { text: '技师', color: 'green' },
   3: { text: '商户', color: 'purple' },
@@ -57,6 +58,19 @@ const PAGE_GRADIENT = 'linear-gradient(135deg,#10b981,#059669)';
 
 const AdminFinancePage: React.FC = () => {
   const { ref: refRecords, height: recordsH } = useTableBodyHeight()
+
+  const { items: flowItems }     = useDict('wallet_flow_type')
+  const { items: userTypeItems } = useDict('user_type')
+
+  const recordTypeMap: Record<number, { text: string; color: string }> =
+    flowItems.length > 0
+      ? Object.fromEntries(flowItems.map(i => [Number(i.dictValue), { text: i.labelZh, color: i.remark ?? 'default' }]))
+      : recordTypeMap_FB
+
+  const userTypeMap: Record<number, { text: string; color: string }> =
+    userTypeItems.length > 0
+      ? Object.fromEntries(userTypeItems.map(i => [Number(i.dictValue), { text: i.labelZh, color: i.remark ?? 'default' }]))
+      : userTypeMap_FB
   const { ref: refWallets, height: walletsH } = useTableBodyHeight()
   const [overview, setOverview] = useState<any>(null);
   const [records, setRecords] = useState<WalletRecord[]>([]);
@@ -87,7 +101,7 @@ const AdminFinancePage: React.FC = () => {
         recordType,
       });
       if (res.data?.code === 200) {
-        setRecords(res.data.data.records ?? []);
+        setRecords(res.data.data.list ?? []);
         setRecordsTotal(res.data.data.total ?? 0);
       }
     } catch {
@@ -104,7 +118,7 @@ const AdminFinancePage: React.FC = () => {
         userType: userTypeFilter,
       });
       if (res.data?.code === 200) {
-        setWallets(res.data.data.records ?? []);
+        setWallets(res.data.data.list ?? []);
         setWalletsTotal(res.data.data.total ?? 0);
       }
     } catch {}

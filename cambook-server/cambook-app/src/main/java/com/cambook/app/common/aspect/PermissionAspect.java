@@ -38,6 +38,11 @@ public class PermissionAspect {
             return;
         }
 
+        // 非管理员请求（商户端 / 匿名）不受本切面约束，由 MerchantSecurityAspect 等各自切面负责
+        if (AdminContext.getUserId() == null) {
+            return;
+        }
+
         Set<String> adminPerms = AdminContext.getPermissions();
         String[] required = annotation.value();
 

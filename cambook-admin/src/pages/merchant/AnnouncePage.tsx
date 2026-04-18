@@ -74,7 +74,7 @@ export default function AnnouncePage({ type }: Props) {
       const res = await merchantPortalApi.announceList({ type, status, keyword, page, size: pageSize })
       if (res.data?.code === 200) {
         const d = res.data.data
-        setList(d.records ?? [])
+        setList(d.list ?? [])
         setTotal(d.total  ?? 0)
       }
     } finally {

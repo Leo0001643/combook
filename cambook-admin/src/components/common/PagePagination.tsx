@@ -1,3 +1,4 @@
+import React from 'react'
 import { Pagination, Select, Typography } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 
@@ -16,6 +17,8 @@ interface PagePaginationProps {
   showSizeChanger?: boolean
   /** 可选的每页条数列表，默认 [20, 50, 100, 200] */
   pageSizeOptions?: number[]
+  /** 容器样式 */
+  style?: React.CSSProperties
 }
 
 /**
@@ -32,6 +35,7 @@ export default function PagePagination({
   countLabel = '条记录',
   showSizeChanger = true,
   pageSizeOptions = [20, 50, 100, 200],
+  style,
 }: PagePaginationProps) {
   const totalPages = Math.ceil(total / pageSize)
 
@@ -48,6 +52,7 @@ export default function PagePagination({
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '6px 20px', borderTop: '1px solid #eef0f8',
       background: 'linear-gradient(180deg,#fafbff 0%,#f5f7ff 100%)',
+      ...style,
     }}>
       {/* 左侧：统计 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

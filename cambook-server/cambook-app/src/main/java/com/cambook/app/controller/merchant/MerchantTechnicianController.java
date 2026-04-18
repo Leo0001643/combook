@@ -4,6 +4,7 @@ import com.cambook.app.common.annotation.RequireMerchant;
 import com.cambook.app.common.security.MerchantOwnershipGuard;
 import com.cambook.app.domain.dto.TechnicianCreateDTO;
 import com.cambook.app.domain.dto.TechnicianQueryDTO;
+import com.cambook.app.domain.dto.TechnicianUpdateDTO;
 import com.cambook.app.domain.vo.TechnicianVO;
 import com.cambook.app.service.admin.IAdminTechnicianService;
 import com.cambook.common.result.PageResult;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 /**
  * 商户端 - 技师管理（薄包装层）
@@ -57,6 +59,15 @@ public class MerchantTechnicianController {
         // merchantId 强制来自 JWT，忽略客户端传入值
         dto.setMerchantId(MerchantOwnershipGuard.requireMerchantId());
         return Result.success(technicianService.create(dto));
+    }
+
+    @Operation(summary = "编辑技师信息")
+    @PutMapping
+    public Result<Void> update(@Valid @ModelAttribute TechnicianUpdateDTO dto) {
+        TechnicianVO vo = technicianService.getDetail(dto.getId());
+        MerchantOwnershipGuard.assertOwnership(vo.getMerchantId(), "技师", dto.getId());
+        technicianService.update(dto);
+        return Result.success();
     }
 
     @Operation(summary = "启用 / 停用技师")

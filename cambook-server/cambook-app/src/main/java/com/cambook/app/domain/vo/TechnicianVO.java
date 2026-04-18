@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 技师信息视图
@@ -69,8 +71,50 @@ public class TechnicianVO {
     @Schema(description = "拒绝原因")
     private String rejectReason;
 
+    @Schema(description = "常用语言")
+    private String lang;
+
+    @Schema(description = "中文简介")
+    private String introZh;
+
+    @Schema(description = "年龄")
+    private Integer age;
+
+    @Schema(description = "身高(cm)")
+    private Integer height;
+
+    @Schema(description = "体重(kg)")
+    private BigDecimal weight;
+
+    @Schema(description = "罩杯")
+    private String bust;
+
+    @Schema(description = "籍贯/所在省份")
+    private String province;
+
+    @Schema(description = "展示视频 URL")
+    private String videoUrl;
+
+    @Schema(description = "技师分成比例(%)")
+    private BigDecimal commissionRate;
+
+    @Schema(description = "结算方式: 0每笔 1日结 2周结 3月结")
+    private Integer settlementMode;
+
+    @Schema(description = "提成类型: 0按比例 1固定金额")
+    private Integer commissionType;
+
+    @Schema(description = "按比例提成百分比(%)")
+    private BigDecimal commissionRatePct;
+
+    @Schema(description = "固定金额结算币种")
+    private String commissionCurrency;
+
     @Schema(description = "技能标签（JSON）")
     private String skillTags;
+
+    @Schema(description = "可提供的服务类目 ID 列表")
+    private List<Long> serviceItemIds;
 
     @Schema(description = "是否推荐")
     private Integer isFeatured;
@@ -105,9 +149,42 @@ public class TechnicianVO {
         vo.setOnlineStatus(t.getOnlineStatus());
         vo.setAuditStatus(t.getAuditStatus());
         vo.setRejectReason(t.getRejectReason());
+        vo.setLang(t.getLang());
+        vo.setIntroZh(t.getIntroZh());
+        vo.setAge(t.getAge());
+        vo.setHeight(t.getHeight());
+        vo.setWeight(t.getWeight());
+        vo.setBust(t.getBust());
+        vo.setProvince(t.getProvince());
+        vo.setVideoUrl(t.getVideoUrl());
+        vo.setCommissionRate(t.getCommissionRate());
+        vo.setSettlementMode(t.getSettlementMode());
+        vo.setCommissionType(t.getCommissionType());
+        vo.setCommissionRatePct(t.getCommissionRatePct());
+        vo.setCommissionCurrency(t.getCommissionCurrency());
         vo.setSkillTags(t.getSkillTags());
+        vo.setServiceItemIds(parseIds(t.getServiceItemIds()));
         vo.setIsFeatured(t.getIsFeatured());
         vo.setStatus(t.getStatus());
         return vo;
+    }
+
+    /** 将 JSON 数组字符串 "[1,2,3]" 解析为 Long 列表，容错处理。 */
+    private static List<Long> parseIds(String json) {
+        if (json == null || json.isBlank()) return Collections.emptyList();
+        try {
+            json = json.trim();
+            if (!json.startsWith("[")) return Collections.emptyList();
+            String inner = json.substring(1, json.length() - 1).trim();
+            if (inner.isEmpty()) return Collections.emptyList();
+            List<Long> result = new java.util.ArrayList<>();
+            for (String part : inner.split(",")) {
+                String p = part.trim();
+                if (!p.isEmpty()) result.add(Long.parseLong(p));
+            }
+            return result;
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 }

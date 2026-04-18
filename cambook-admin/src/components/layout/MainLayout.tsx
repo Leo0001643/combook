@@ -12,10 +12,11 @@ import {
   BookOutlined, NotificationOutlined, DesktopOutlined, ClockCircleOutlined,
   DatabaseOutlined, StarOutlined, SolutionOutlined, RocketOutlined, SoundOutlined,
   GiftOutlined, HomeOutlined, ReadOutlined, MessageOutlined,
+  BarChartOutlined, MinusCircleOutlined, GlobalOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '../../store/authStore'
 import type { PermissionVO } from '../../api/api'
-import { merchantPortalApi } from '../../api/api'
+import { merchantPortalApi, authApi } from '../../api/api'
 import AnnouncementBell from '../common/AnnouncementBell'
 
 const { Sider, Header, Content } = Layout
@@ -72,6 +73,10 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   SafetyOutlined:       ic(<SafetyOutlined />,        '#2dd4bf'),  // 青绿 — 安全证书
   AuditOutlined:        ic(<AuditOutlined />,         '#fb7185'),  // 玫瑰 — 审核日志
   SettingOutlined:      ic(<SettingOutlined />,       '#94a3b8'),  // 灰蓝 — 系统设置
+  // ── 新增功能图标 ──
+  BarChartOutlined:     ic(<BarChartOutlined />,      '#34d399'),  // 翠绿 — 财务概览/图表
+  MinusCircleOutlined:  ic(<MinusCircleOutlined />,   '#f87171'),  // 红色 — 支出管理
+  GlobalOutlined:       ic(<GlobalOutlined />,        '#60a5fa'),  // 蓝色 — 全球货币
 }
 
 const getIcon = (name?: string | null): React.ReactNode | undefined =>
@@ -119,7 +124,7 @@ function calcOpenKeys(nodes: PermissionVO[], currentPath: string): string[] {
 export default function MainLayout() {
   const navigate    = useNavigate()
   const location    = useLocation()
-  const { user, merchant, menus, isMerchant, setLogout } = useAuthStore()
+  const { user, merchant, menus, isMerchant, setLogout, setMenus } = useAuthStore()
   const [collapsed, setCollapsed] = useState(false)
 
   // ── 实时时钟（每秒刷新）────────────────────────────────────────────────────
@@ -141,6 +146,23 @@ export default function MainLayout() {
       if (res.data?.data) setStaffInfo(res.data.data)
     }).catch(() => {/* ignore */})
   }, [isMerchant])
+
+  // ── 静默刷新菜单（解决 localStorage 缓存与数据库不同步的问题）────────────────
+  // 每次 MainLayout 挂载时重新拉一次菜单树，并更新 zustand store 缓存，
+  // 确保菜单 icon / 名称 / 排序等变更后无需退出登录即可生效。
+  useEffect(() => {
+    const refresh = isMerchant
+      ? () => merchantPortalApi.menus().then(res => {
+          const list: PermissionVO[] = (res.data as any)?.data ?? res.data ?? []
+          if (Array.isArray(list) && list.length) setMenus(list)
+        })
+      : () => authApi.menus().then(res => {
+          const list: PermissionVO[] = (res.data as any)?.data ?? res.data ?? []
+          if (Array.isArray(list) && list.length) setMenus(list)
+        })
+    refresh().catch(() => {/* 网络异常静默忽略，继续用缓存 */})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 同步侧边栏宽度到 CSS 变量，让弹窗在内容区居中
   useEffect(() => {
@@ -288,7 +310,13 @@ export default function MainLayout() {
         />
       </Sider>
 
-      <Layout style={{ marginLeft: collapsed ? 80 : 220, transition: 'margin-left 0.2s' }}>
+      <Layout style={{
+        marginLeft: collapsed ? 80 : 220,
+        transition: 'margin-left 0.2s',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
         {/* ── 顶部导航 ──────────────────────────────────────────────────────── */}
         <Header style={{
           position: 'sticky', top: 0, zIndex: 99,
@@ -465,7 +493,11 @@ export default function MainLayout() {
         </Header>
 
         {/* ── 主内容区 ─────────────────────────────────────────────────── */}
-        <Content style={{ margin: '24px', minHeight: 'calc(100vh - 112px)' }}>
+        <Content style={{
+          flex: 1,
+          padding: '24px',
+          background: '#f8fafc',
+        }}>
           <Outlet />
         </Content>
       </Layout>

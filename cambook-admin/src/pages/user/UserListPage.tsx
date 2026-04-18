@@ -8,7 +8,7 @@ import DateTimeRangePicker from '../../components/common/DateTimeRangePicker'
 import type { ColumnsType } from 'antd/es/table'
 import {
   SearchOutlined, UserOutlined, StopOutlined, CheckCircleOutlined,
-  EyeOutlined, ReloadOutlined, TeamOutlined,
+  EyeOutlined, EditOutlined, ReloadOutlined, TeamOutlined,
   PhoneOutlined,   CalendarOutlined, ShoppingOutlined, DollarOutlined,
   ManOutlined, WomanOutlined, StarOutlined,
   CrownOutlined, GlobalOutlined, EnvironmentOutlined,
@@ -18,10 +18,12 @@ import {
 import dayjs from 'dayjs'
 import type { Dayjs } from 'dayjs'
 import { usePortalScope } from '../../hooks/usePortalScope'
+import { useDict } from '../../hooks/useDict'
 import PermGuard from '../../components/common/PermGuard'
 import ContactCell from '../../components/common/ContactCell'
 import ContactFilter, { type ContactFilterType } from '../../components/common/ContactFilter'
 import MemberDetailDrawer, { type MemberDetailVO } from '../../components/common/MemberDetailDrawer'
+import MemberEditModal from '../../components/common/MemberEditModal'
 import DangerModal from '../../components/common/DangerModal'
 import { styledTableComponents, col as colHelper } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
@@ -32,7 +34,7 @@ const { Option } = Select
 // MemberVO 使用统一的 MemberDetailVO 类型，额外加上 wechat 字段
 type MemberVO = MemberDetailVO
 
-const LEVEL_CFG: Record<number, { label: string; color: string; bg: string }> = {
+const LEVEL_CFG_FB: Record<number, { label: string; color: string; bg: string }> = {
   0: { label: '普通', color: '#9ca3af', bg: '#f9fafb' },
   1: { label: '银牌', color: '#6b7280', bg: '#f3f4f6' },
   2: { label: '金牌', color: '#d97706', bg: '#fffbeb' },
@@ -40,14 +42,14 @@ const LEVEL_CFG: Record<number, { label: string; color: string; bg: string }> = 
   4: { label: '钻石', color: '#0891b2', bg: '#ecfeff' },
 }
 
-const LANG_FLAG: Record<string, { flag: string; label: string }> = {
+const LANG_FLAG_FB: Record<string, { flag: string; label: string }> = {
   zh: { flag: '🇨🇳', label: '中文' },
   km: { flag: '🇰🇭', label: 'Khmer' },
   vi: { flag: '🇻🇳', label: 'Tiếng Việt' },
   en: { flag: '🇬🇧', label: 'English' },
 }
 
-const STATUS_MAP: Record<number, { badge: 'success' | 'error' | 'warning'; color: string; label: string }> = {
+const STATUS_MAP_FB: Record<number, { badge: 'success' | 'error' | 'warning'; color: string; label: string }> = {
   1: { badge: 'success', color: '#10b981', label: '正常'  },
   2: { badge: 'error',   color: '#ef4444', label: '已封禁' },
   3: { badge: 'warning', color: '#f59e0b', label: '注销中' },
@@ -64,7 +66,33 @@ const col = colHelper  // shared column title helper
 
 export default function UserListPage() {
   const { ref, height: tableBodyH } = useTableBodyHeight()
-  const { isAdmin, memberList, memberUpdateStatus } = usePortalScope()
+  const { isAdmin, memberList, memberUpdate, memberUpdateStatus } = usePortalScope()
+
+  const { items: statusItems } = useDict('member_status')
+  const { items: levelItems }  = useDict('member_level')
+  const { items: langItems }   = useDict('language')
+
+  const STATUS_MAP: Record<number, { badge: 'success' | 'error' | 'warning'; color: string; label: string }> =
+    statusItems.length > 0
+      ? Object.fromEntries(statusItems.map(i => {
+          const b = ({ green: 'success', red: 'error', orange: 'warning' }[i.remark ?? ''] ?? 'default') as any
+          const hex = i.remark?.startsWith('#') ? i.remark : ({ green:'#10b981', red:'#ef4444', orange:'#f59e0b' }[i.remark ?? ''] ?? '#94a3b8')
+          return [Number(i.dictValue), { badge: b, color: hex, label: i.labelZh }]
+        }))
+      : STATUS_MAP_FB
+
+  const LEVEL_CFG: Record<number, { label: string; color: string; bg: string }> =
+    levelItems.length > 0
+      ? Object.fromEntries(levelItems.map(i => {
+          const hex = i.remark?.startsWith('#') ? i.remark : ({ default:'#9ca3af', silver:'#6b7280', gold:'#d97706', cyan:'#0891b2' }[i.remark ?? ''] ?? '#94a3b8')
+          return [Number(i.dictValue), { label: i.labelZh, color: hex, bg: `${hex}15` }]
+        }))
+      : LEVEL_CFG_FB
+
+  const LANG_FLAG: Record<string, { flag: string; label: string }> =
+    langItems.length > 0
+      ? Object.fromEntries(langItems.map(i => [i.dictValue, { flag: i.remark ?? '', label: i.labelZh }]))
+      : LANG_FLAG_FB
 
   const [loading,      setLoading]      = useState(false)
   const [data,         setData]         = useState<MemberVO[]>([])
@@ -84,6 +112,10 @@ export default function UserListPage() {
   // 详情抽屉
   const [detail,     setDetail]     = useState<MemberVO | null>(null)
   const [drawerOpen, setDrawer]     = useState(false)
+
+  // 编辑弹窗
+  const [editTarget,  setEditTarget]  = useState<MemberVO | null>(null)
+  const [editOpen,    setEditOpen]    = useState(false)
 
   // 封禁/解封确认弹窗
   const [banTarget,  setBanTarget]  = useState<MemberVO | null>(null)
@@ -138,9 +170,9 @@ export default function UserListPage() {
   // ── 统计数据 ───────────────────────────────────────────────────────────────
   const stats = [
     { label: '注册会员', value: total,                                                            color: '#6366f1', bg: 'rgba(99,102,241,0.1)',  border: 'rgba(99,102,241,0.25)',  icon: '👥' },
-    { label: '活跃',     value: data.filter(d => d.status === 1).length,                         color: '#10b981', bg: 'rgba(16,185,129,0.1)',  border: 'rgba(16,185,129,0.25)',  icon: '🟢' },
-    { label: '已封禁',   value: data.filter(d => d.status !== 1).length,                         color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.25)',   icon: '🔴' },
-    { label: '近7天新增', value: data.filter(d => dayjs(d.createdAt).isAfter(dayjs().subtract(7,'day'))).length, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)', icon: '🆕' },
+    { label: '活跃（当页）',  value: data.filter(d => d.status === 1).length,                        color: '#10b981', bg: 'rgba(16,185,129,0.1)',  border: 'rgba(16,185,129,0.25)',  icon: '🟢' },
+    { label: '封禁（当页）',  value: data.filter(d => d.status !== 1).length,                        color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.25)',   icon: '🔴' },
+    { label: '近7天新增（当页）', value: data.filter(d => dayjs(d.createdAt).isAfter(dayjs().subtract(7,'day'))).length, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)', icon: '🆕' },
   ]
 
   const columns: ColumnsType<MemberVO> = [
@@ -277,12 +309,17 @@ export default function UserListPage() {
     },
     {
       title: col(<SettingOutlined style={{ color: '#6b7280' }} />, '操作'),
-      key: 'action', fixed: 'right', width: 118, align: 'center',
+      key: 'action', fixed: 'right', width: 220,
       render: (_, r) => (
         <Space size={4}>
           <Button size="small" type="primary" ghost icon={<EyeOutlined />}
             style={{ borderRadius: 6, fontSize: 12 }}
             onClick={() => { setDetail(r); setDrawer(true) }}>查看</Button>
+          <PermGuard code="member:edit">
+            <Button size="small" icon={<EditOutlined />}
+              style={{ borderRadius: 6, fontSize: 12, color: '#6366f1', borderColor: '#a5b4fc' }}
+              onClick={() => { setEditTarget(r); setEditOpen(true) }}>编辑</Button>
+          </PermGuard>
           {isAdmin && (
             r.status === 1 ? (
               <PermGuard code="member:ban">
@@ -334,7 +371,7 @@ export default function UserListPage() {
             }}>
               <TeamOutlined style={{ color: '#fff', fontSize: 16 }} />
             </div>
-            <div>
+    <div>
               <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', lineHeight: 1.2 }}>会员管理</div>
               <div style={{ fontSize: 11, color: '#9ca3af', lineHeight: 1.3, marginTop: 1 }}>
                 {isAdmin ? '管理平台注册会员 · 查看消费记录 · 封禁解封' : '查看在您商户消费过的会员 · 消费记录'}
@@ -383,7 +420,7 @@ export default function UserListPage() {
           />
 
           {/* 地址模糊查询 */}
-          <Input
+            <Input
             placeholder="地址查询"
             prefix={<EnvironmentOutlined style={{ color: '#f59e0b', fontSize: 12 }} />}
             allowClear size="middle"
@@ -527,6 +564,15 @@ export default function UserListPage() {
         loading={banLoading}
         onConfirm={handleBanConfirm}
         onCancel={() => setBanTarget(null)}
+      />
+
+      {/* ── 编辑会员弹窗 ──────────────────────────────────────────────────── */}
+      <MemberEditModal
+        open={editOpen}
+        member={editTarget}
+        onClose={() => { setEditOpen(false); setEditTarget(null) }}
+        onSuccess={() => fetchList()}
+        updateFn={memberUpdate}
       />
     </div>
   )

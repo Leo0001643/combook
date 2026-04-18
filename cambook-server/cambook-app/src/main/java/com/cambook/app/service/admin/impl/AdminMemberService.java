@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cambook.app.domain.dto.MemberQueryDTO;
 import com.cambook.app.domain.dto.MemberStatusDTO;
+import com.cambook.app.domain.dto.MemberUpdateDTO;
 import com.cambook.app.domain.vo.MemberVO;
 import com.cambook.app.service.admin.IAdminMemberService;
 import com.cambook.common.enums.CbCodeEnum;
@@ -92,6 +93,21 @@ public class AdminMemberService implements IAdminMemberService {
         CbMember member = memberMapper.selectById(id);
         if (member == null) throw new BusinessException(CbCodeEnum.MEMBER_NOT_FOUND);
         return MemberVO.from(member);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(MemberUpdateDTO dto) {
+        CbMember member = memberMapper.selectById(dto.getId());
+        if (member == null) throw new BusinessException(CbCodeEnum.MEMBER_NOT_FOUND);
+        memberMapper.update(
+                Wrappers.<CbMember>lambdaUpdate()
+                        .set(dto.getNickname() != null, CbMember::getNickname, dto.getNickname())
+                        .set(dto.getAvatar()   != null, CbMember::getAvatar,   dto.getAvatar())
+                        .set(dto.getGender()   != null, CbMember::getGender,   dto.getGender())
+                        .set(dto.getTelegram() != null, CbMember::getTelegram, dto.getTelegram())
+                        .set(dto.getAddress()  != null, CbMember::getAddress,  dto.getAddress())
+                        .eq(CbMember::getId, dto.getId()));
     }
 
     @Override

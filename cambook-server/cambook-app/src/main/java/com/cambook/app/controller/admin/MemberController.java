@@ -3,6 +3,7 @@ package com.cambook.app.controller.admin;
 import com.cambook.common.annotation.RequirePermission;
 import com.cambook.app.domain.dto.MemberQueryDTO;
 import com.cambook.app.domain.dto.MemberStatusDTO;
+import com.cambook.app.domain.dto.MemberUpdateDTO;
 import com.cambook.app.domain.vo.MemberVO;
 import com.cambook.app.service.admin.IAdminMemberService;
 import com.cambook.common.result.PageResult;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,6 +47,14 @@ public class MemberController {
     @GetMapping("/{id}")
     public Result<MemberVO> detail(@PathVariable Long id) {
         return Result.success(memberService.getDetail(id));
+    }
+
+    @RequirePermission("member:edit")
+    @Operation(summary = "编辑会员信息")
+    @PutMapping
+    public Result<Void> update(@Valid @ModelAttribute MemberUpdateDTO dto) {
+        memberService.update(dto);
+        return Result.success();
     }
 
     @RequirePermission("member:status")

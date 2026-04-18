@@ -28,6 +28,9 @@ public class OrderQueryDTO {
     @Schema(description = "订单号")
     private String orderNo;
 
+    @Schema(description = "关键词（订单号 / 用户昵称 / 技师编号）")
+    private String keyword;
+
     @Schema(description = "会员 ID")
     private Long memberId;
 
@@ -37,6 +40,10 @@ public class OrderQueryDTO {
     @Min(value = 0) @Max(value = 9)
     @Schema(description = "订单状态：0-9")
     private Integer status;
+
+    @Min(value = 1) @Max(value = 2)
+    @Schema(description = "服务方式：1=上门服务 2=到店服务")
+    private Integer serviceMode;
 
     @Schema(description = "开始日期（yyyy-MM-dd）", example = "2026-01-01")
     private String startDate;

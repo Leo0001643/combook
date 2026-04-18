@@ -20,6 +20,7 @@ import { merchantApi } from '../../api/api'
 import MerchantCreateModal from '../../components/merchant/MerchantCreateModal'
 import PermGuard from '../../components/common/PermGuard'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import { useDict } from '../../hooks/useDict'
 
 const { Text } = Typography
 
@@ -42,16 +43,25 @@ interface Merchant {
   createTime: string
 }
 
-const AUDIT_MAP: Record<number, { label: string; color: string; bg: string }> = {
+const AUDIT_MAP_FB: Record<number, { label: string; color: string; bg: string }> = {
   0: { label: '待审核', color: '#fa8c16', bg: 'rgba(250,140,22,0.1)' },
   1: { label: '已通过', color: '#52c41a', bg: 'rgba(82,196,26,0.1)' },
   2: { label: '已拒绝', color: '#ff4d4f', bg: 'rgba(255,77,79,0.1)' },
 }
 
-const CITIES = ['金边', '暹粒', '西哈努克', '贡布', '白马']
+const CITIES = ['金边', '暹粒', '西哈努克', '贡布', '白马'] // kept as fallback until dict loads
 
 export default function MerchantListPage() {
   const { ref, height: tableBodyH } = useTableBodyHeight()
+  const { opts: cityOpts } = useDict('service_city')
+  const { items: auditItems } = useDict('technician_audit')
+  const AUDIT_MAP: Record<number, { label: string; color: string; bg: string }> =
+    auditItems.length > 0
+      ? Object.fromEntries(auditItems.map(i => {
+          const hex = ({ orange:'#fa8c16', green:'#52c41a', red:'#ff4d4f' }[i.remark ?? ''] ?? i.remark ?? '#94a3b8')
+          return [Number(i.dictValue), { label: i.labelZh, color: hex, bg: `${hex}18` }]
+        }))
+      : AUDIT_MAP_FB
   const [data, setData]               = useState<Merchant[]>([])
   const [loading, setLoading]         = useState(false)
   const [total, setTotal]             = useState(0)
@@ -99,9 +109,13 @@ export default function MerchantListPage() {
 
   const handleStatusToggle = async (r: Merchant) => {
     const next = r.status === 1 ? 0 : 1
-    await merchantApi.updateStatus(r.id, next)
-    message.success(next === 1 ? '已开启营业' : '已停业')
-    fetchData()
+    try {
+      await merchantApi.updateStatus(r.id, next)
+      message.success(next === 1 ? '已开启营业' : '已停业')
+      fetchData()
+    } catch {
+      // 拦截器处理
+    }
   }
 
   const handleAudit = (id: number, status: number) => {
@@ -114,19 +128,25 @@ export default function MerchantListPage() {
         ? { style: { background: '#52c41a', borderColor: '#52c41a' } }
         : { danger: true },
       async onOk() {
-        await merchantApi.audit(id, status)
-        message.success(status === 1 ? '审核已通过' : '已拒绝')
-        fetchData()
+        try {
+          await merchantApi.audit(id, status)
+          message.success(status === 1 ? '审核已通过' : '已拒绝')
+          fetchData()
+        } catch { /* interceptor handles */ }
       },
     })
   }
 
   const handleCommSubmit = async () => {
-    const { rate } = await commForm.validateFields()
-    await merchantApi.updateCommission(selected!.id, rate)
-    message.success('佣金比例已更新')
-    setCommModal(false)
-    fetchData()
+    try {
+      const { rate } = await commForm.validateFields()
+      await merchantApi.updateCommission(selected!.id, rate)
+      message.success('佣金比例已更新')
+      setCommModal(false)
+      fetchData()
+    } catch {
+      // 拦截器处理
+    }
   }
 
   const activeCount  = data.filter(m => m.status === 1).length
@@ -377,7 +397,7 @@ export default function MerchantListPage() {
           <Select
             placeholder={<Space size={4}><EnvironmentOutlined style={{ color: '#f59e0b', fontSize: 12 }} />所在城市</Space>} allowClear size="middle" style={{ width: 115 }}
             value={cityFilter} onChange={setCityFilter}
-            options={CITIES.map(c => ({ value: c, label: c }))}
+            options={cityOpts().length > 0 ? cityOpts() : CITIES.map(c => ({ value: c, label: c }))}
           />
           <Select
             placeholder={<Space size={4}><ShopOutlined style={{ color: '#10b981', fontSize: 12 }} />营业状态</Space>} allowClear size="middle" style={{ width: 115 }}

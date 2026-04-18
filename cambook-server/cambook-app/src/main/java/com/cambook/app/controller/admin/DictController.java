@@ -114,19 +114,21 @@ public class DictController {
     @Operation(summary = "新增字典数据")
     @PostMapping("/data")
     public Result<Void> addData(@RequestParam String dictType,
-                                @RequestParam String dictLabel,
+                                @RequestParam String labelZh,
                                 @RequestParam String dictValue,
+                                @RequestParam(required = false) String labelEn,
+                                @RequestParam(required = false) String labelVi,
+                                @RequestParam(required = false) String labelKm,
                                 @RequestParam(defaultValue = "0") Integer sort,
-                                @RequestParam(defaultValue = "0") Integer isDefault,
-                                @RequestParam(required = false) String cssClass,
                                 @RequestParam(required = false) String remark) {
         SysDictData d = new SysDictData();
         d.setDictType(dictType);
-        d.setDictLabel(dictLabel);
+        d.setLabelZh(labelZh);
         d.setDictValue(dictValue);
+        d.setLabelEn(labelEn);
+        d.setLabelVi(labelVi);
+        d.setLabelKm(labelKm);
         d.setSort(sort);
-        d.setIsDefault(isDefault);
-        d.setCssClass(cssClass);
         d.setRemark(remark);
         d.setStatus(1);
         dataMapper.insert(d);
@@ -137,20 +139,22 @@ public class DictController {
     @Operation(summary = "修改字典数据")
     @PutMapping("/data")
     public Result<Void> editData(@RequestParam Long id,
-                                 @RequestParam String dictLabel,
+                                 @RequestParam String labelZh,
                                  @RequestParam String dictValue,
+                                 @RequestParam(required = false) String labelEn,
+                                 @RequestParam(required = false) String labelVi,
+                                 @RequestParam(required = false) String labelKm,
                                  @RequestParam(defaultValue = "0") Integer sort,
-                                 @RequestParam(defaultValue = "0") Integer isDefault,
-                                 @RequestParam(required = false) String cssClass,
                                  @RequestParam(required = false) String remark,
                                  @RequestParam(required = false) Integer status) {
         SysDictData d = dataMapper.selectById(id);
         if (d == null) return Result.fail(400, "字典数据不存在");
-        d.setDictLabel(dictLabel);
+        d.setLabelZh(labelZh);
         d.setDictValue(dictValue);
+        d.setLabelEn(labelEn);
+        d.setLabelVi(labelVi);
+        d.setLabelKm(labelKm);
         d.setSort(sort);
-        d.setIsDefault(isDefault);
-        d.setCssClass(cssClass);
         d.setRemark(remark);
         if (status != null) d.setStatus(status);
         dataMapper.updateById(d);

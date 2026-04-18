@@ -125,7 +125,7 @@ const ReviewPage: React.FC = () => {
     },
     {
       title: col(<StarFilled style={{ color: '#f59e0b' }} />, '评分'), dataIndex: 'overallScore',
-      render: v => <Rate disabled defaultValue={v} style={{ fontSize: 14 }} />,
+      render: v => <Rate disabled value={v} style={{ fontSize: 14 }} />,
       sorter: (a, b) => a.overallScore - b.overallScore,
     },
     {

@@ -30,6 +30,8 @@ public class CbTechnician extends BaseEntity {
     private String nickname;
     private String avatar;
     private String photos;
+    /** 展示视频 URL */
+    private String videoUrl;
     private Integer gender;
     /** 国籍 */
     private String nationality;
@@ -59,8 +61,18 @@ public class CbTechnician extends BaseEntity {
     private Long merchantId;
     /** 技师分成比例(%) */
     private BigDecimal commissionRate;
+    /** 结算方式：0每笔 1日结 2周结 3月结 */
+    private Integer settlementMode;
+    /** 提成类型：0按比例 1固定金额 */
+    private Integer commissionType;
+    /** 按比例提成百分比(%) */
+    private BigDecimal commissionRatePct;
+    /** 固定金额结算币种 */
+    private String commissionCurrency;
     /** 技能标签 ID 列表（JSON 数组） */
     private String skillTags;
+    /** 可提供的服务类目 ID 列表（JSON 数组，存 cb_service_category.id） */
+    private String serviceItemIds;
     private Integer height;
     private BigDecimal weight;
     private Integer age;
@@ -78,6 +90,7 @@ public class CbTechnician extends BaseEntity {
     public String getNickname()           { return nickname; }
     public String getAvatar()             { return avatar; }
     public String getPhotos()             { return photos; }
+    public String getVideoUrl()           { return videoUrl; }
     public Integer getGender()            { return gender; }
     public String getNationality()        { return nationality; }
     public LocalDate getBirthday()        { return birthday; }
@@ -103,7 +116,12 @@ public class CbTechnician extends BaseEntity {
     public Integer getOnlineStatus()      { return onlineStatus; }
     public Long getMerchantId()           { return merchantId; }
     public BigDecimal getCommissionRate() { return commissionRate; }
+    public Integer getSettlementMode()    { return settlementMode; }
+    public Integer getCommissionType()    { return commissionType; }
+    public BigDecimal getCommissionRatePct() { return commissionRatePct; }
+    public String getCommissionCurrency() { return commissionCurrency; }
     public String getSkillTags()          { return skillTags; }
+    public String getServiceItemIds()     { return serviceItemIds; }
     public Integer getHeight()            { return height; }
     public BigDecimal getWeight()         { return weight; }
     public Integer getAge()               { return age; }
@@ -121,6 +139,7 @@ public class CbTechnician extends BaseEntity {
     public void setNickname(String nickname)                   { this.nickname = nickname; }
     public void setAvatar(String avatar)                       { this.avatar = avatar; }
     public void setPhotos(String photos)                       { this.photos = photos; }
+    public void setVideoUrl(String videoUrl)                   { this.videoUrl = videoUrl; }
     public void setGender(Integer gender)                      { this.gender = gender; }
     public void setNationality(String nationality)             { this.nationality = nationality; }
     public void setBirthday(LocalDate birthday)                { this.birthday = birthday; }
@@ -146,7 +165,12 @@ public class CbTechnician extends BaseEntity {
     public void setOnlineStatus(Integer onlineStatus)          { this.onlineStatus = onlineStatus; }
     public void setMerchantId(Long merchantId)                 { this.merchantId = merchantId; }
     public void setCommissionRate(BigDecimal commissionRate)   { this.commissionRate = commissionRate; }
+    public void setSettlementMode(Integer settlementMode)      { this.settlementMode = settlementMode; }
+    public void setCommissionType(Integer commissionType)      { this.commissionType = commissionType; }
+    public void setCommissionRatePct(BigDecimal v)             { this.commissionRatePct = v; }
+    public void setCommissionCurrency(String v)                { this.commissionCurrency = v; }
     public void setSkillTags(String skillTags)                 { this.skillTags = skillTags; }
+    public void setServiceItemIds(String serviceItemIds)       { this.serviceItemIds = serviceItemIds; }
     public void setHeight(Integer height)                      { this.height = height; }
     public void setWeight(BigDecimal weight)                   { this.weight = weight; }
     public void setAge(Integer age)                            { this.age = age; }

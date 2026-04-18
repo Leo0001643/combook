@@ -140,6 +140,7 @@ CREATE TABLE `sys_dict` (
     `label_ko`    VARCHAR(200)                                 COMMENT '韩文标签',
     `sort`        INT          NOT NULL DEFAULT 0              COMMENT '排序权重，值越小越靠前',
     `status`      TINYINT      NOT NULL DEFAULT 1              COMMENT '状态：1=启用 0=停用',
+    `remark`      VARCHAR(200)                                 COMMENT '附加信息：Ant Design Tag color / 品牌色 hex / 国旗 emoji 等',
     `create_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
     PRIMARY KEY (`id`),

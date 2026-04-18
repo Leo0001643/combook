@@ -2,6 +2,7 @@ package com.cambook.app.service.admin;
 
 import com.cambook.app.domain.dto.MemberQueryDTO;
 import com.cambook.app.domain.dto.MemberStatusDTO;
+import com.cambook.app.domain.dto.MemberUpdateDTO;
 import com.cambook.app.domain.vo.MemberVO;
 import com.cambook.common.result.PageResult;
 
@@ -15,6 +16,8 @@ public interface IAdminMemberService {
     PageResult<MemberVO> pageList(MemberQueryDTO query);
 
     MemberVO getDetail(Long id);
+
+    void update(MemberUpdateDTO dto);
 
     void updateStatus(Long id, MemberStatusDTO dto);
 }

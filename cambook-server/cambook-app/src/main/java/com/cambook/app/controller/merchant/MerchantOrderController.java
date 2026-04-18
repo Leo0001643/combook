@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 /**
  * 商户端 - 订单管理（薄包装层）
  *
@@ -42,8 +44,37 @@ public class MerchantOrderController {
     @GetMapping("/{id}")
     public Result<OrderVO> detail(@PathVariable Long id) {
         OrderVO vo = orderService.getDetail(id);
-        // 行级安全：校验订单归属当前商户，防止 IDOR 攻击
         MerchantOwnershipGuard.assertOwnership(vo.getMerchantId(), "订单", id);
         return Result.success(vo);
+    }
+
+    @Operation(summary = "取消订单")
+    @PatchMapping("/{id}/cancel")
+    public Result<Void> cancel(@PathVariable Long id,
+                               @RequestParam(defaultValue = "前台取消") String reason) {
+        OrderVO vo = orderService.getDetail(id);
+        MerchantOwnershipGuard.assertOwnership(vo.getMerchantId(), "订单", id);
+        orderService.cancel(id, reason);
+        return Result.success();
+    }
+
+    @Operation(summary = "结算订单（组合支付）")
+    @PostMapping("/{id}/settle")
+    public Result<Void> settle(@PathVariable Long id,
+                               @RequestParam BigDecimal paidAmount,
+                               @RequestParam(required = false) String payRecords) {
+        OrderVO vo = orderService.getDetail(id);
+        MerchantOwnershipGuard.assertOwnership(vo.getMerchantId(), "订单", id);
+        orderService.settle(id, paidAmount, payRecords);
+        return Result.success();
+    }
+
+    @Operation(summary = "删除订单")
+    @DeleteMapping("/{id}")
+    public Result<Void> delete(@PathVariable Long id) {
+        OrderVO vo = orderService.getDetail(id);
+        MerchantOwnershipGuard.assertOwnership(vo.getMerchantId(), "订单", id);
+        orderService.delete(id);
+        return Result.success();
     }
 }

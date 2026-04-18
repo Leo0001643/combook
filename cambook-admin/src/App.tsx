@@ -45,6 +45,17 @@ const MerchantRolePage     = lazy(() => import('./pages/merchant/RolePage'))
 const MerchantDeptPage     = lazy(() => import('./pages/merchant/DeptPage'))
 const MerchantPositionPage = lazy(() => import('./pages/merchant/PositionPage'))
 const AnnouncePage         = lazy(() => import('./pages/merchant/AnnouncePage'))
+// ── 新增功能模块 ──────────────────────────────────────────────────────────────
+const WalkinSessionPage    = lazy(() => import('./pages/walkin/WalkinSessionPage'))
+const VehicleDispatchPage  = lazy(() => import('./pages/vehicle/VehicleDispatchPage'))
+const FinanceOverviewPage  = lazy(() => import('./pages/finance/FinanceOverviewPage'))
+const ExpenseManagePage    = lazy(() => import('./pages/finance/ExpenseManagePage'))
+const SalaryManagePage     = lazy(() => import('./pages/finance/SalaryManagePage'))
+const IncomeRecordPage     = lazy(() => import('./pages/finance/IncomeRecordPage'))
+const CurrencyManagePage          = lazy(() => import('./pages/system/CurrencyManagePage'))
+const MerchantCurrencyPage        = lazy(() => import('./pages/settings/MerchantCurrencyPage'))
+const TechnicianSettlementPage    = lazy(() => import('./pages/finance/TechnicianSettlementPage'))
+const OrderHistoryPage            = lazy(() => import('./pages/order/OrderHistoryPage'))
 // ── Loading ──────────────────────────────────────────────────────────────────
 const LoadingFallback = () => (
   <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', gap: 16 }}>
@@ -140,8 +151,13 @@ export default function App() {
             <Route path="technicians/audit"      element={<TechnicianAuditPage />} />
             <Route path="merchants"              element={<MerchantListPage />} />
             <Route path="orders"                 element={<OrderListPage />} />
+            <Route path="orders/history"         element={<OrderHistoryPage />} />
             <Route path="orders/:orderId"        element={<OrderDetailPage />} />
             <Route path="vehicles"               element={<VehicleListPage />} />
+            <Route path="vehicles/dispatch"      element={<VehicleDispatchPage />} />
+
+            {/* 门店订单 */}
+            <Route path="walkin"                 element={<WalkinSessionPage />} />
 
             <Route path="operation/category"     element={<CategoryPage />} />
             <Route path="operation/banner"       element={<BannerPage />} />
@@ -150,6 +166,11 @@ export default function App() {
 
             <Route path="finance"                element={<FinancePage />} />
             <Route path="finance/withdraw"       element={<WithdrawAuditPage />} />
+            <Route path="finance/overview"       element={<FinanceOverviewPage />} />
+            <Route path="finance/income"         element={<IncomeRecordPage />} />
+            <Route path="finance/expense"        element={<ExpenseManagePage />} />
+            <Route path="finance/salary"         element={<SalaryManagePage />} />
+            <Route path="finance/settlement"     element={<TechnicianSettlementPage />} />
 
             <Route path="admin/staff"            element={<StaffListPage />} />
             <Route path="admin/positions"        element={<PositionListPage />} />
@@ -169,6 +190,9 @@ export default function App() {
             <Route path="monitor/server"         element={<ServerMonitorPage />} />
             <Route path="monitor/cache"          element={<CacheMonitorPage />} />
 
+            {/* 币种管理 */}
+            <Route path="system/currency"        element={<CurrencyManagePage />} />
+
             <Route path="system/banner"          element={<Navigate to="/operation/banner"   replace />} />
             <Route path="system/category"        element={<Navigate to="/operation/category" replace />} />
           </Route>
@@ -179,10 +203,14 @@ export default function App() {
             {/* 共用管理员页面 — usePortalScope Hook 自动切换数据来源 */}
             <Route path="dashboard"                element={<DashboardPage />} />
             <Route path="orders"                   element={<OrderListPage />} />
+            <Route path="orders/history"           element={<OrderHistoryPage />} />
             <Route path="technicians"              element={<TechnicianListPage />} />
             <Route path="members"                  element={<UserListPage />} />
             <Route path="vehicles"                 element={<VehicleListPage />} />
+            <Route path="vehicles/dispatch"        element={<VehicleDispatchPage />} />
             <Route path="coupons"                  element={<CouponListPage />} />
+            {/* 门店订单 */}
+            <Route path="walkin"                   element={<WalkinSessionPage />} />
             {/* 运营管理 */}
             <Route path="operation/category"       element={<CategoryPage />} />
             <Route path="operation/banner"         element={<BannerPage />} />
@@ -191,6 +219,11 @@ export default function App() {
             {/* 财务管理 */}
             <Route path="finance"                  element={<FinancePage />} />
             <Route path="finance/withdraw"         element={<WithdrawAuditPage />} />
+            <Route path="finance/overview"         element={<FinanceOverviewPage />} />
+            <Route path="finance/income"           element={<IncomeRecordPage />} />
+            <Route path="finance/expense"          element={<ExpenseManagePage />} />
+            <Route path="finance/salary"           element={<SalaryManagePage />} />
+            <Route path="finance/settlement"       element={<TechnicianSettlementPage />} />
             {/* 商户专属功能页 */}
             <Route path="profile"                  element={<MerchantProfilePage />} />
             <Route path="perm/staff"               element={<MerchantStaffPage />} />
@@ -200,6 +233,8 @@ export default function App() {
             {/* 公告管理 */}
             <Route path="announce/internal"        element={<AnnouncePage type={1} />} />
             <Route path="announce/customer"        element={<AnnouncePage type={2} />} />
+            {/* 结算币种配置 */}
+            <Route path="settings/currency"        element={<MerchantCurrencyPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

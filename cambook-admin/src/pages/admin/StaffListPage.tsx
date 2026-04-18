@@ -57,8 +57,8 @@ export default function StaffListPage() {
     setLoading(true)
     try {
       const res = await staffApi.page({ current, size: pageSize, keyword, status, positionId })
-      const page = res.data?.data ?? { records: [], total: 0 }
-      setData(page.records ?? [])
+      const page = res.data?.data ?? { list: [], total: 0 }
+      setData(page.list ?? [])
       setTotal(page.total ?? 0)
     } finally { setLoading(false) }
   }, [current, keyword, status, positionId, pageSize])

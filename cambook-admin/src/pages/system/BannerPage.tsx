@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Row, Col, Card, Table, Input, Button, Space, Typography, Tag, Modal,
   Form, InputNumber, Switch, message, Popconfirm, Tabs, Tooltip,
@@ -21,12 +21,6 @@ import PagePagination from '../../components/common/PagePagination'
 const { Text } = Typography
 
 const PAGE_GRADIENT = 'linear-gradient(135deg,#475569,#64748b)'
-
-const MOCK_BANNERS: BannerVO[] = [
-  { id: 1, title: '限时特惠 · 首单立减 $20', imageUrl: '', linkUrl: '/promotion/first', sort: 1, status: 1, createdAt: '2026-04-01' },
-  { id: 2, title: '精油 SPA 新品上线', imageUrl: '', linkUrl: '/service/spa', sort: 2, status: 1, createdAt: '2026-04-05' },
-  { id: 3, title: '邀请好友赚佣金', imageUrl: '', linkUrl: '/invite', sort: 3, status: 0, createdAt: '2026-04-08' },
-]
 
 const GRADIENT_PRESETS = [
   { label: '暖橙', value: 'linear-gradient(135deg,#F5A623,#F97316)' },
@@ -58,8 +52,8 @@ function BannerPreview({ title, gradient }: { title: string; gradient: string })
 
 export default function BannerPage() {
   const { ref, height: tableBodyH } = useTableBodyHeight()
-  const { bannerAdd, bannerEdit, bannerDelete } = usePortalScope()
-  const [data, setData]           = useState<BannerVO[]>(MOCK_BANNERS)
+  const { bannerList, bannerAdd, bannerEdit, bannerDelete } = usePortalScope()
+  const [data, setData]           = useState<BannerVO[]>([])
   const [loading, setLoading]     = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing]     = useState<BannerVO | null>(null)
@@ -68,9 +62,20 @@ export default function BannerPage() {
 
   const fetchBanners = async () => {
     setLoading(true)
-    // TODO: replace with real list API when backend provides GET /admin/banner/list
-    setTimeout(() => setLoading(false), 300)
+    try {
+      const res = await bannerList()
+      const d = res.data?.data
+      const list = d?.list ?? d?.records ?? (Array.isArray(d) ? d : [])
+      setData(list)
+    } catch {
+      // 拦截器统一处理错误
+    } finally {
+      setLoading(false)
+    }
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchBanners() }, [])
 
   const openAdd = () => {
     setEditing(null)
@@ -89,8 +94,8 @@ export default function BannerPage() {
   const handleDelete = async (id: number) => {
     try {
       await bannerDelete(id)
-      setData(prev => prev.filter(b => b.id !== id))
       message.success('删除成功')
+      fetchBanners()
     } catch {
       // 拦截器处理
     }
@@ -101,14 +106,13 @@ export default function BannerPage() {
     try {
       if (editing) {
         await bannerEdit({ ...payload, id: editing.id })
-        setData(prev => prev.map(b => b.id === editing.id ? { ...b, ...payload } : b))
         message.success('修改成功')
       } else {
         await bannerAdd(payload)
-        setData(prev => [...prev, { ...payload, id: Date.now(), createdAt: dayjs().format('YYYY-MM-DD') }])
         message.success('新增成功')
       }
       setModalOpen(false)
+      fetchBanners()
     } catch {
       // 拦截器处理
     }
@@ -196,7 +200,8 @@ export default function BannerPage() {
       label: <Space><PictureOutlined />Banner 管理</Space>,
       children: (
         <div>
-          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <Button icon={<ReloadOutlined />} onClick={fetchBanners} loading={loading}>刷新</Button>
             <PermGuard code="banner:add">
               <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}
                 style={{ borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none' }}>

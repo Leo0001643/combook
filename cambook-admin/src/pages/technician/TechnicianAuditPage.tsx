@@ -18,11 +18,17 @@ import PermGuard from '../../components/common/PermGuard'
 import PagePagination from '../../components/common/PagePagination'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import { useDict } from '../../hooks/useDict'
 
 const { Text, Paragraph } = Typography
 
 export default function TechnicianAuditPage() {
   const { ref, height: tableBodyH } = useTableBodyHeight()
+  const { items: nationalityItems } = useDict('nationality')
+  const nationalityFlagMap: Record<string, string> =
+    nationalityItems.length > 0
+      ? Object.fromEntries(nationalityItems.filter(i => i.remark).map(i => [i.labelZh, i.remark!]))
+      : { '中国': '🇨🇳', '柬埔寨': '🇰🇭', '越南': '🇻🇳', '泰国': '🇹🇭', '马来西亚': '🇲🇾', '新加坡': '🇸🇬', '缅甸': '🇲🇲', '老挝': '🇱🇦', '菲律宾': '🇵🇭', '韩国': '🇰🇷', '日本': '🇯🇵' }
   const [loading, setLoading]         = useState(false)
   const [data, setData]               = useState<TechnicianVO[]>([])
   const [total, setTotal]             = useState(0)
@@ -162,12 +168,8 @@ export default function TechnicianAuditPage() {
       width: 90,
       render: v => {
         if (!v) return <Text type="secondary">—</Text>
-        const flagMap: Record<string, string> = {
-          '中国': '🇨🇳', '柬埔寨': '🇰🇭', '越南': '🇻🇳', '泰国': '🇹🇭',
-          '马来西亚': '🇲🇾', '新加坡': '🇸🇬', '缅甸': '🇲🇲', '老挝': '🇱🇦',
-          '菲律宾': '🇵🇭', '韩国': '🇰🇷', '日本': '🇯🇵',
-        }
-        return <Tag color="geekblue">{flagMap[v] ? `${flagMap[v]} ` : ''}{v}</Tag>
+        const flag = nationalityFlagMap[v] ?? ''
+        return <Tag color="geekblue">{flag ? `${flag} ` : ''}{v}</Tag>
       },
     },
     {

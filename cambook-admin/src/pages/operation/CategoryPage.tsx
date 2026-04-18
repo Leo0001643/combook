@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from 'react'
 import {
   Table, Button, Space, Tag, Typography, message,
-  Modal, Form, Input, InputNumber, Select, Badge, Row, Col, TreeSelect, Popconfirm, Divider, Tooltip,
+  Modal, Form, Input, InputNumber, Select, Badge, Row, Col, TreeSelect, Popconfirm, Tooltip,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
   AppstoreOutlined, PlusOutlined, EditOutlined, DeleteOutlined,
   CheckCircleOutlined, StopOutlined, ReloadOutlined, SearchOutlined,
   SortAscendingOutlined, ApartmentOutlined, SafetyCertificateOutlined, CalendarOutlined, SettingOutlined,
+  DollarOutlined,
 } from '@ant-design/icons'
 import { usePortalScope } from '../../hooks/usePortalScope'
 import PermGuard from '../../components/common/PermGuard'
@@ -27,6 +28,9 @@ interface CategoryVO {
   nameEn?: string
   nameKm?: string
   icon?: string
+  price?: number
+  duration?: number
+  isSpecial?: number   // 0=常规 1=特殊
   sort: number
   status: number
   createTime?: string
@@ -66,6 +70,8 @@ export default function CategoryPage() {
   const [pageSize, setPageSize] = useState(20)
   const [form] = Form.useForm()
 
+  const [expandedRowKeys, setExpandedKeys] = useState<React.Key[]>([])
+
   useEffect(() => { loadData() }, [])
 
   const loadData = async () => {
@@ -74,7 +80,10 @@ export default function CategoryPage() {
       const res = await categoryList()
       const list: CategoryVO[] = res.data?.data ?? []
       setFlat(list)
-      setData(buildTree(list))
+      const tree = buildTree(list)
+      setData(tree)
+      // 保持所有节点展开（包含数据刷新后）
+      setExpandedKeys(list.map(c => c.id))
     } catch {
       message.error('加载失败')
     } finally {
@@ -85,20 +94,23 @@ export default function CategoryPage() {
   const openAdd = (parentId = 0) => {
     setEditing(null)
     form.resetFields()
-    form.setFieldsValue({ parentId, status: 1, sort: 0 })
+    form.setFieldsValue({ parentId, status: 1, sort: 0, isSpecial: 0 })
     setModalOpen(true)
   }
 
   const openEdit = (r: CategoryVO) => {
     setEditing(r)
     form.setFieldsValue({
-      parentId: r.parentId,
-      nameZh: r.nameZh,
-      nameEn: r.nameEn,
-      nameKm: r.nameKm,
-      icon: r.icon,
-      sort: r.sort,
-      status: r.status,
+      parentId:  r.parentId,
+      nameZh:    r.nameZh,
+      nameEn:    r.nameEn,
+      nameKm:    r.nameKm,
+      icon:      r.icon,
+      price:     r.price,
+      duration:  r.duration,
+      isSpecial: r.isSpecial ?? 0,
+      sort:      r.sort,
+      status:    r.status,
     })
     setModalOpen(true)
   }
@@ -161,43 +173,97 @@ export default function CategoryPage() {
   const columns: ColumnsType<CategoryVO> = [
     {
       title: col(<SortAscendingOutlined style={{ color: '#0891b2' }} />, '排序'), dataIndex: 'sort',
+      align: 'center',
       render: v => (
         <div style={{
           width: 28, height: 28, borderRadius: 8,
           background: 'linear-gradient(135deg,#43e97b,#38f9d7)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto',
           color: '#fff', fontWeight: 700, fontSize: 12,
         }}>{v}</div>
       ),
     },
     {
       title: col(<AppstoreOutlined style={{ color: '#0891b2' }} />, '分类名称', 'left'), key: 'name',
-      render: (_, r) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 10, flexShrink: 0,
-            background: r.status === 1 ? 'linear-gradient(135deg,#43e97b,#38f9d7)' : '#f5f5f5',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <AppstoreOutlined style={{ color: r.status === 1 ? '#fff' : '#ccc', fontSize: 16 }} />
+      render: (_, r) => {
+        const isLeaf = !r.children || r.children.length === 0
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+              background: r.status === 1 ? 'linear-gradient(135deg,#43e97b,#38f9d7)' : '#f5f5f5',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 20,
+            }}>
+              {r.icon || <AppstoreOutlined style={{ color: r.status === 1 ? '#0891b2' : '#ccc', fontSize: 16 }} />}
+            </div>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>
+                {r.nameZh}
+                {isLeaf && r.isSpecial === 1 && (
+                  <Tag color="volcano" style={{ marginLeft: 6, fontSize: 10, padding: '0 5px', lineHeight: '18px', borderRadius: 10 }}>特殊项目</Tag>
+                )}
+                {isLeaf && (r.isSpecial ?? 0) === 0 && (
+                  <Tag color="cyan" style={{ marginLeft: 6, fontSize: 10, padding: '0 5px', lineHeight: '18px', borderRadius: 10 }}>常规项目</Tag>
+                )}
+              </div>
+              {r.nameEn && <Text type="secondary" style={{ fontSize: 12 }}>{r.nameEn}</Text>}
+            </div>
           </div>
-          <div>
-            <div style={{ fontWeight: 600, fontSize: 14 }}>{r.nameZh}</div>
-            {r.nameEn && <Text type="secondary" style={{ fontSize: 12 }}>{r.nameEn}</Text>}
-          </div>
-        </div>
-      ),
+        )
+      },
     },
     {
       title: col(<ApartmentOutlined style={{ color: '#0891b2' }} />, '层级'), dataIndex: 'parentId',
-      render: v => <Tag color={v === 0 ? 'geekblue' : 'cyan'}>{v === 0 ? '一级' : '二级'}</Tag>,
+      align: 'center',
+      render: (v, r) => {
+        const isLeaf = !r.children || r.children.length === 0
+        return (
+          <Space size={4}>
+            <Tag color={v === 0 ? 'geekblue' : 'cyan'}>{v === 0 ? '一级' : '二级'}</Tag>
+            {isLeaf && <Tag color="purple" style={{ fontSize: 10, padding: '0 4px' }}>服务项</Tag>}
+          </Space>
+        )
+      },
+    },
+    {
+      title: col(<span style={{ fontSize: 13 }}>⏱️</span>, '时长'), dataIndex: 'duration',
+      align: 'center',
+      render: (v, r) => {
+        const isLeaf = !r.children || r.children.length === 0
+        if (!isLeaf) return <Text type="secondary">—</Text>
+        return v
+          ? <span style={{ fontWeight: 600, color: '#6366f1', fontSize: 13 }}>{v} min</span>
+          : <Text type="secondary">未设置</Text>
+      },
+    },
+    {
+      title: col(<DollarOutlined style={{ color: '#0891b2' }} />, '指导价'), dataIndex: 'price',
+      align: 'center',
+      render: (v, r) => {
+        const isLeaf = !r.children || r.children.length === 0
+        if (!isLeaf) return <Text type="secondary">—</Text>
+        return v != null
+          ? (
+            <div>
+              <span style={{ fontWeight: 700, color: '#6366f1', fontSize: 14 }}>${Number(v).toFixed(2)}</span>
+              {r.isSpecial === 1 && (
+                <div style={{ fontSize: 10, color: '#f97316', marginTop: 1 }}>技师可覆盖</div>
+              )}
+            </div>
+          )
+          : <Text type="secondary">未设置</Text>
+      },
     },
     {
       title: col(<SafetyCertificateOutlined style={{ color: '#0891b2' }} />, '状态'), dataIndex: 'status',
+      align: 'center',
       render: s => <Badge status={s === 1 ? 'success' : 'error'} text={s === 1 ? '启用' : '停用'} />,
     },
     {
       title: col(<CalendarOutlined style={{ color: '#0891b2' }} />, '创建时间'), dataIndex: 'createTime',
+      align: 'center',
       render: v => v?.slice(0, 10) ?? '—',
     },
     {
@@ -287,8 +353,8 @@ export default function CategoryPage() {
           components={styledTableComponents}
           scroll={{ x: 'max-content', y: tableBodyH }}
           expandable={keyword ? undefined : {
-            defaultExpandAllRows: true,
-            expandRowByClick: false,
+            expandedRowKeys,
+            onExpandedRowsChange: keys => setExpandedKeys(keys as React.Key[]),
           }}
         />
         {keyword ? (
@@ -357,7 +423,7 @@ export default function CategoryPage() {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="icon" label="图标">
+              <Form.Item name="icon" label="图标（emoji 或 URL）">
                 <Input placeholder="如 💆 或图标URL" />
               </Form.Item>
             </Col>
@@ -383,6 +449,42 @@ export default function CategoryPage() {
                   style={{ width: '100%' }}
                 />
               </Form.Item>
+            </Col>
+            {/* 子类目特有字段 */}
+            <Col span={24}>
+              <div style={{
+                padding: '10px 14px 2px', borderRadius: 10, marginBottom: 4,
+                background: 'linear-gradient(135deg,#f0f9ff,#e0f2fe)',
+                border: '1px solid #bae6fd',
+              }}>
+                <div style={{ fontSize: 12, color: '#0891b2', fontWeight: 700, marginBottom: 10 }}>
+                  💡 以下字段适用于最终服务项（无子类目的叶子节点），有子类目的分类不需填写
+                </div>
+                <Row gutter={16}>
+                  <Col span={8}>
+                    <Form.Item name="price" label="服务指导价（$）" tooltip="系统全局基础价格，常规项目使用此价格，特殊项目技师可覆盖">
+                      <InputNumber
+                        min={0} precision={2} style={{ width: '100%' }}
+                        prefix={<DollarOutlined style={{ color: '#6366f1' }} />}
+                        placeholder="0.00"
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item name="duration" label="服务时长（分钟）" tooltip="标准服务时长，用于进度条计算">
+                      <InputNumber min={1} style={{ width: '100%' }} placeholder="60" suffix="min" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item name="isSpecial" label="项目类型" tooltip="常规项目：价格统一由系统配置；特殊项目：技师可自行设置专属价格">
+                      <Select>
+                        <Option value={0}><Space><span style={{ fontSize: 14 }}>🟢</span> 常规项目</Space></Option>
+                        <Option value={1}><Space><span style={{ fontSize: 14 }}>⭐</span> 特殊项目</Space></Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </div>
             </Col>
           </Row>
         </Form>

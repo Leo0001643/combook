@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { usePortalScope } from '../../hooks/usePortalScope'
+import { useDict } from '../../hooks/useDict'
 import { merchantApi, uploadApi } from '../../api/api'
 import RichTextInput from '../../components/common/RichTextInput'
 import PagePagination from '../../components/common/PagePagination'
@@ -34,15 +35,32 @@ interface VehicleVO {
   brand: string
   model: string
   color: string
-  seats: number
-  inspectionCode: string
-  inspectionExpiry: string
-  photo: string
+  seats?: number
+  inspectionCode?: string
+  inspectionExpiry?: string
+  photo?: string
   photos?: string
   status: number
-  remark: string
+  remark?: string
   createTime: string
 }
+
+/** 颜色兜底列表（字典未加载时使用） */
+const COLOR_FALLBACK: { label: string; hex: string }[] = [
+  { label: '珍珠白', hex: '#f0ede8' },
+  { label: '深空黑', hex: '#1a1a1a' },
+  { label: '银灰色', hex: '#c0c0c0' },
+  { label: '磁性灰', hex: '#757575' },
+  { label: '魂动红', hex: '#c1121f' },
+  { label: '星云蓝', hex: '#2563eb' },
+  { label: '橄榄绿', hex: '#4d7c0f' },
+  { label: '水晶黑', hex: '#0f172a' },
+  { label: '晶石白', hex: '#f8fafc' },
+  { label: '岩石灰', hex: '#6b7280' },
+  { label: '锆沙银', hex: '#94a3b8' },
+  { label: '极地白', hex: '#f1f5f9' },
+  { label: '香槟金', hex: '#c5a028' },
+]
 
 function parsePhotos(photos: string | undefined | null): string[] {
   if (!photos) return []
@@ -53,23 +71,34 @@ function parsePhotos(photos: string | undefined | null): string[] {
   } catch { return [] }
 }
 
-const STATUS_CFG: Record<number, { label: string; color: string; icon: React.ReactNode; bg: string }> = {
+const STATUS_CFG_FALLBACK: Record<number, { label: string; color: string; icon: React.ReactNode; bg: string }> = {
   0: { label: '空闲中', color: '#10b981', icon: <CarOutlined />, bg: '#ecfdf5' },
   1: { label: '使用中', color: '#3b82f6', icon: <CarFilled />, bg: '#eff6ff' },
   2: { label: '维修中', color: '#f59e0b', icon: <ToolOutlined />, bg: '#fffbeb' },
 }
+const VEHICLE_STATUS_ICONS: React.ReactNode[] = [<CarOutlined />, <CarFilled />, <ToolOutlined />]
 
-const BRAND_COLORS: Record<string, string> = {
-  Toyota: '#eb0a1e', Honda: '#cc0000', Mazda: '#c00000',
-  Mitsubishi: '#e60012', Hyundai: '#002c5f', Kia: '#05141f',
-  Lexus: '#1a1a1a', default: '#667eea',
-}
 
 const PAGE_GRADIENT = 'linear-gradient(135deg,#10b981,#059669)'
 
 export default function VehicleListPage() {
   const { ref, height: tableBodyH } = useTableBodyHeight()
   const { isMerchant, vehicleList, vehicleAdd, vehicleEdit, vehicleDelete, vehicleStatus } = usePortalScope()
+  const { items: brandItems } = useDict('vehicle_brand')
+  const { items: colorItems } = useDict('vehicle_color')
+  const { items: vsItems }    = useDict('vehicle_status')
+
+  /** 根据状态码获取 label/color/bg，优先字典，兜底静态配置 */
+  function statusCfg(v: number) {
+    const item = vsItems.find(i => i.dictValue === String(v))
+    if (item) {
+      const color = item.remark ?? '#94a3b8'
+      const antColors: Record<string, string> = { green: '#10b981', blue: '#3b82f6', orange: '#f59e0b', red: '#ef4444' }
+      const hex = color.startsWith('#') ? color : (antColors[color] ?? '#94a3b8')
+      return { label: item.labelZh, color: hex, icon: VEHICLE_STATUS_ICONS[v] ?? <CarOutlined />, bg: `${hex}18` }
+    }
+    return STATUS_CFG_FALLBACK[v] ?? { label: String(v), color: '#94a3b8', icon: <CarOutlined />, bg: '#f5f5f5' }
+  }
   const [data, setData]               = useState<VehicleVO[]>([])
   const [total, setTotal]             = useState(0)
   const [loading, setLoading]         = useState(false)
@@ -92,7 +121,7 @@ export default function VehicleListPage() {
     if (!isMerchant) {
       merchantApi.list({ page: 1, size: 200 }).then(res => {
         const list = res.data?.data?.list ?? res.data?.data?.records ?? []
-        setMerchantOpts(list.map((m: any) => ({ value: m.id, label: m.name })))
+        setMerchantOpts(list.map((m: any) => ({ value: m.id, label: m.merchantNameZh || m.merchantNameEn || `商户#${m.id}` })))
       }).catch(() => {})
     }
   }, [isMerchant])
@@ -184,7 +213,7 @@ export default function VehicleListPage() {
 
   const handleStatus = async (r: VehicleVO, next: number) => {
     await vehicleStatus(r.id, next)
-    message.success(`已切换为「${STATUS_CFG[next]?.label}」`)
+    message.success(`已切换为「${statusCfg(next)?.label}」`)
     loadData()
   }
 
@@ -242,10 +271,10 @@ export default function VehicleListPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
           <div style={{
             width: 36, height: 36, borderRadius: 8, flexShrink: 0,
-            background: `${BRAND_COLORS[r.brand] ?? BRAND_COLORS.default}18`,
+            background: `${brandItems.find(b => b.dictValue === r.brand)?.remark ?? '#667eea'}18`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Text style={{ color: BRAND_COLORS[r.brand] ?? BRAND_COLORS.default, fontWeight: 700, fontSize: 12 }}>
+            <Text style={{ color: brandItems.find(b => b.dictValue === r.brand)?.remark ?? '#667eea', fontWeight: 700, fontSize: 12 }}>
               {r.brand?.slice(0, 2)}
             </Text>
           </div>
@@ -303,7 +332,9 @@ export default function VehicleListPage() {
           <Space size={6}>
             <div style={{
               width: 14, height: 14, borderRadius: '50%',
-              background: COLOR_MAP[r.color] ?? '#ccc',
+              background: colorItems.find(c => c.labelZh === r.color)?.remark
+                ?? COLOR_FALLBACK.find(c => c.label === r.color)?.hex
+                ?? '#ccc',
               border: '2px solid #f0f0f0', flexShrink: 0,
             }} />
             <Text style={{ fontSize: 12 }}>{r.color || '—'}</Text>
@@ -341,11 +372,13 @@ export default function VehicleListPage() {
       dataIndex: 'status',
       width: 120,
       render: (v: number, record: VehicleVO) => {
-        const cfg = STATUS_CFG[v]
-        if (!cfg) return null
-        const menuItems: MenuProps['items'] = Object.entries(STATUS_CFG).map(([k, c]) => ({
-          key: k,
-          disabled: Number(k) === v,
+        const cfg = statusCfg(v)
+        const allStatuses = vsItems.length > 0
+          ? vsItems.map(i => ({ v: Number(i.dictValue), cfg: statusCfg(Number(i.dictValue)) }))
+          : Object.entries(STATUS_CFG_FALLBACK).map(([k, c]) => ({ v: Number(k), cfg: c }))
+        const menuItems: MenuProps['items'] = allStatuses.map(({ v: k, cfg: c }) => ({
+          key: String(k),
+          disabled: k === v,
           label: (
             <Space size={8}>
               <span style={{ color: c.color }}>{c.icon}</span>
@@ -506,9 +539,9 @@ export default function VehicleListPage() {
             value={status}
             onChange={v => { setStatus(v); setCurrent(1) }}
           >
-            {Object.entries(STATUS_CFG).map(([k, v]) => (
+            {(vsItems.length > 0 ? vsItems.map(i => ({ k: i.dictValue, cfg: statusCfg(Number(i.dictValue)) })) : Object.entries(STATUS_CFG_FALLBACK).map(([k, c]) => ({ k, cfg: c }))).map(({ k, cfg }) => (
               <Option key={k} value={Number(k)}>
-                <Space><span style={{ color: v.color }}>{v.icon}</span>{v.label}</Space>
+                <Space><span style={{ color: cfg.color }}>{cfg.icon}</span>{cfg.label}</Space>
               </Option>
             ))}
           </Select>
@@ -622,11 +655,10 @@ export default function VehicleListPage() {
             </Col>
             <Col span={8}>
               <Form.Item name="brand" label="品牌" rules={[{ required: true, message: '请输入品牌' }]}>
-                <Select placeholder="选择或输入品牌" showSearch allowClear>
-                  {['Toyota', 'Honda', 'Mazda', 'Mitsubishi', 'Hyundai', 'Kia', 'Lexus', '其他'].map(b => (
-                    <Option key={b} value={b}>{b}</Option>
-                  ))}
-                </Select>
+                <Select placeholder="选择或输入品牌" showSearch allowClear
+                  options={brandItems.length > 0
+                    ? brandItems.filter(b => b.status === 1).map(b => ({ value: b.dictValue, label: b.labelZh }))
+                    : ['Toyota','Honda','Hyundai','Kia','Lexus','BMW','Mercedes','Mazda','Nissan','Audi','Ford','Suzuki','Other'].map(v => ({ value: v, label: v }))} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -636,16 +668,24 @@ export default function VehicleListPage() {
             </Col>
             <Col span={8}>
               <Form.Item name="color" label="车身颜色">
-                <Select placeholder="选择颜色" allowClear>
-                  {['珍珠白', '深空黑', '银灰色', '磁性灰', '魂动红', '星云蓝', '橄榄绿', '水晶黑', '晶石白'].map(c => (
-                    <Option key={c} value={c}>
+                <Select placeholder="选择颜色" allowClear
+                  optionRender={option => {
+                    const hex = colorItems.find(c => c.labelZh === option.label)?.remark
+                      ?? COLOR_FALLBACK.find(c => c.label === option.label)?.hex
+                      ?? '#ccc'
+                    return (
                       <Space>
-                        <div style={{ width: 12, height: 12, borderRadius: '50%', background: COLOR_MAP[c] ?? '#ccc', border: '1px solid #eee' }} />
-                        {c}
+                        <div style={{ width: 12, height: 12, borderRadius: '50%', background: hex, border: '1px solid #eee' }} />
+                        {option.label}
                       </Space>
-                    </Option>
-                  ))}
-                </Select>
+                    )
+                  }}
+                  options={
+                    colorItems.length > 0
+                      ? colorItems.filter(c => c.status === 1).map(c => ({ value: c.labelZh, label: c.labelZh }))
+                      : COLOR_FALLBACK.map(c => ({ value: c.label, label: c.label }))
+                  }
+                />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -658,9 +698,9 @@ export default function VehicleListPage() {
             <Col span={8}>
               <Form.Item name="status" label="车辆状态">
                 <Select>
-                  {Object.entries(STATUS_CFG).map(([k, v]) => (
+                  {(vsItems.length > 0 ? vsItems.map(i => ({ k: i.dictValue, cfg: statusCfg(Number(i.dictValue)) })) : Object.entries(STATUS_CFG_FALLBACK).map(([k, c]) => ({ k, cfg: c }))).map(({ k, cfg }) => (
                     <Option key={k} value={Number(k)}>
-                      <Space><span style={{ color: v.color }}>{v.icon}</span>{v.label}</Space>
+                      <Space><span style={{ color: cfg.color }}>{cfg.icon}</span>{cfg.label}</Space>
                     </Option>
                   ))}
                 </Select>
@@ -714,8 +754,4 @@ export default function VehicleListPage() {
   )
 }
 
-const COLOR_MAP: Record<string, string> = {
-  珍珠白: '#f0ede8', 深空黑: '#1a1a1a', 银灰色: '#c0c0c0', 磁性灰: '#757575',
-  魂动红: '#c1121f', 星云蓝: '#2563eb', 橄榄绿: '#4d7c0f', 水晶黑: '#0f172a',
-  晶石白: '#f8fafc', 岩石灰: '#6b7280', 锆沙银: '#94a3b8', 极地白: '#f1f5f9',
-}
+

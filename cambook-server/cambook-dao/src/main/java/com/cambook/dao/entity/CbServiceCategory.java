@@ -11,6 +11,8 @@ public class CbServiceCategory extends BaseEntity {
 
     /** 归属商户 ID（null = 平台公共类目） */
     private Long    merchantId;
+    /** 写时复制来源：商户私有副本记录平台原始类目 ID，平台类目本身为 null */
+    private Long    sourceCategoryId;
     private Long    parentId;
     private String  nameZh;
     private String  nameEn;
@@ -19,12 +21,17 @@ public class CbServiceCategory extends BaseEntity {
     private String  nameJa;
     private String  nameKo;
     private String  icon;
+    private java.math.BigDecimal price;
+    private Integer duration;
+    private Integer isSpecial;
     private Integer sort;
     private Integer status;
 
-    public Long    getMerchantId()           { return merchantId; }
-    public void    setMerchantId(Long v)     { this.merchantId = v; }
-    public Long    getParentId()            { return parentId; }
+    public Long    getMerchantId()                      { return merchantId; }
+    public void    setMerchantId(Long v)                { this.merchantId = v; }
+    public Long    getSourceCategoryId()                { return sourceCategoryId; }
+    public void    setSourceCategoryId(Long v)          { this.sourceCategoryId = v; }
+    public Long    getParentId()                        { return parentId; }
     public void    setParentId(Long v)      { this.parentId = v; }
     public String  getNameZh()              { return nameZh; }
     public void    setNameZh(String v)      { this.nameZh = v; }
@@ -40,6 +47,12 @@ public class CbServiceCategory extends BaseEntity {
     public void    setNameKo(String v)      { this.nameKo = v; }
     public String  getIcon()               { return icon; }
     public void    setIcon(String v)       { this.icon = v; }
+    public java.math.BigDecimal getPrice() { return price; }
+    public void    setPrice(java.math.BigDecimal v) { this.price = v; }
+    public Integer getDuration()           { return duration; }
+    public void    setDuration(Integer v)  { this.duration = v; }
+    public Integer getIsSpecial()          { return isSpecial; }
+    public void    setIsSpecial(Integer v) { this.isSpecial = v; }
     public Integer getSort()               { return sort; }
     public void    setSort(Integer v)      { this.sort = v; }
     public Integer getStatus()             { return status; }

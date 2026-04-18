@@ -40,7 +40,7 @@ class MerchantHomePage extends StatelessWidget {
       AuthController.to.appLocale.value;
       final l   = AppLocalizations(AuthController.to.locale);
       final tab = logic.state.currentTab.value;
-      return Scaffold(
+    return Scaffold(
         backgroundColor: _bg,
         body: IndexedStack(
           index: tab,
@@ -769,7 +769,7 @@ class _OrdersTab extends StatelessWidget {
         bottom: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-          child: Row(
+      child: Row(
             children: [
               Expanded(
                 child: Text(l.orderMgmt, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
@@ -929,9 +929,9 @@ class _MerchantOrderCard extends StatelessWidget {
                     ),
                     Text('\$${order.amount.toStringAsFixed(0)}',
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _green)),
-                  ],
-                ),
-                const SizedBox(height: 12),
+            ],
+          ),
+          const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(color: const Color(0xFFF8F9FB), borderRadius: BorderRadius.circular(10)),
@@ -959,8 +959,8 @@ class _MerchantOrderCard extends StatelessWidget {
                           ),
                           child: Text(l.rejectOrder, style: const TextStyle(fontWeight: FontWeight.w600)),
                         ),
-                      ),
-                      const SizedBox(width: 12),
+                ),
+                const SizedBox(width: 12),
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
@@ -1300,7 +1300,7 @@ class _ServiceRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Container(
+            Container(
             width: 44, height: 44,
             decoration: BoxDecoration(
               color: service.isActive ? _indigoLight : const Color(0xFFF0F0F0),

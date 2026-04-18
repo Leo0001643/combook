@@ -9,17 +9,17 @@ import {
   PictureOutlined, VideoCameraOutlined, PercentageOutlined,
   PlusOutlined, LoadingOutlined, CameraOutlined,
   BankOutlined, ContactsOutlined, GlobalOutlined,
-  SafetyCertificateOutlined, IdcardOutlined, ApartmentOutlined,
+  SafetyCertificateOutlined, IdcardOutlined,
   ExpandOutlined, CheckCircleOutlined,
 } from '@ant-design/icons'
 import type { UploadFile, UploadProps } from 'antd'
 import { merchantApi, uploadApi } from '../../api/api'
+import { useDict } from '../../hooks/useDict'
 import RichTextInput from '../common/RichTextInput'
 
 const { Text } = Typography
 
-
-const CITIES = ['金边', '暹粒', '西哈努克', '贡布', '白马', '磅湛', '菩萨', '茶胶', '柴桢', '磅清扬']
+const CITIES_FALLBACK = ['金边', '暹粒', '西哈努克', '贡布', '白马', '磅湛', '菩萨', '茶胶', '柴桢', '磅清扬']
 
 interface Props {
   open: boolean
@@ -63,6 +63,7 @@ export default function MerchantCreateModal({ open, onClose, onSuccess }: Props)
   const [form] = Form.useForm()
   const [submitting, setSubmitting] = useState(false)
   const [activeTab, setActiveTab]   = useState('basic')
+  const { opts: cityOpts }          = useDict('service_city')
 
   // Logo
   const [logoUrl, setLogoUrl]         = useState<string>()
@@ -212,7 +213,7 @@ export default function MerchantCreateModal({ open, onClose, onSuccess }: Props)
         <Col span={8}>
           <Form.Item name="city" label="所在城市">
             <Select placeholder="请选择城市" allowClear
-              options={CITIES.map(c => ({ value: c, label: c }))}
+              options={cityOpts().length > 0 ? cityOpts() : CITIES_FALLBACK.map(c => ({ value: c, label: c }))}
               suffixIcon={<FieldIcon icon={<EnvironmentOutlined />} color="#1677ff" />} />
           </Form.Item>
         </Col>

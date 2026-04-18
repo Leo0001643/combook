@@ -6,10 +6,11 @@ import {
   ShopOutlined, PhoneOutlined, EnvironmentOutlined, AuditOutlined,
 } from '@ant-design/icons'
 import { merchantPortalApi } from '../../api/api'
+import { useDict } from '../../hooks/useDict'
 
 const { Text } = Typography
 
-const AUDIT_MAP: Record<number, { color: string; text: string }> = {
+const AUDIT_MAP_FB: Record<number, { color: string; text: string }> = {
   0: { color: 'orange', text: '待审核' },
   1: { color: 'green',  text: '已通过' },
   2: { color: 'red',    text: '已拒绝' },
@@ -18,6 +19,12 @@ const AUDIT_MAP: Record<number, { color: string; text: string }> = {
 export default function MerchantProfilePage() {
   const [data, setData]       = useState<any>(null)
   const [loading, setLoading] = useState(true)
+
+  const { items: auditItems } = useDict('technician_audit')
+  const AUDIT_MAP: Record<number, { color: string; text: string }> =
+    auditItems.length > 0
+      ? Object.fromEntries(auditItems.map(i => [Number(i.dictValue), { color: i.remark ?? 'default', text: i.labelZh }]))
+      : AUDIT_MAP_FB
 
   useEffect(() => {
     merchantPortalApi.profile().then(r => setData(r.data?.data)).finally(() => setLoading(false))

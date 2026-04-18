@@ -11,58 +11,66 @@
  */
 export const styledTableComponents = {
   header: {
-    cell: (props: React.ThHTMLAttributes<HTMLTableCellElement>) => (
-      <th
-        {...props}
-        style={{
-          ...props.style,
-          background: 'linear-gradient(180deg,#f5f7ff 0%,#eef1ff 100%)',
-          borderBottom: '2px solid #e0e4ff',
-          padding: '9px 8px',
-          height: 'auto',        // 显式覆盖 fixed 列可能注入的 height 值
-          boxSizing: 'border-box',
-          fontSize: 12,
-          fontWeight: 600,
-          color: '#374151',
-          whiteSpace: 'nowrap',
-          textAlign: 'center',
-          verticalAlign: 'middle',
-        }}
-      />
-    ),
+    cell: (props: React.ThHTMLAttributes<HTMLTableCellElement>) => {
+      // antd/rc-table may deliver alignment via HTML `align` attr OR via style.textAlign
+      const rawAlign = (props as any).align ?? props.style?.textAlign ?? 'center'
+      const textAlign = rawAlign as React.CSSProperties['textAlign']
+      return (
+        <th
+          {...props}
+          style={{
+            ...props.style,
+            background: 'linear-gradient(180deg,#f5f7ff 0%,#eef1ff 100%)',
+            borderBottom: '2px solid #e0e4ff',
+            padding: '9px 8px',
+            height: 'auto',
+            boxSizing: 'border-box',
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#374151',
+            whiteSpace: 'nowrap',
+            verticalAlign: 'middle',
+            textAlign,
+          }}
+        />
+      )
+    },
   },
   body: {
-    /**
-     * 垂直居中方案（双保险）：
-     * 1. td 设 height:'1px'：table layout 自动将 td 拉伸到行高，子元素可用 height:100%
-     * 2. 内层 div height:'100%' + display:flex + alignItems:center → 真正垂直居中
-     * 3. justifyContent:'center' 让简单文字/标签水平居中；
-     *    avatar+文字列的 render 应返回 width:100% 容器以实现左对齐
-     */
     cell: (props: React.TdHTMLAttributes<HTMLTableCellElement>) => {
       const { children, ...rest } = props as React.TdHTMLAttributes<HTMLTableCellElement> & { children?: React.ReactNode }
+      // Check both HTML `align` attribute and CSS style.textAlign — antd may use either
+      const rawAlign = (rest as any).align ?? rest.style?.textAlign ?? 'left'
+      const justifyContent =
+        rawAlign === 'center' ? 'center' :
+        rawAlign === 'right'  ? 'flex-end' :
+        'flex-start'
+      const textAlign = rawAlign as React.CSSProperties['textAlign']
       return (
         <td
           {...rest}
           style={{
             ...rest.style,
             padding: 0,
-            height: '1px', // table layout 拉伸到行高；子元素 height:100% 得以生效
+            height: '1px',
           }}
         >
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              padding: '8px 12px',
+              justifyContent,
+              textAlign,
+              padding: '8px',
               height: '100%',
               minHeight: 52,
               boxSizing: 'border-box',
-              textAlign: 'left',
             }}
           >
-            {children}
+            {/* 让 render 函数返回的 100%-宽容器能正确撑满 */}
+            <div style={{ width: '100%', display: 'flex', alignItems: 'inherit', justifyContent: 'inherit' }}>
+              {children}
+            </div>
           </div>
         </td>
       )
@@ -80,8 +88,9 @@ export function col(icon: React.ReactNode, label: string, align: 'center' | 'lef
     <div style={{
       display: 'flex', alignItems: 'center',
       justifyContent: align === 'left' ? 'flex-start' : 'center',
-      paddingLeft: align === 'left' ? 4 : 0,
+      textAlign: align,
       gap: 5, fontWeight: 600, fontSize: 12, color: '#374151',
+      width: '100%',
     }}>
       {icon}<span>{label}</span>
     </div>

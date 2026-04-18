@@ -60,7 +60,7 @@ export default function SysParamPage() {
         configGroup: searchGroup || undefined,
       })
       const d = res.data?.data
-      setConfigs(d?.records ?? [])
+      setConfigs(d?.list ?? [])
       setTotal(d?.total ?? 0)
     } finally {
       setLoading(false)

@@ -3,7 +3,7 @@ import {
   Table, Tag, Button, Space, Row, Col,
   Modal, Form, Input, Select, InputNumber,
   Typography, Progress, message, Popconfirm, Switch,
-  Divider, Tooltip,
+  Tooltip,
 } from 'antd';
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, GiftOutlined,
@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { usePortalScope } from '../../hooks/usePortalScope';
+import { useDict } from '../../hooks/useDict';
 import { merchantApi } from '../../api/api';
 import PermGuard from '../../components/common/PermGuard';
 import PagePagination from '../../components/common/PagePagination';
@@ -37,7 +38,7 @@ interface Coupon {
   status: number;
 }
 
-const typeMap: Record<number, { text: string; color: string }> = {
+const typeMap_FB: Record<number, { text: string; color: string }> = {
   1: { text: '满减券', color: 'red' },
   2: { text: '折扣券', color: 'purple' },
 };
@@ -47,6 +48,12 @@ const PAGE_GRADIENT = 'linear-gradient(135deg,#f59e0b,#d97706)';
 const CouponListPage: React.FC = () => {
   const { ref, height: tableBodyH } = useTableBodyHeight()
   const { isMerchant, couponList, couponAdd, couponEdit, couponUpdateStatus, couponDelete } = usePortalScope();
+
+  const { items: typeItems } = useDict('coupon_type')
+  const typeMap: Record<number, { text: string; color: string }> =
+    typeItems.length > 0
+      ? Object.fromEntries(typeItems.map(i => [Number(i.dictValue), { text: i.labelZh, color: i.remark ?? 'default' }]))
+      : typeMap_FB;
   const [data, setData]               = useState<Coupon[]>([]);
   const [loading, setLoading]         = useState(false);
   const [total, setTotal]             = useState(0);
@@ -65,7 +72,7 @@ const CouponListPage: React.FC = () => {
     if (!isMerchant) {
       merchantApi.list({ page: 1, size: 200 }).then(res => {
         const list = res.data?.data?.list ?? res.data?.data?.records ?? [];
-        setMerchantOpts(list.map((m: any) => ({ value: m.id, label: m.name })));
+        setMerchantOpts(list.map((m: any) => ({ value: m.id, label: m.merchantNameZh || m.merchantNameEn || `商户#${m.id}` })));
       }).catch(() => {});
     }
   }, [isMerchant]);
@@ -80,7 +87,7 @@ const CouponListPage: React.FC = () => {
       const sf  = overrides?.status      !== undefined ? overrides.status      : statusFilter;
       const mid = overrides?.merchantId  !== undefined ? overrides.merchantId  : merchantId;
       const res = await couponList({
-        current: page,
+        page,
         size: pageSize,
         keyword: kw || undefined,
         type: tf,

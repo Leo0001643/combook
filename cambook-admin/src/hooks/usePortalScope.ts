@@ -14,7 +14,7 @@ import { useAuthStore } from '../store/authStore'
 import {
   orderApi, technicianApi, memberApi,
   vehicleApi, couponApi, reviewApi, noticeApi,
-  categoryApi, bannerApi, merchantPortalApi,
+  categoryApi, bannerApi, merchantPortalApi, currencyApi,
 } from '../api/api'
 import request from '../api/request'
 
@@ -27,18 +27,23 @@ export function usePortalScope() {
     isMerchant,
 
     // ── 数据看板 ─────────────────────────────────────────────────────────────
-    dashboardStats: () =>
+    dashboardStats: (period = 'week') =>
       isMerchant
-        ? merchantPortalApi.dashboard()
-        : request.get<any>('/admin/dashboard/stats'),
+        ? merchantPortalApi.dashboard(period)
+        : request.get<any>('/admin/dashboard/stats', { params: { period } }),
 
     // ── 订单管理 ─────────────────────────────────────────────────────────────
     orderList: (params: any) =>
       isMerchant ? merchantPortalApi.orders(params) : orderApi.list(params),
 
-    orderCancel: (id: number) => orderApi.cancel(id),
+    orderDetail: (id: number) =>
+      isMerchant ? merchantPortalApi.orderDetail(id) : orderApi.detail(id),
 
-    orderDelete: (id: number) => orderApi.delete(id),
+    orderCancel: (id: number, reason?: string) =>
+      isMerchant ? merchantPortalApi.orderCancel(id, reason) : orderApi.cancel(id),
+
+    orderDelete: (id: number) =>
+      isMerchant ? merchantPortalApi.orderDelete(id) : orderApi.delete(id),
 
     // ── 技师管理 ─────────────────────────────────────────────────────────────
     technicianList: (params: any) =>
@@ -65,11 +70,17 @@ export function usePortalScope() {
     technicianDelete: (id: number) =>
       isMerchant ? merchantPortalApi.technicianDelete(id) : technicianApi.delete(id),
 
+    technicianUpdate: (data: any) =>
+      isMerchant ? merchantPortalApi.technicianUpdate(data) : technicianApi.update(data),
+
     technicianAudit: (params: any) => technicianApi.audit(params),
 
     // ── 会员管理 ─────────────────────────────────────────────────────────────
     memberList: (params: any) =>
       isMerchant ? merchantPortalApi.members(params) : memberApi.list(params),
+
+    memberUpdate: (data: any) =>
+      isMerchant ? merchantPortalApi.memberUpdate(data) : memberApi.update(data),
 
     memberUpdateStatus: (id: number, status: number) =>
       isAdmin ? memberApi.updateStatus(id, status) : Promise.reject('无权操作'),
@@ -144,6 +155,12 @@ export function usePortalScope() {
     categoryList: (params?: any) =>
       isMerchant ? merchantPortalApi.categoryList(params) : categoryApi.list(params),
 
+    /** 获取当前商户（或指定商户）下已启用的服务类目，供选择器使用 */
+    categoryAllEnabled: (merchantId?: number) =>
+      isMerchant
+        ? merchantPortalApi.categoryList({ status: 1, size: 200 })
+        : categoryApi.list({ status: 1, size: 200, ...(merchantId != null ? { merchantId } : {}) }),
+
     categoryAdd: (data: any) =>
       isMerchant ? merchantPortalApi.categoryAdd(data) : categoryApi.add(data),
 
@@ -176,5 +193,16 @@ export function usePortalScope() {
       isMerchant
         ? merchantPortalApi.financeOverview()
         : request.get<any>('/admin/finance/overview'),
+
+    // ── 结算币种 ─────────────────────────────────────────────────────────────
+    /** 获取当前上下文（商户或管理员）可用的已启用币种列表 */
+    enabledCurrencies: () =>
+      isMerchant
+        ? merchantPortalApi.currencyEnabled()
+        : currencyApi.list(1),        // Admin 上下文：全平台启用币种
+
+    /** 商户保存自己的币种配置 */
+    saveCurrencyConfig: (configs: any[]) =>
+      merchantPortalApi.currencySave(configs),
   }
 }

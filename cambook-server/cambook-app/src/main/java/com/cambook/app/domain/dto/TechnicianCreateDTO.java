@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 后台新增技师 DTO
  *
@@ -62,6 +64,9 @@ public class TechnicianCreateDTO {
     @Schema(description = "技能标签（逗号分隔字符串，如 按摩,正骨；后台自动转 JSON 数组）")
     private String skillTags;
 
+    @Schema(description = "可提供的服务类目 ID 列表（对应 cb_service_category.id）")
+    private List<Long> serviceItemIds;
+
     @DecimalMin("0") @DecimalMax("100")
     @Schema(description = "分成比例(%)，默认 70", defaultValue = "70")
     private java.math.BigDecimal commissionRate = new java.math.BigDecimal("70");
@@ -79,6 +84,21 @@ public class TechnicianCreateDTO {
     @Schema(description = "罩杯（A/B/C/D/E/F/G）")
     private String bust;
 
-    @Schema(description = "所在省份")
+    @Schema(description = "Telegram 账号")
+    private String telegram;
+
+    @Schema(description = "结算方式: 0每笔 1日结 2周结 3月结", defaultValue = "3")
+    private Integer settlementMode = 3;
+
+    @Schema(description = "提成类型: 0按比例 1固定金额", defaultValue = "0")
+    private Integer commissionType = 0;
+
+    @Schema(description = "按比例提成百分比(%)")
+    private java.math.BigDecimal commissionRatePct;
+
+    @Schema(description = "固定金额结算币种")
+    private String commissionCurrency;
+
+    @Schema(description = "所在省份/籍贯")
     private String province;
 }

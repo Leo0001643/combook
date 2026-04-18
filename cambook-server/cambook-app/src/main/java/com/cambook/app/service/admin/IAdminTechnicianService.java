@@ -3,6 +3,7 @@ package com.cambook.app.service.admin;
 import com.cambook.app.domain.dto.TechnicianAuditDTO;
 import com.cambook.app.domain.dto.TechnicianCreateDTO;
 import com.cambook.app.domain.dto.TechnicianQueryDTO;
+import com.cambook.app.domain.dto.TechnicianUpdateDTO;
 import com.cambook.app.domain.vo.TechnicianVO;
 import com.cambook.common.result.PageResult;
 
@@ -18,6 +19,8 @@ public interface IAdminTechnicianService {
     TechnicianVO getDetail(Long id);
 
     TechnicianVO create(TechnicianCreateDTO dto);
+
+    void update(TechnicianUpdateDTO dto);
 
     void audit(TechnicianAuditDTO dto);
 

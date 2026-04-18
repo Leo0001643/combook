@@ -86,6 +86,11 @@ public class PermissionService implements IPermissionService {
     public void edit(PermissionDTO dto) {
         SysPermission p = permissionMapper.selectById(dto.getId());
         if (p == null) throw new BusinessException(CbCodeEnum.DATA_NOT_FOUND);
+
+        // icon 仅在用户明确传值（非空白）时才更新，防止编辑排序/可见性时意外清空已配置的图标
+        String newIcon = (dto.getIcon() != null && !dto.getIcon().isBlank())
+                ? dto.getIcon() : p.getIcon();
+
         permissionMapper.update(
                 Wrappers.<SysPermission>lambdaUpdate()
                         .set(SysPermission::getName,      dto.getName())
@@ -93,7 +98,7 @@ public class PermissionService implements IPermissionService {
                         .set(SysPermission::getType,      dto.getType())
                         .set(SysPermission::getPath,      dto.getPath())
                         .set(SysPermission::getComponent, dto.getComponent())
-                        .set(SysPermission::getIcon,      dto.getIcon())
+                        .set(SysPermission::getIcon,      newIcon)
                         .set(SysPermission::getSort,      dto.getSort())
                         .set(SysPermission::getVisible,   dto.getVisible())
                         .eq(SysPermission::getId, dto.getId()));

@@ -3,12 +3,14 @@ package com.cambook.app.controller.merchant;
 import com.cambook.app.common.annotation.RequireMerchant;
 import com.cambook.app.common.security.MerchantOwnershipGuard;
 import com.cambook.app.domain.dto.MemberQueryDTO;
+import com.cambook.app.domain.dto.MemberUpdateDTO;
 import com.cambook.app.domain.vo.MemberVO;
 import com.cambook.app.service.admin.IAdminMemberService;
 import com.cambook.common.result.PageResult;
 import com.cambook.common.result.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -36,5 +38,12 @@ public class MerchantMemberController {
     public Result<PageResult<MemberVO>> list(MemberQueryDTO query) {
         query.setMerchantId(MerchantOwnershipGuard.requireMerchantId());
         return Result.success(memberService.pageList(query));
+    }
+
+    @Operation(summary = "编辑会员信息")
+    @PutMapping
+    public Result<Void> update(@Valid @ModelAttribute MemberUpdateDTO dto) {
+        memberService.update(dto);
+        return Result.success();
     }
 }

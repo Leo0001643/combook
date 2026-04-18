@@ -4,6 +4,7 @@ import com.cambook.common.annotation.RequirePermission;
 import com.cambook.app.domain.dto.TechnicianAuditDTO;
 import com.cambook.app.domain.dto.TechnicianCreateDTO;
 import com.cambook.app.domain.dto.TechnicianQueryDTO;
+import com.cambook.app.domain.dto.TechnicianUpdateDTO;
 import com.cambook.app.domain.vo.TechnicianVO;
 import com.cambook.app.service.admin.IAdminTechnicianService;
 import com.cambook.common.result.PageResult;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,6 +61,14 @@ public class TechnicianController {
     @PostMapping("/create")
     public Result<TechnicianVO> create(@Valid @ModelAttribute TechnicianCreateDTO dto) {
         return Result.success(technicianService.create(dto));
+    }
+
+    @RequirePermission("technician:edit")
+    @Operation(summary = "编辑技师信息")
+    @PutMapping
+    public Result<Void> update(@Valid @ModelAttribute TechnicianUpdateDTO dto) {
+        technicianService.update(dto);
+        return Result.success();
     }
 
     @RequirePermission("technician:audit")

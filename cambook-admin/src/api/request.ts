@@ -61,11 +61,13 @@ request.interceptors.request.use(
     }
 
     // POST / PUT / PATCH 自动转为 application/x-www-form-urlencoded
+    // 注意：Array 类型的 body（对应后端 @RequestBody）跳过此转换，由 axios 以 JSON 发送
     if (
       config.method &&
       FORM_METHODS.includes(config.method.toLowerCase()) &&
       config.data &&
       typeof config.data === 'object' &&
+      !Array.isArray(config.data) &&
       !(config.data instanceof FormData) &&
       !(config.data instanceof URLSearchParams)
     ) {

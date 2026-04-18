@@ -7,6 +7,7 @@ import com.cambook.app.common.audit.AbstractAuditService;
 import com.cambook.app.domain.dto.TechnicianAuditDTO;
 import com.cambook.app.domain.dto.TechnicianCreateDTO;
 import com.cambook.app.domain.dto.TechnicianQueryDTO;
+import com.cambook.app.domain.dto.TechnicianUpdateDTO;
 import com.cambook.app.domain.vo.TechnicianVO;
 import com.cambook.app.service.admin.IAdminTechnicianService;
 import com.cambook.common.enums.CbCodeEnum;
@@ -22,6 +23,7 @@ import org.springframework.util.DigestUtils;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,14 +120,21 @@ public class AdminTechnicianService
         t.setAvatar(dto.getAvatar());
         t.setPhotos(dto.getPhotos());
         t.setSkillTags(toJsonArray(dto.getSkillTags()));
+        t.setServiceItemIds(toJsonLongArray(dto.getServiceItemIds()));
         t.setCommissionRate(dto.getCommissionRate());
         // 归属商户（商户端新增时由控制器注入，admin端无merchantId则为平台技师）
         t.setMerchantId(dto.getMerchantId());
+        t.setTelegram(dto.getTelegram());
         t.setHeight(dto.getHeight());
         t.setWeight(dto.getWeight());
         t.setAge(dto.getAge());
         t.setBust(dto.getBust());
         t.setProvince(dto.getProvince());
+        t.setVideoUrl(dto.getVideoUrl());
+        t.setSettlementMode(dto.getSettlementMode() != null ? dto.getSettlementMode() : 3);
+        t.setCommissionType(dto.getCommissionType() != null ? dto.getCommissionType() : 0);
+        t.setCommissionRatePct(dto.getCommissionRatePct());
+        t.setCommissionCurrency(dto.getCommissionCurrency());
         // 后台新增默认已通过审核，状态正常
         t.setAuditStatus(1);
         t.setStatus(1);
@@ -140,6 +149,39 @@ public class AdminTechnicianService
         CbTechnician t = technicianMapper.selectById(id);
         if (t == null) throw new com.cambook.common.exception.BusinessException(CbCodeEnum.TECHNICIAN_NOT_FOUND);
         return TechnicianVO.from(t);
+    }
+
+    @Override
+    public void update(TechnicianUpdateDTO dto) {
+        CbTechnician t = technicianMapper.selectById(dto.getId());
+        if (t == null) throw new com.cambook.common.exception.BusinessException(CbCodeEnum.TECHNICIAN_NOT_FOUND);
+
+        LambdaUpdateWrapper<CbTechnician> upd = new LambdaUpdateWrapper<CbTechnician>()
+                .eq(CbTechnician::getId, dto.getId());
+        if (StringUtils.isNotBlank(dto.getRealName()))    upd.set(CbTechnician::getRealName,      dto.getRealName());
+        if (StringUtils.isNotBlank(dto.getNickname()))    upd.set(CbTechnician::getNickname,      dto.getNickname());
+        if (dto.getGender()        != null)               upd.set(CbTechnician::getGender,        dto.getGender());
+        if (StringUtils.isNotBlank(dto.getNationality())) upd.set(CbTechnician::getNationality,   dto.getNationality());
+        if (StringUtils.isNotBlank(dto.getServiceCity())) upd.set(CbTechnician::getServiceCity,   dto.getServiceCity());
+        if (StringUtils.isNotBlank(dto.getLang()))        upd.set(CbTechnician::getLang,          dto.getLang());
+        if (StringUtils.isNotBlank(dto.getIntroZh()))     upd.set(CbTechnician::getIntroZh,       dto.getIntroZh());
+        if (dto.getAvatar()        != null)               upd.set(CbTechnician::getAvatar,        dto.getAvatar());
+        if (dto.getPhotos()        != null)               upd.set(CbTechnician::getPhotos,        dto.getPhotos());
+        if (StringUtils.isNotBlank(dto.getSkillTags()))   upd.set(CbTechnician::getSkillTags,     toJsonArray(dto.getSkillTags()));
+        if (dto.getServiceItemIds() != null)              upd.set(CbTechnician::getServiceItemIds, toJsonLongArray(dto.getServiceItemIds()));
+        if (dto.getCommissionRate() != null)              upd.set(CbTechnician::getCommissionRate,dto.getCommissionRate());
+        if (dto.getHeight()        != null)               upd.set(CbTechnician::getHeight,        dto.getHeight());
+        if (dto.getWeight()        != null)               upd.set(CbTechnician::getWeight,        dto.getWeight());
+        if (dto.getAge()           != null)               upd.set(CbTechnician::getAge,           dto.getAge());
+        if (dto.getBust()          != null)               upd.set(CbTechnician::getBust,          dto.getBust());
+        if (dto.getTelegram()      != null)               upd.set(CbTechnician::getTelegram,      dto.getTelegram());
+        if (StringUtils.isNotBlank(dto.getProvince()))    upd.set(CbTechnician::getProvince,      dto.getProvince());
+        if (dto.getVideoUrl()      != null)               upd.set(CbTechnician::getVideoUrl,      dto.getVideoUrl());
+        if (dto.getSettlementMode() != null)              upd.set(CbTechnician::getSettlementMode, dto.getSettlementMode());
+        if (dto.getCommissionType() != null)              upd.set(CbTechnician::getCommissionType, dto.getCommissionType());
+        if (dto.getCommissionRatePct() != null)           upd.set(CbTechnician::getCommissionRatePct, dto.getCommissionRatePct());
+        if (dto.getCommissionCurrency() != null)          upd.set(CbTechnician::getCommissionCurrency, dto.getCommissionCurrency());
+        technicianMapper.update(null, upd);
     }
 
     @Override
@@ -246,6 +288,18 @@ public class AdminTechnicianService
             if (!first) sb.append(",");
             sb.append("\"").append(tag.replace("\\", "\\\\").replace("\"", "\\\"")).append("\"");
             first = false;
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    /** 将 Long 列表序列化为 JSON 数字数组字符串，如 [1,2,3]。 */
+    private static String toJsonLongArray(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return "[]";
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < ids.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(ids.get(i));
         }
         sb.append("]");
         return sb.toString();
