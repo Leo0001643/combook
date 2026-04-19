@@ -560,7 +560,7 @@ export default function OrderHistoryPage() {
             </div>
 
             {/* 订单基础信息 */}
-            <Descriptions size="small" column={2} bordered labelStyle={{ fontSize: 12, whiteSpace: 'nowrap' }}>
+            <Descriptions size="small" column={2} bordered styles={{ label: { fontSize: 12, whiteSpace: 'nowrap' } }}>
               <Descriptions.Item label="订单号" span={2}>
                 <span style={{ fontFamily: 'monospace', color: '#6366f1', fontSize: 11 }}>{detail.orderNo}</span>
               </Descriptions.Item>

@@ -527,7 +527,7 @@ export default function MerchantListPage() {
 
             <Divider style={{ margin: '12px 0' }} />
 
-            <Descriptions column={2} size="small" bordered labelStyle={{ background: '#fafafa', fontWeight: 600 }}>
+            <Descriptions column={2} size="small" bordered styles={{ label: { background: '#fafafa', fontWeight: 600 } }}>
               <Descriptions.Item label="负责人">{selected.contactPerson || '—'}</Descriptions.Item>
               <Descriptions.Item label="联系电话">{selected.contactMobile || selected.mobile}</Descriptions.Item>
               <Descriptions.Item label="登录手机" span={2}>{selected.mobile}</Descriptions.Item>

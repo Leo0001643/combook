@@ -19,7 +19,6 @@ dayjs.extend(isSameOrAfter)
 dayjs.locale('zh-cn')
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { ConfigProvider } from 'antd'
@@ -47,13 +46,10 @@ const zhCNWithDates = {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    {/*
-      StyleProvider hashPriority="low"：antd CSS-in-JS 使用 :where() 选择器
-      使其特异性降为 0，index.css 中的普通选择器即可无需 !important 直接覆盖。
-    */}
-    <StyleProvider hashPriority="low">
-      <ConfigProvider
+  // StyleProvider hashPriority="low"：antd CSS-in-JS 使用 :where() 选择器
+  // 使其特异性降为 0，index.css 中的普通选择器即可无需 !important 直接覆盖。
+  <StyleProvider hashPriority="low">
+    <ConfigProvider
         locale={zhCNWithDates}
         theme={{
           token: {
@@ -81,5 +77,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <App />
       </ConfigProvider>
     </StyleProvider>
-  </React.StrictMode>
 )

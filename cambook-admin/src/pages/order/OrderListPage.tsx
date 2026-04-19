@@ -242,8 +242,6 @@ export default function OrderListPage() {
   const [currencies, setCurrencies] = useState<any[]>([])
   const defaultCurrency = currencies.find(c => c.isDefault)?.currencyCode ?? currencies[0]?.currencyCode ?? 'USD'
 
-  // (技师列表留待后续创建订单弹窗使用)
-
   // 详情抽屉
   const [detailOpen, setDetailOpen] = useState(false)
   const [detail,     setDetail]     = useState<any>(null)
@@ -268,12 +266,9 @@ export default function OrderListPage() {
   }, [isMerchant])
 
   useEffect(() => {
-    // 币种
     enabledCurrencies()
       .then((res: any) => setCurrencies(res.data?.data ?? []))
       .catch(() => {})
-    // 技师
-    merchantPortalApi.technicians({ page: 1, size: 200 }).catch(() => {})
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -573,7 +568,7 @@ export default function OrderListPage() {
           }}>
             <OrderedListOutlined style={{ color:'#fff', fontSize:16 }} />
           </div>
-          <div>
+    <div>
             <div style={{ fontSize:15, fontWeight:700, color:'#1e293b', lineHeight:1.2 }}>在线订单</div>
             <div style={{ fontSize:11, color:'#94a3b8', marginTop:1 }}>{subtitle}</div>
           </div>
@@ -807,7 +802,7 @@ export default function OrderListPage() {
                               <span style={{ fontSize:16 }}>{pm.icon}</span>
                               <span style={{ fontWeight:600, color:pm.color }}>{pm.label}</span>
                               {pr.currency && pr.currency !== 'USD' && <Tag style={{ fontSize:10 }}>{pr.currency}</Tag>}
-                            </Space>
+              </Space>
                             <Text strong style={{ color:'#10b981', fontSize:15 }}>${Number(pr.amount).toFixed(2)}</Text>
                           </div>
                         )
@@ -891,7 +886,6 @@ export default function OrderListPage() {
         closeIcon={null}
         open={settleOpen}
         onCancel={() => setSettleOpen(false)}
-        destroyOnClose
         width={620}
         style={{ top: 40 }}
         styles={{ body: { maxHeight: 'calc(100vh - 260px)', overflowY: 'auto', padding: '16px 24px 8px' } }}

@@ -1298,7 +1298,7 @@ export default function TechnicianListPage() {
             </Row>
 
             {/* 详情信息 */}
-            <Descriptions column={2} size="small" bordered labelStyle={{ background: '#fafafa', fontWeight: 600 }}>
+            <Descriptions column={2} size="small" bordered styles={{ label: { background: '#fafafa', fontWeight: 600 } }}>
               {isAdmin && (
                 <Descriptions.Item label={<Space size={4}><ShopOutlined style={{ color: '#6366f1' }} /><span>所属商户</span></Space>} span={2}>
                   {detail.merchantName
