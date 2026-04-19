@@ -1,0 +1,112 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║                  Cambook Monorepo .gitignore                   ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# ── 日志 ─────────────────────────────────────────────────────────────
+*.log
+logs/
+**/logs/
+**/logs/archive/
+
+# ── 环境配置（含密钥，严禁入库）────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── macOS ─────────────────────────────────────────────────────────────
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ── IDE / 编辑器 ────────────────────────────────────────────────────
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ══════════════════════════════════════════════════════════════════════
+#  前端 (cambook-admin) — Vue 3 / Vite / TypeScript
+# ══════════════════════════════════════════════════════════════════════
+cambook-admin/node_modules/
+cambook-admin/dist/
+cambook-admin/.vite/
+cambook-admin/.cache/
+cambook-admin/*.local
+cambook-admin/coverage/
+
+# ══════════════════════════════════════════════════════════════════════
+#  后端 (cambook-server) — Java / Maven / Spring Boot
+# ══════════════════════════════════════════════════════════════════════
+cambook-server/**/target/
+cambook-server/**/*.class
+cambook-server/**/*.jar
+cambook-server/**/*.war
+cambook-server/**/*.ear
+cambook-server/**/*.nar
+cambook-server/.mvn/wrapper/maven-wrapper.jar
+cambook-server/**/spring-shell.log
+
+# ══════════════════════════════════════════════════════════════════════
+#  Flutter App (cambook_app)
+# ══════════════════════════════════════════════════════════════════════
+cambook_app/build/
+cambook_app/.dart_tool/
+cambook_app/.flutter-plugins
+cambook_app/.flutter-plugins-dependencies
+cambook_app/pubspec.lock
+cambook_app/.packages
+cambook_app/**/*.g.dart
+cambook_app/**/*.freezed.dart
+cambook_app/android/.gradle/
+cambook_app/android/captures/
+cambook_app/android/gradlew
+cambook_app/android/gradlew.bat
+cambook_app/android/local.properties
+cambook_app/android/GeneratedPluginRegistrant.java
+cambook_app/ios/Pods/
+cambook_app/ios/.symlinks/
+cambook_app/ios/Flutter/Flutter.framework
+cambook_app/ios/Flutter/Flutter.podspec
+cambook_app/ios/Flutter/Generated.xcconfig
+cambook_app/ios/Flutter/app.flx
+cambook_app/ios/Flutter/app.zip
+cambook_app/ios/Flutter/flutter_assets/
+cambook_app/ios/Flutter/flutter_export_environment.sh
+cambook_app/ios/ServiceDefinitions.json
+cambook_app/ios/Runner/GeneratedPluginRegistrant.*
+
+# ══════════════════════════════════════════════════════════════════════
+#  Flutter Partner (cambook_partner)
+# ══════════════════════════════════════════════════════════════════════
+cambook_partner/build/
+cambook_partner/.dart_tool/
+cambook_partner/.flutter-plugins
+cambook_partner/.flutter-plugins-dependencies
+cambook_partner/pubspec.lock
+cambook_partner/.packages
+cambook_partner/**/*.g.dart
+cambook_partner/**/*.freezed.dart
+cambook_partner/android/.gradle/
+cambook_partner/android/captures/
+cambook_partner/android/gradlew
+cambook_partner/android/gradlew.bat
+cambook_partner/android/local.properties
+cambook_partner/android/GeneratedPluginRegistrant.java
+cambook_partner/ios/Pods/
+cambook_partner/ios/.symlinks/
+cambook_partner/ios/Flutter/Flutter.framework
+cambook_partner/ios/Flutter/Flutter.podspec
+cambook_partner/ios/Flutter/Generated.xcconfig
+cambook_partner/ios/Flutter/app.flx
+cambook_partner/ios/Flutter/app.zip
+cambook_partner/ios/Flutter/flutter_assets/
+cambook_partner/ios/Flutter/flutter_export_environment.sh
+cambook_partner/ios/ServiceDefinitions.json
+cambook_partner/ios/Runner/GeneratedPluginRegistrant.*
