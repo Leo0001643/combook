@@ -42,21 +42,15 @@ public class TechOrderItemController {
         return Result.success(itemService.listItems(orderId));
     }
 
-    @Operation(summary = "追加服务项",
-               description = "向已接单/服务中的订单追加服务项目，自动重算订单金额")
+    @Operation(summary = "追加服务项", description = "向已接单/服务中的订单追加服务项目，自动重算订单金额")
     @PostMapping
-    public Result<List<OrderVO.OrderItemVO>> add(
-            @PathVariable Long orderId,
-            @Valid @RequestBody AddOrderItemDTO dto) {
+    public Result<List<OrderVO.OrderItemVO>> add(@PathVariable Long orderId, @Valid @RequestBody AddOrderItemDTO dto) {
         return Result.success(itemService.addItem(orderId, dto));
     }
 
-    @Operation(summary = "取消服务项",
-               description = "取消指定的尚未开始的服务项（svc_status=0），自动重算订单金额")
+    @Operation(summary = "取消服务项", description = "取消指定的尚未开始的服务项（svc_status=0），自动重算订单金额")
     @DeleteMapping("/{itemId}")
-    public Result<Void> remove(
-            @PathVariable Long orderId,
-            @PathVariable Long itemId) {
+    public Result<Void> remove(@PathVariable Long orderId, @PathVariable Long itemId) {
         itemService.removeItem(orderId, itemId);
         return Result.success();
     }

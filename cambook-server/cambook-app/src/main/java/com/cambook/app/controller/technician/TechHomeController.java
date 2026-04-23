@@ -34,8 +34,7 @@ public class TechHomeController {
      * <p>收入说明：技师实际收入 = 订单实付金额 × 技师分成比例，
      * 平台佣金与商户佣金已在订单完成结算时扣除，此处直接返回净收入。
      */
-    @Operation(summary = "今日统计",
-               description = "返回今日有效订单数、技师净收入（USD）、今日平均评分，无评价时 todayRating 为 null")
+    @Operation(summary = "今日统计", description = "返回今日有效订单数、技师净收入（USD）、今日平均评分，无评价时 todayRating 为 null")
     @GetMapping("/stats")
     public Result<HomeStatsVO> stats() {
         return Result.success(homeService.getStats());
