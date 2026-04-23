@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   Table, Tag, Button, Space, Card, Row, Col,
   Modal, Input, Typography, Avatar, Drawer, message,
-  Descriptions, Progress, Empty, Tooltip, Divider,
+  Descriptions, Progress, Empty, Tooltip,
 } from 'antd'
 import {
   UserOutlined, CheckCircleOutlined, CloseCircleOutlined,
   AuditOutlined, ClockCircleOutlined, EyeOutlined,
   EnvironmentOutlined, StarFilled, PhoneOutlined,
-  ManOutlined, WomanOutlined, ReloadOutlined, FireOutlined,
+  ManOutlined, WomanOutlined, ReloadOutlined,
   SearchOutlined, GlobalOutlined, TagsOutlined, SettingOutlined,
   TagOutlined, FieldNumberOutlined,
 } from '@ant-design/icons'
@@ -19,6 +19,7 @@ import PagePagination from '../../components/common/PagePagination'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 import { useDict } from '../../hooks/useDict'
+import { toEpochMs } from '../../utils/time'
 
 const { Text, Paragraph } = Typography
 
@@ -103,8 +104,9 @@ export default function TechnicianAuditPage() {
   }
 
   const urgentCount = data.filter(r => {
-    if (!r.createTime) return false
-    const hours = Math.floor((Date.now() - new Date(r.createTime).getTime()) / 3600000)
+    const ms = toEpochMs(r.createTime)
+    if (ms == null) return false
+    const hours = Math.floor((Date.now() - ms) / 3600000)
     return hours > 48
   }).length
 
@@ -203,8 +205,10 @@ export default function TechnicianAuditPage() {
       dataIndex: 'createTime',
       width: 120,
       render: v => {
-        if (!v) return '—'
-        const hours = Math.floor((Date.now() - new Date(v).getTime()) / 3600000)
+        if (v == null || v === '') return '—'
+        const ms = toEpochMs(v)
+        if (ms == null) return '—'
+        const hours = Math.floor((Date.now() - ms) / 3600000)
         const days = Math.floor(hours / 24)
         const color = hours > 48 ? '#ff4d4f' : hours > 24 ? '#fa8c16' : '#52c41a'
         return (
@@ -321,8 +325,9 @@ export default function TechnicianAuditPage() {
             scroll={{ x: 'max-content', y: tableBodyH }}
             pagination={false}
             rowClassName={(r) => {
-              if (!r.createTime) return ''
-              const hours = Math.floor((Date.now() - new Date(r.createTime).getTime()) / 3600000)
+              const ms = toEpochMs(r.createTime)
+              if (ms == null) return ''
+              const hours = Math.floor((Date.now() - ms) / 3600000)
               return hours > 48 ? 'row-urgent' : ''
             }}
           />

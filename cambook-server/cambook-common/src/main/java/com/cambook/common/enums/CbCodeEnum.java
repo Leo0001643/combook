@@ -29,6 +29,9 @@ public enum CbCodeEnum {
     TOKEN_EXPIRED(401),
     NO_PERMISSION(403),
     REPEAT_SUBMIT(400),
+    DATA_DUPLICATE(409),
+    MISSING_PARAM(400),
+    METHOD_NOT_ALLOWED(405),
 
     // ── 认证 / 登录 ───────────────────────────────────────────────────────────
     SMS_CODE_EXPIRED(40001),
@@ -45,6 +48,12 @@ public enum CbCodeEnum {
     TECHNICIAN_AUDIT_PENDING(40022),
     TECHNICIAN_OFFLINE(40023),
     TECHNICIAN_BUSY(40024),
+    TECHNICIAN_AUDIT_REJECTED(40025),
+    TECHNICIAN_BANNED(40026),
+    TECHNICIAN_MOBILE_EXISTS(40027),
+
+    // ── 商户验证 ───────────────────────────────────────────────────────────────
+    MERCHANT_NO_INVALID(40032),
 
     // ── 商户 ──────────────────────────────────────────────────────────────────
     MERCHANT_NOT_FOUND(40030),

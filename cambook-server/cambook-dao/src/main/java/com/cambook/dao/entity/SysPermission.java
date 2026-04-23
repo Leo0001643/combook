@@ -1,5 +1,8 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
@@ -9,6 +12,8 @@ import com.cambook.dao.entity.base.BaseEntity;
  * @author CamBook
  */
 @TableName("sys_permission")
+@Getter
+@Setter
 public class SysPermission extends BaseEntity {
 
     private Long parentId;
@@ -41,7 +46,6 @@ public class SysPermission extends BaseEntity {
     public String getComponent(){ return component; }
     public String getIcon()     { return icon; }
     public Integer getSort()       { return sort; }
-    public Integer getPortalType() { return portalType; }
     public Integer getVisible()    { return visible; }
     public Integer getStatus()  { return status; }
 
@@ -50,10 +54,8 @@ public class SysPermission extends BaseEntity {
     public void setCode(String code)           { this.code = code; }
     public void setType(Integer type)          { this.type = type; }
     public void setPath(String path)           { this.path = path; }
-    public void setComponent(String component) { this.component = component; }
     public void setIcon(String icon)           { this.icon = icon; }
     public void setSort(Integer sort)             { this.sort = sort; }
-    public void setPortalType(Integer portalType) { this.portalType = portalType; }
     public void setVisible(Integer visible)       { this.visible = visible; }
     public void setStatus(Integer status)      { this.status = status; }
 }

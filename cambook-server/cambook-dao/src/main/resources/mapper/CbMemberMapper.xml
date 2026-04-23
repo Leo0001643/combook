@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cambook.dao.mapper.CbMemberMapper">
+
+    <!-- 新增会员趋势：按小时聚合（day 维度）[{hour, newMembers}] -->
+    <select id="memberTrendByHour" resultType="map">
+        SELECT
+            FROM_UNIXTIME(create_time, '%H') AS hour,
+            COUNT(*)                          AS newMembers
+        FROM cb_member
+        WHERE deleted = 0
+          AND create_time &gt;= #{from}
+          AND create_time &lt;  #{to}
+        GROUP BY hour
+        ORDER BY hour
+    </select>
+
+    <!-- 新增会员趋势：按天聚合（week/month 维度）[{label, ymd, newMembers}] -->
+    <select id="memberTrendByDay" resultType="map">
+        SELECT
+            FROM_UNIXTIME(create_time, '%m-%d')   AS label,
+            FROM_UNIXTIME(create_time, '%Y-%m-%d') AS ymd,
+            COUNT(*)                                AS newMembers
+        FROM cb_member
+        WHERE deleted = 0
+          AND create_time &gt;= #{from}
+          AND create_time &lt;  #{to}
+        GROUP BY ymd, label
+        ORDER BY ymd
+    </select>
+
+    <!-- 新增会员趋势：按月聚合（year 维度）[{month, newMembers}] -->
+    <select id="memberTrendByMonth" resultType="map">
+        SELECT
+            FROM_UNIXTIME(create_time, '%Y-%m') AS month,
+            COUNT(*)                             AS newMembers
+        FROM cb_member
+        WHERE deleted = 0
+          AND create_time &gt;= #{from}
+          AND create_time &lt;  #{to}
+        GROUP BY month
+        ORDER BY month
+    </select>
+
+</mapper>

@@ -1,15 +1,19 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 优惠券模板实体
  */
 @TableName("cb_coupon_template")
+@Getter
+@Setter
 public class CbCouponTemplate extends BaseEntity {
 
     private Long          merchantId;
@@ -24,8 +28,8 @@ public class CbCouponTemplate extends BaseEntity {
     private Integer       totalCount;
     private Integer       issuedCount;
     private Integer       validDays;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private Long          startTime;
+    private Long          endTime;
     private Integer       status;
 
     public Long          getMerchantId()                   { return merchantId; }
@@ -50,10 +54,10 @@ public class CbCouponTemplate extends BaseEntity {
     public void          setIssuedCount(Integer v)         { this.issuedCount = v; }
     public Integer       getValidDays()                   { return validDays; }
     public void          setValidDays(Integer v)           { this.validDays = v; }
-    public LocalDateTime getStartTime()                   { return startTime; }
-    public void          setStartTime(LocalDateTime v)     { this.startTime = v; }
-    public LocalDateTime getEndTime()                     { return endTime; }
-    public void          setEndTime(LocalDateTime v)       { this.endTime = v; }
+    public Long          getStartTime()                   { return startTime; }
+    public void          setStartTime(Long v)             { this.startTime = v; }
+    public Long          getEndTime()                     { return endTime; }
+    public void          setEndTime(Long v)               { this.endTime = v; }
     public Integer       getStatus()                      { return status; }
     public void          setStatus(Integer v)              { this.status = v; }
 }

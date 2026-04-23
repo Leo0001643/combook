@@ -3,23 +3,21 @@
  */
 import { useState, useRef } from 'react'
 import {
-  Table, Select, Button, Tag, Space, Typography, message,
+  Table, Select, Button, Tag, Space, message,
   Row, Col, Drawer, Statistic,
   Avatar, Badge, Divider,
 } from 'antd'
 import {
   TeamOutlined, DollarOutlined, CheckCircleOutlined,
   UserOutlined, SettingOutlined, BarChartOutlined, TrophyOutlined,
-  // PlusOutlined unused currently
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import type { ColumnsType } from 'antd/es/table'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
-import { useDict, parseRemark } from '../../hooks/useDict'
+import { useDict } from '../../hooks/useDict'
 
-const { Text, Title } = Typography
 const { Option } = Select
 
 const STAFF_TYPES_FB: Record<number, { label: string; color: string }> = {

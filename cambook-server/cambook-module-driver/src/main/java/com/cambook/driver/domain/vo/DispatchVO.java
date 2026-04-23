@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 派车单视图
@@ -46,13 +45,13 @@ public class DispatchVO {
     private String destAddress;
 
     @Schema(description = "预约接送时间")
-    private LocalDateTime pickupTime;
+    private Long pickupTime;
 
     @Schema(description = "实际接到时间")
-    private LocalDateTime actualPickupTime;
+    private Long actualPickupTime;
 
     @Schema(description = "完成时间")
-    private LocalDateTime finishTime;
+    private Long finishTime;
 
     @Schema(description = "状态：0待接 1接单 2前往 3到达 4服务中 5完成 9取消")
     private Integer status;
@@ -61,5 +60,5 @@ public class DispatchVO {
     private String remark;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private Long createTime;
 }

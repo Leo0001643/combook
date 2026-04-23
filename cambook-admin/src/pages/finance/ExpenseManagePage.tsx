@@ -20,7 +20,7 @@ import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 import { useDict } from '../../hooks/useDict'
 import DateTimeRangePicker from '../../components/common/DateTimeRangePicker'
 
-const { Text, Title } = Typography
+const { Text } = Typography
 const { Option } = Select
 const { TextArea } = Input
 

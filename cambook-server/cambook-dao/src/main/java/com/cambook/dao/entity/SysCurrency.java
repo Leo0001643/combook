@@ -1,5 +1,8 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -7,7 +10,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 全平台币种注册表
@@ -15,6 +17,8 @@ import java.time.LocalDateTime;
  * @author CamBook
  */
 @TableName("sys_currency")
+@Getter
+@Setter
 public class SysCurrency implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -41,8 +45,8 @@ public class SysCurrency implements Serializable {
     /** 对 USD 汇率（1 单位本币 = X USD） */
     private BigDecimal rateToUsd;
 
-    /** 汇率最后更新时间 */
-    private LocalDateTime rateUpdateTime;
+    /** 汇率最后更新时间（UTC 秒级时间戳） */
+    private Long rateUpdateTime;
 
     /** 小数位数（KRW=0, USDT=6） */
     private Integer decimalPlaces;
@@ -56,8 +60,8 @@ public class SysCurrency implements Serializable {
     /** 备注 */
     private String remark;
 
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private Long createTime;
+    private Long updateTime;
 
     // ── Getters & Setters ─────────────────────────────────────────────────────
 
@@ -85,8 +89,7 @@ public class SysCurrency implements Serializable {
     public BigDecimal getRateToUsd()            { return rateToUsd; }
     public void setRateToUsd(BigDecimal v)      { this.rateToUsd = v; }
 
-    public LocalDateTime getRateUpdateTime()    { return rateUpdateTime; }
-    public void setRateUpdateTime(LocalDateTime v) { this.rateUpdateTime = v; }
+    public Long getRateUpdateTime()    { return rateUpdateTime; }
 
     public Integer getDecimalPlaces()           { return decimalPlaces; }
     public void setDecimalPlaces(Integer v)     { this.decimalPlaces = v; }
@@ -100,9 +103,9 @@ public class SysCurrency implements Serializable {
     public String getRemark()                   { return remark; }
     public void setRemark(String v)             { this.remark = v; }
 
-    public LocalDateTime getCreateTime()        { return createTime; }
-    public void setCreateTime(LocalDateTime v)  { this.createTime = v; }
+    public Long getCreateTime()        { return createTime; }
+    public void setCreateTime(Long v)  { this.createTime = v; }
 
-    public LocalDateTime getUpdateTime()        { return updateTime; }
-    public void setUpdateTime(LocalDateTime v)  { this.updateTime = v; }
+    public Long getUpdateTime()        { return updateTime; }
+    public void setUpdateTime(Long v)  { this.updateTime = v; }
 }

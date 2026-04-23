@@ -64,9 +64,9 @@ public class AdminMemberService implements IAdminMemberService {
                 .eq(query.getLevel()  != null, CbMember::getLevel,  query.getLevel())
                 // 语言精确
                 .eq(StringUtils.hasText(query.getLang()), CbMember::getLang, query.getLang())
-                // 注册时间范围
-                .ge(query.getStartDate() != null, CbMember::getRegisterTime, query.getStartDate() != null ? query.getStartDate().atStartOfDay()      : null)
-                .le(query.getEndDate()   != null, CbMember::getRegisterTime, query.getEndDate()   != null ? query.getEndDate().atTime(23, 59, 59) : null)
+                // 注册时间范围（UTC 秒级时间戳）
+                .ge(query.getStartDate() != null, CbMember::getRegisterTime, query.getStartDate())
+                .le(query.getEndDate()   != null, CbMember::getRegisterTime, query.getEndDate())
                 .eq(CbMember::getDeleted, 0)
                 .orderByDesc(CbMember::getCreateTime);
 

@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 会员信息视图
@@ -65,7 +64,7 @@ public class MemberVO {
     private String address;
 
     @Schema(description = "注册时间")
-    private LocalDateTime createdAt;
+    private Long createdAt;
 
     public static MemberVO from(CbMember m) {
         MemberVO vo = new MemberVO();

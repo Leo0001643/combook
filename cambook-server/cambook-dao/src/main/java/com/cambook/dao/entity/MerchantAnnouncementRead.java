@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * 公告已读记录
@@ -18,5 +17,5 @@ public class MerchantAnnouncementRead implements Serializable {
     /** 读者手机号（作为唯一标识） */
     private String        readerMobile;
     private Long          merchantId;
-    private LocalDateTime readTime;
+    private Long          readTime;
 }

@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -64,7 +63,7 @@ public class OrderVO {
     private String addressDetail;
 
     @Schema(description = "预约时间")
-    private LocalDateTime appointTime;
+    private Long appointTime;
 
     @Schema(description = "原始金额")
     private BigDecimal originalAmount;
@@ -94,13 +93,13 @@ public class OrderVO {
     private String remark;
 
     @Schema(description = "下单时间")
-    private LocalDateTime createTime;
+    private Long createTime;
 
     @Schema(description = "服务开始时间")
-    private LocalDateTime startTime;
+    private Long startTime;
 
     @Schema(description = "服务结束时间")
-    private LocalDateTime endTime;
+    private Long endTime;
 
     @Schema(description = "多服务项明细列表")
     private List<OrderItemVO> orderItems;
@@ -116,8 +115,8 @@ public class OrderVO {
         private BigDecimal  unitPrice;
         private Integer     qty;
         private Integer     svcStatus;
-        private LocalDateTime startTime;
-        private LocalDateTime endTime;
+        private Long startTime;
+        private Long endTime;
 
         public static OrderItemVO from(CbOrderItem item) {
             OrderItemVO vo = new OrderItemVO();

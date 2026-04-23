@@ -56,6 +56,10 @@ public final class Result<T> {
         return new Result<>(code, message, null);
     }
 
+    public static <T> Result<T> fail(int code, String message, T data) {
+        return new Result<>(code, message, data);
+    }
+
     // ── getter ────────────────────────────────────────────────────────────────
 
     public int getCode()       { return code; }

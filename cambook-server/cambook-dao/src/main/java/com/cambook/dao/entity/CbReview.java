@@ -1,14 +1,17 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
-
-import java.time.LocalDateTime;
 
 /**
  * 评价实体
  */
 @TableName("cb_review")
+@Getter
+@Setter
 public class CbReview extends BaseEntity {
 
     private Long          orderId;
@@ -22,7 +25,7 @@ public class CbReview extends BaseEntity {
     private String        tags;
     private Integer       isAnonymous;
     private String        reply;
-    private LocalDateTime replyTime;
+    private Long          replyTime;
     private Integer       status;
 
     public Long          getOrderId()                      { return orderId; }
@@ -47,8 +50,8 @@ public class CbReview extends BaseEntity {
     public void          setIsAnonymous(Integer v)          { this.isAnonymous = v; }
     public String        getReply()                        { return reply; }
     public void          setReply(String v)                 { this.reply = v; }
-    public LocalDateTime getReplyTime()                    { return replyTime; }
-    public void          setReplyTime(LocalDateTime v)      { this.replyTime = v; }
+    public Long          getReplyTime()                    { return replyTime; }
+    public void          setReplyTime(Long v)              { this.replyTime = v; }
     public Integer       getStatus()                       { return status; }
     public void          setStatus(Integer v)               { this.status = v; }
 }

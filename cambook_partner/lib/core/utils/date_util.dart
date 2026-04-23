@@ -1,5 +1,27 @@
 /// 日期时间工具
+///
+/// 时区约定：后端所有时间字段统一返回 UTC 秒级时间戳（int），
+/// [fromEpochSec] 将其转换为设备本地时区的 [DateTime]，页面直接展示即可。
 abstract class DateUtil {
+  /// 把后端返回的 UTC 秒级时间戳转换为本地 [DateTime]。
+  /// 支持 null、0、字符串形式的数字。
+  static DateTime fromEpochSec(dynamic v) {
+    if (v == null) return DateTime.now();
+    final secs = v is num ? v.toInt() : int.tryParse(v.toString()) ?? 0;
+    if (secs == 0) return DateTime.now();
+    return DateTime.fromMillisecondsSinceEpoch(secs * 1000);
+  }
+
+  /// 同 [fromEpochSec]，但当值为 null/0 时返回 null。
+  static DateTime? fromEpochSecNullable(dynamic v) {
+    if (v == null) return null;
+    final secs = v is num ? v.toInt() : int.tryParse(v.toString()) ?? 0;
+    if (secs == 0) return null;
+    return DateTime.fromMillisecondsSinceEpoch(secs * 1000);
+  }
+
+  /// 把本地 [DateTime] 转换为 UTC 秒级时间戳（提交给后端时用）。
+  static int toEpochSec(DateTime d) => d.toUtc().millisecondsSinceEpoch ~/ 1000;
   /// 格式化为 yyyy/MM/dd HH:mm
   static String format(DateTime d) =>
       '${d.year}/${_p(d.month)}/${_p(d.day)} ${_p(d.hour)}:${_p(d.minute)}';

@@ -12,7 +12,6 @@ import com.cambook.dao.mapper.CbTechnicianSettlementItemMapper;
 import com.cambook.dao.mapper.CbTechnicianSettlementMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -60,8 +59,8 @@ public class TechnicianSettlementController {
             @RequestParam(required = false)    Long technicianId,
             @RequestParam(required = false)    Integer settlementMode,
             @RequestParam(required = false)    Integer status,
-            @RequestParam(required = false)    @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam(required = false)    @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
 
         Long merchantId = MerchantContext.getMerchantId();
 
@@ -87,13 +86,13 @@ public class TechnicianSettlementController {
         BigDecimal totalSettled  = sum(all, 1);
         long       pendingCount  = all.stream().filter(s -> s.getStatus() == 0).count();
 
-        // 本月
-        LocalDate now   = LocalDate.now();
-        LocalDate mStart = now.withDayOfMonth(1);
+        // 本月（periodEnd 存储为 YYYY-MM-DD 字符串，字典序等价于日期序）
+        String now    = LocalDate.now().toString();
+        String mStart = LocalDate.now().withDayOfMonth(1).toString();
         BigDecimal monthFinal = all.stream()
                 .filter(s -> s.getPeriodEnd() != null
-                        && !s.getPeriodEnd().isBefore(mStart)
-                        && !s.getPeriodEnd().isAfter(now))
+                        && s.getPeriodEnd().compareTo(mStart) >= 0
+                        && s.getPeriodEnd().compareTo(now)    <= 0)
                 .map(CbTechnicianSettlement::getFinalAmount)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -135,11 +134,11 @@ public class TechnicianSettlementController {
                         .eq(CbTechnicianSettlement::getMerchantId,   merchantId)
                         .eq(CbTechnicianSettlement::getTechnicianId, technicianId));
 
-        LocalDate now    = LocalDate.now();
-        LocalDate mStart = now.withDayOfMonth(1);
+        String now    = LocalDate.now().toString();
+        String mStart = LocalDate.now().withDayOfMonth(1).toString();
 
         BigDecimal monthEarnings = list.stream()
-                .filter(s -> s.getPeriodEnd() != null && !s.getPeriodEnd().isBefore(mStart))
+                .filter(s -> s.getPeriodEnd() != null && s.getPeriodEnd().compareTo(mStart) >= 0)
                 .map(CbTechnicianSettlement::getFinalAmount)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -239,7 +238,7 @@ public class TechnicianSettlementController {
         if (s.getStatus() == 1) throw new BusinessException("该结算单已结算，请勿重复操作");
 
         s.setStatus(1);
-        s.setPaidTime(LocalDateTime.now());
+        s.setPaidTime(System.currentTimeMillis() / 1000L);
         s.setPaymentMethod(req.paymentMethod);
         s.setPaymentRef(req.paymentRef);
         if (req.remark != null) s.setRemark(req.remark);
@@ -291,7 +290,7 @@ public class TechnicianSettlementController {
             if (s == null || !s.getMerchantId().equals(merchantId)) continue;
             if (s.getStatus() == 1) continue; // 已结算跳过
             s.setStatus(1);
-            s.setPaidTime(LocalDateTime.now());
+            s.setPaidTime(System.currentTimeMillis() / 1000L);
             s.setPaymentMethod(req.paymentMethod);
             s.setPaymentRef(req.paymentRef);
             settlementMapper.updateById(s);
@@ -387,7 +386,8 @@ public class TechnicianSettlementController {
     }
 
     private String generateNo() {
-        return "SET" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"))
+        return "SET" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                + (System.currentTimeMillis() % 1_000_000_000L)
                 + String.format("%03d", (int) (Math.random() * 1000));
     }
 
@@ -403,8 +403,8 @@ public class TechnicianSettlementController {
         public Long          technicianId;
         public String        technicianName;
         public Integer       settlementMode;
-        public LocalDate     periodStart;
-        public LocalDate     periodEnd;
+        public String        periodStart;
+        public String        periodEnd;
         public Integer       orderCount;
         public BigDecimal    totalRevenue;
         public Integer       commissionType;
@@ -425,7 +425,7 @@ public class TechnicianSettlementController {
         public BigDecimal    orderAmount;
         public BigDecimal    commissionRate;
         public BigDecimal    commissionAmount;
-        public LocalDateTime serviceTime;
+        public Long          serviceTime;
     }
 
     public static class PayRequest {

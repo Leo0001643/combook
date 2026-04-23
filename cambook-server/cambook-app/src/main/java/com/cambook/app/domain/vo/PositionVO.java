@@ -4,8 +4,6 @@ import com.cambook.dao.entity.SysPosition;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 /**
  * 职位视图
  *
@@ -40,7 +38,7 @@ public class PositionVO {
     private Integer fullAccess;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private Long createTime;
 
     public static PositionVO from(SysPosition p) {
         PositionVO vo = new PositionVO();

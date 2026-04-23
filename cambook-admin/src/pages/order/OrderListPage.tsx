@@ -26,7 +26,9 @@ import {
   HomeOutlined, ShopOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import type { Dayjs } from 'dayjs'
 import type { ColumnsType } from 'antd/es/table'
+import { fmtTime, toEpochSec, fromEpochSec, dayjsFromApi } from '../../utils/time'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
@@ -95,7 +97,8 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
 
   let pct = 0; let elapsed = 0; let remaining = item.serviceDuration ?? item.duration ?? 60
   if (item.svcStatus === 1 && item.startTime) {
-    elapsed = now.diff(dayjs(item.startTime), 'minute')
+    const start = dayjsFromApi(item.startTime)
+    elapsed = start ? now.diff(start, 'minute') : 0
     pct = Math.min(100, Math.round((elapsed / (item.serviceDuration ?? item.duration ?? 60)) * 100))
     remaining = Math.max(0, (item.serviceDuration ?? item.duration ?? 60) - elapsed)
   } else if (item.svcStatus === 2) { pct = 100; elapsed = item.serviceDuration ?? item.duration ?? 60; remaining = 0 }
@@ -234,7 +237,7 @@ export default function OrderListPage() {
   const [keyword,  setKeyword]  = useState('')
   const [statusFilter,      setStatusFilter]      = useState<number | undefined>()
   const [serviceModeFilter, setServiceModeFilter] = useState<number | undefined>()
-  const [dateRange,  setDateRange]  = useState<[string,string] | null>(null)
+  const [dateRange,  setDateRange]  = useState<[number, number] | null>(null)
   const [merchantId, setMerchantId] = useState<number | undefined>()
   const [merchantOpts, setMerchantOpts] = useState<{ value: number; label: string }[]>([])
 
@@ -275,7 +278,7 @@ export default function OrderListPage() {
   // ── 列表加载 ────────────────────────────────────────────────────────────
   const fetchList = useCallback((
     pg = page, kw = keyword, st = statusFilter, sm = serviceModeFilter,
-    dr: [string,string]|null = dateRange, mid = merchantId,
+    dr: [number, number] | null = dateRange, mid = merchantId,
   ) => {
     setLoading(true)
     orderList({
@@ -498,11 +501,11 @@ export default function OrderListPage() {
         <div>
           {r.appointTime && (
             <div style={{ fontSize:11, color:'#6366f1', fontWeight:600 }}>
-              📅 {dayjs(r.appointTime).format('MM-DD HH:mm')}
+              📅 {fmtTime(r.appointTime, 'MM-DD HH:mm')}
             </div>
           )}
           <div style={{ fontSize:11, color:'#9ca3af', marginTop: r.appointTime ? 2 : 0 }}>
-            {r.createTime ? dayjs(r.createTime).format('MM-DD HH:mm') : '—'}
+            {r.createTime ? fmtTime(r.createTime, 'MM-DD HH:mm') : '—'}
           </div>
         </div>
       ),
@@ -634,11 +637,19 @@ export default function OrderListPage() {
           )}
           <DateTimeRangePicker
             placeholder={['开始时间', '结束时间']}
-            value={dateRange?.[0] && dateRange?.[1] ? [dayjs(dateRange[0]), dayjs(dateRange[1])] : null}
-            onChange={(_, strings) => {
-              setDateRange(strings)
+            value={(() => {
+              if (dateRange?.[0] == null || dateRange?.[1] == null) return null
+              const a = fromEpochSec(dateRange[0])
+              const b = fromEpochSec(dateRange[1])
+              return a && b ? ([a, b] as [Dayjs, Dayjs]) : null
+            })()}
+            onChange={dates => {
+              const s0 = dates?.[0] ? toEpochSec(dates[0]) : null
+              const s1 = dates?.[1] ? toEpochSec(dates[1]) : null
+              const next = s0 != null && s1 != null ? [s0, s1] as [number, number] : null
+              setDateRange(next)
               setPage(1)
-              fetchList(1, keyword, statusFilter, serviceModeFilter, strings)
+              fetchList(1, keyword, statusFilter, serviceModeFilter, next)
             }}
           />
           <div style={{ flex:1 }} />
@@ -716,7 +727,7 @@ export default function OrderListPage() {
               <div style={{ fontSize:15, fontWeight:700, fontFamily:'monospace' }}>{detail.orderNo}</div>
               <div style={{ marginTop:12, display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
                 <div style={{ fontSize:11, opacity:0.75 }}>
-                  {detail.appointTime ? `预约：${dayjs(detail.appointTime).format('MM-DD HH:mm')}` : ''}
+                  {detail.appointTime ? `预约：${fmtTime(detail.appointTime, 'MM-DD HH:mm')}` : ''}
                 </div>
                 <div style={{ fontSize:24, fontWeight:900 }}>
                   ${Number(detail.payAmount ?? detail.originalAmount ?? 0).toFixed(2)}
@@ -821,7 +832,7 @@ export default function OrderListPage() {
               </div>
               <Timeline
                 items={[
-                  { color:'green', children:'订单创建', label: detail.createTime ? dayjs(detail.createTime).format('MM-DD HH:mm') : undefined },
+                  { color:'green', children:'订单创建', label: detail.createTime ? fmtTime(detail.createTime, 'MM-DD HH:mm') : undefined },
                   { color: detail.status>=1?'green':'gray', children:'等待接单' },
                   { color: detail.status>=2?'green':'gray', children:'技师已接单' },
                   { color: detail.status>=3?'orange':'gray', children:'技师前往中' },

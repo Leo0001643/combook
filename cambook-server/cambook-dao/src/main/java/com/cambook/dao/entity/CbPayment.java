@@ -1,10 +1,12 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 支付记录实体
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
  * @author CamBook
  */
 @TableName("cb_payment")
+@Getter
+@Setter
 public class CbPayment extends BaseEntity {
 
     private String        paymentNo;
@@ -28,7 +32,7 @@ public class CbPayment extends BaseEntity {
     private String        thirdPartyNo;
     /** 第三方支付原始响应（JSON） */
     private String        rawResponse;
-    private LocalDateTime payTime;
+    private Long          payTime;
 
     public String        getPaymentNo()                  { return paymentNo; }
     public void          setPaymentNo(String v)          { this.paymentNo = v; }
@@ -46,6 +50,6 @@ public class CbPayment extends BaseEntity {
     public void          setThirdPartyNo(String v)       { this.thirdPartyNo = v; }
     public String        getRawResponse()                { return rawResponse; }
     public void          setRawResponse(String v)        { this.rawResponse = v; }
-    public LocalDateTime getPayTime()                    { return payTime; }
-    public void          setPayTime(LocalDateTime v)     { this.payTime = v; }
+    public Long          getPayTime()                    { return payTime; }
+    public void          setPayTime(Long v)              { this.payTime = v; }
 }

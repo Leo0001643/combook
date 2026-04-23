@@ -332,5 +332,55 @@
   "helpAndSupport": "帮助与支持",
   "rateApp": "评价应用",
   "exitApp": "退出应用",
-  "exitAppConfirm": "确定退出应用程序？"
+  "exitAppConfirm": "确定退出应用程序？",
+  "todaySchedule": "今日安排",
+  "allOrders": "全部订单",
+  "orderStatusPending": "待确认",
+  "orderStatusAccepted": "已接单",
+  "orderStatusInProgress": "服务中",
+  "orderStatusCompleted": "已完成",
+  "orderStatusCancelled": "已取消",
+  "noScheduleToday": "今日暂无预约",
+  "keepOnlineHint": "保持在线，随时迎接新订单 ✨",
+  "myStats": "我的数据",
+  "totalOrders": "累计接单",
+  "overallRating": "综合评分",
+  "currentBalance": "当前余额",
+
+  "statTodayAppointments": "今日预约",
+  "statTodayCompleted": "今日完成",
+  "statTodayCancelled": "今日取消",
+
+  "schedOrderCount": "{n}单",
+  "@schedOrderCount": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+  "schedInService": "进行中",
+  "schedPending": "待服务",
+  "totalDuration": "总时长",
+  "scheduleProgress": "{completed} / {total} 单完成",
+  "@scheduleProgress": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total":     { "type": "int" }
+    }
+  },
+
+  "statusOnWay": "前往中",
+  "statusCancelling": "取消中",
+  "statusRefunding": "退款中",
+  "statusRefunded": "已退款",
+
+  "schedEndTime": "结束 {time} · {duration}min",
+  "@schedEndTime": {
+    "placeholders": {
+      "time":     { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "serviceInProgress": "服务进行中",
+  "estimatedIncome": "预计 {amount}",
+  "@estimatedIncome": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

@@ -1,8 +1,23 @@
 /// API 端点常量 —— 后期只需修改此文件即可切换后端地址
 abstract class ApiEndpoints {
-  static const String _base = '/api';
+  static const String _base = '';
 
-  // ── Auth ──────────────────────────────────────────────────────────
+  // ── 技师端认证（对应后端 TechnicianAuthController /tech/auth） ─────
+  static const String techLogin    = '/tech/auth/login';
+  static const String techRegister = '/tech/auth/register';
+  static const String techMe       = '/tech/auth/me';
+
+  // ── 技师端首页（对应后端 TechHomeController /tech/home） ───────────
+  static const String techHomeStats         = '/tech/home/stats';
+  static const String techHomeSchedule      = '/tech/home/schedule';
+  static const String techPendingOrderCount = '/tech/home/pending-count';
+
+  // ── 技师端订单服务项（一单多项）──────────────────────────────────────
+  static String techOrderItems(int orderId)            => '/tech/order/$orderId/item';
+  static String techRemoveOrderItem(int orderId, int itemId)
+      => '/tech/order/$orderId/item/$itemId';
+
+  // ── Auth (legacy / 管理端) ─────────────────────────────────────────
   static const String login  = '$_base/partner/auth/login';
   static const String logout = '$_base/partner/auth/logout';
   static const String profile= '$_base/partner/profile';

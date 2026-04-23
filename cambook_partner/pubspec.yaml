@@ -5,47 +5,36 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
-
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-
   # ── State / Navigation / DI ──────────────────────────────────────
   get: ^4.6.6
-
   # ── Storage ──────────────────────────────────────────────────────
   get_storage: ^2.1.1
-
   # ── Network ──────────────────────────────────────────────────────
   dio: ^5.7.0
-
   # ── Charts ───────────────────────────────────────────────────────
   fl_chart: ^0.69.0
-
   # ── UI ───────────────────────────────────────────────────────────
   badges: ^3.1.2
   shimmer: ^3.0.0
   cached_network_image: ^3.4.1
-
   # ── Utils ────────────────────────────────────────────────────────
   intl: ^0.19.0
   url_launcher: ^6.3.0
   event_bus: ^2.0.1
-
   # ── Audio ────────────────────────────────────────────────────────
   audioplayers: ^6.1.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-
 flutter:
   uses-material-design: true
   generate: true           # enables flutter gen-l10n via l10n.yaml
-
   assets:
     - assets/images/
     - assets/icons/

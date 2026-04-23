@@ -56,6 +56,9 @@
     <logger name="io.micrometer"                                   level="WARN"/>
     <logger name="reactor"                                         level="WARN"/>
 
+    <!-- ─── HTTP 请求日志（RequestLogFilter 使用） ──────────────────── -->
+    <logger name="HTTP" level="INFO"/>
+
     <!-- ─── 业务代码保留 INFO（dev 下可按需调 DEBUG） ────────────────── -->
     <logger name="com.cambook" level="DEBUG"/>
 

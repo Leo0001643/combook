@@ -331,5 +331,55 @@
   "helpAndSupport": "ជំនួយ និង ការគាំទ្រ",
   "rateApp": "វាយតម្លៃ App",
   "exitApp": "ចេញពី App",
-  "exitAppConfirm": "ចង់ចេញពីកម្មវិធីមែនទេ?"
+  "exitAppConfirm": "ចង់ចេញពីកម្មវិធីមែនទេ?",
+  "todaySchedule": "កម្មវិធីថ្ងៃនេះ",
+  "allOrders": "ការបញ្ជាទិញទាំងអស់",
+  "orderStatusPending": "រង់ចាំ",
+  "orderStatusAccepted": "បានទទួល",
+  "orderStatusInProgress": "កំពុងបម្រើ",
+  "orderStatusCompleted": "បានបញ្ចប់",
+  "orderStatusCancelled": "បានបោះបង់",
+  "noScheduleToday": "គ្មានការណាត់ថ្ងៃនេះ",
+  "keepOnlineHint": "បន្តអនឡាញ ដើម្បីទទួលការបញ្ជាទិញថ្មី ✨",
+  "myStats": "ទិន្នន័យរបស់ខ្ញុំ",
+  "totalOrders": "ការបញ្ជាទិញសរុប",
+  "overallRating": "ការវាយតម្លៃទូទៅ",
+  "currentBalance": "សមតុល្យបច្ចុប្បន្ន",
+
+  "statTodayAppointments": "ការណាត់ថ្ងៃនេះ",
+  "statTodayCompleted": "បានបញ្ចប់ថ្ងៃនេះ",
+  "statTodayCancelled": "បានលុបថ្ងៃនេះ",
+
+  "schedOrderCount": "{n} ការបញ្ជាទិញ",
+  "@schedOrderCount": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+  "schedInService": "កំពុងបម្រើ",
+  "schedPending": "រង់ចាំ",
+  "totalDuration": "រយៈពេលសរុប",
+  "scheduleProgress": "{completed} / {total} បានបញ្ចប់",
+  "@scheduleProgress": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total":     { "type": "int" }
+    }
+  },
+
+  "statusOnWay": "កំពុងទៅ",
+  "statusCancelling": "កំពុងលុប",
+  "statusRefunding": "កំពុងសងប្រាក់",
+  "statusRefunded": "បានសងប្រាក់",
+
+  "schedEndTime": "ចប់ {time} · {duration}នាទី",
+  "@schedEndTime": {
+    "placeholders": {
+      "time":     { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "serviceInProgress": "កំពុងបម្រើ",
+  "estimatedIncome": "ប្រហាក់ {amount}",
+  "@estimatedIncome": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

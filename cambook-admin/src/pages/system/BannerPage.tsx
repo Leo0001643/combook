@@ -10,8 +10,8 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
-import dayjs from 'dayjs'
 import { type BannerVO } from '../../api/api'
+import { fmtDate } from '../../utils/time'
 import { usePortalScope } from '../../hooks/usePortalScope'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
@@ -171,7 +171,7 @@ export default function BannerPage() {
       title: col(<CalendarOutlined style={{ color: '#6366f1' }} />, '时间'),
       dataIndex: 'createdAt',
       width: 110,
-      render: (v: string) => <Text type="secondary" style={{ fontSize: 12 }}>{dayjs(v).format('YYYY-MM-DD')}</Text>,
+      render: (v: string | number) => <Text type="secondary" style={{ fontSize: 12 }}>{fmtDate(v)}</Text>,
     },
     {
       title: col(<SettingOutlined style={{ color: '#6366f1' }} />, '操作'),

@@ -61,8 +61,8 @@ public class MerchantDashboardController {
 
         // ── 历史比较（环比）──
         long yestOrders   = count(merchantId, yesterdayStart(), todayStart());
-        long lastWeekOrders  = count(merchantId, weekStart().minusWeeks(1), weekStart());
-        long lastMonthOrders = count(merchantId, monthStart().minusMonths(1), monthStart());
+        long lastWeekOrders  = count(merchantId, weekStart() - 7 * 86400L, weekStart());
+        long lastMonthOrders = count(merchantId, prevMonthStart(), monthStart());
 
         // ── 营收汇总 ──
         List<CbOrder> allCompleted = orderMapper.selectList(
@@ -80,8 +80,8 @@ public class MerchantDashboardController {
         BigDecimal weekRevenue   = sumFilter(allCompleted, weekStart(),   o -> o.getPayAmount());
         BigDecimal monthRevenue  = sumFilter(allCompleted, monthStart(),  o -> o.getPayAmount());
         BigDecimal yestRevenue   = sumFilterRange(allCompleted, yesterdayStart(), todayStart(),  o -> o.getPayAmount());
-        BigDecimal lastWeekRevenue  = sumFilterRange(allCompleted, weekStart().minusWeeks(1), weekStart(), o -> o.getPayAmount());
-        BigDecimal lastMonthRevenue = sumFilterRange(allCompleted, monthStart().minusMonths(1), monthStart(), o -> o.getPayAmount());
+        BigDecimal lastWeekRevenue  = sumFilterRange(allCompleted, weekStart() - 7 * 86400L, weekStart(), o -> o.getPayAmount());
+        BigDecimal lastMonthRevenue = sumFilterRange(allCompleted, prevMonthStart(), monthStart(), o -> o.getPayAmount());
 
         // ── 技师 ──
         long techCount  = technicianMapper.selectCount(
@@ -176,7 +176,7 @@ public class MerchantDashboardController {
         return id;
     }
 
-    private long count(Long merchantId, LocalDateTime start, LocalDateTime end) {
+    private long count(Long merchantId, Long start, Long end) {
         return orderMapper.selectCount(
                 Wrappers.<CbOrder>lambdaQuery()
                         .eq(CbOrder::getMerchantId, merchantId)
@@ -192,21 +192,21 @@ public class MerchantDashboardController {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private BigDecimal sumFilter(List<CbOrder> list, LocalDateTime since,
+    private BigDecimal sumFilter(List<CbOrder> list, long since,
                                   java.util.function.Function<CbOrder, BigDecimal> getter) {
         return list.stream()
-                .filter(o -> o.getCreateTime() != null && !o.getCreateTime().isBefore(since))
+                .filter(o -> o.getCreateTime() != null && o.getCreateTime() >= since)
                 .map(getter).filter(v -> v != null)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private BigDecimal sumFilterRange(List<CbOrder> list,
-                                       LocalDateTime from, LocalDateTime to,
+                                       long from, long to,
                                        java.util.function.Function<CbOrder, BigDecimal> getter) {
         return list.stream()
                 .filter(o -> o.getCreateTime() != null
-                        && !o.getCreateTime().isBefore(from)
-                        && o.getCreateTime().isBefore(to))
+                        && o.getCreateTime() >= from
+                        && o.getCreateTime() < to)
                 .map(getter).filter(v -> v != null)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
@@ -217,16 +217,16 @@ public class MerchantDashboardController {
         DateTimeFormatter fmtDay  = DateTimeFormatter.ofPattern("MM-dd");
         DateTimeFormatter fmtMonth = DateTimeFormatter.ofPattern("yyyy-MM");
 
+        ZoneId zone = ZoneId.systemDefault();
         switch (period) {
             case "day" -> {
-                // 近 24 小时，每小时一个点
                 for (int h = 23; h >= 0; h--) {
-                    LocalDateTime s = LocalDateTime.now().minusHours(h).withMinute(0).withSecond(0);
-                    LocalDateTime e = s.plusHours(1);
+                    ZonedDateTime zs = ZonedDateTime.now(zone).minusHours(h).truncatedTo(java.time.temporal.ChronoUnit.HOURS);
+                    long s = zs.toEpochSecond(), e = s + 3600;
                     long cnt = count(merchantId, s, e);
                     BigDecimal rev = sumFilterRange(completedOrders, s, e, CbOrder::getPayAmount);
                     Map<String, Object> item = new LinkedHashMap<>();
-                    item.put("label", s.format(DateTimeFormatter.ofPattern("HH:mm")));
+                    item.put("label", zs.format(DateTimeFormatter.ofPattern("HH:mm")));
                     item.put("orders", cnt);
                     item.put("revenue", rev);
                     result.add(item);
@@ -235,8 +235,8 @@ public class MerchantDashboardController {
             case "week" -> {
                 for (int d = 6; d >= 0; d--) {
                     LocalDate day = LocalDate.now().minusDays(d);
-                    LocalDateTime s = day.atStartOfDay();
-                    LocalDateTime e = day.plusDays(1).atStartOfDay();
+                    long s = day.atStartOfDay(zone).toEpochSecond();
+                    long e = day.plusDays(1).atStartOfDay(zone).toEpochSecond();
                     long cnt = count(merchantId, s, e);
                     BigDecimal rev = sumFilterRange(completedOrders, s, e, CbOrder::getPayAmount);
                     Map<String, Object> item = new LinkedHashMap<>();
@@ -247,11 +247,10 @@ public class MerchantDashboardController {
                 }
             }
             case "month" -> {
-                // 近 30 天
                 for (int d = 29; d >= 0; d--) {
                     LocalDate day = LocalDate.now().minusDays(d);
-                    LocalDateTime s = day.atStartOfDay();
-                    LocalDateTime e = day.plusDays(1).atStartOfDay();
+                    long s = day.atStartOfDay(zone).toEpochSecond();
+                    long e = day.plusDays(1).atStartOfDay(zone).toEpochSecond();
                     long cnt = count(merchantId, s, e);
                     BigDecimal rev = sumFilterRange(completedOrders, s, e, CbOrder::getPayAmount);
                     Map<String, Object> item = new LinkedHashMap<>();
@@ -262,11 +261,10 @@ public class MerchantDashboardController {
                 }
             }
             case "year" -> {
-                // 近 12 个月
                 for (int m = 11; m >= 0; m--) {
                     LocalDate firstDay = LocalDate.now().minusMonths(m).withDayOfMonth(1);
-                    LocalDateTime s = firstDay.atStartOfDay();
-                    LocalDateTime e = firstDay.plusMonths(1).atStartOfDay();
+                    long s = firstDay.atStartOfDay(zone).toEpochSecond();
+                    long e = firstDay.plusMonths(1).withDayOfMonth(1).atStartOfDay(zone).toEpochSecond();
                     long cnt = count(merchantId, s, e);
                     BigDecimal rev = sumFilterRange(completedOrders, s, e, CbOrder::getPayAmount);
                     Map<String, Object> item = new LinkedHashMap<>();
@@ -319,15 +317,12 @@ public class MerchantDashboardController {
         }).collect(Collectors.toList());
     }
 
-    // ── 日期工具 ──────────────────────────────────────────────────────────────
+    // ── 日期工具（UTC epoch seconds，用系统时区边界）────────────────────────────
 
-    private LocalDateTime todayStart()     { return LocalDate.now().atStartOfDay(); }
-    private LocalDateTime tomorrowStart()  { return LocalDate.now().plusDays(1).atStartOfDay(); }
-    private LocalDateTime yesterdayStart() { return LocalDate.now().minusDays(1).atStartOfDay(); }
-    private LocalDateTime weekStart() {
-        return LocalDate.now().with(WeekFields.ISO.dayOfWeek(), 1).atStartOfDay();
-    }
-    private LocalDateTime monthStart() {
-        return LocalDate.now().withDayOfMonth(1).atStartOfDay();
-    }
+    private long todayStart()     { return LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toEpochSecond(); }
+    private long tomorrowStart()  { return LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toEpochSecond(); }
+    private long yesterdayStart() { return LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toEpochSecond(); }
+    private long weekStart()      { return LocalDate.now().with(WeekFields.ISO.dayOfWeek(), 1).atStartOfDay(ZoneId.systemDefault()).toEpochSecond(); }
+    private long monthStart()     { return LocalDate.now().withDayOfMonth(1).atStartOfDay(ZoneId.systemDefault()).toEpochSecond(); }
+    private long prevMonthStart() { return LocalDate.now().minusMonths(1).withDayOfMonth(1).atStartOfDay(ZoneId.systemDefault()).toEpochSecond(); }
 }

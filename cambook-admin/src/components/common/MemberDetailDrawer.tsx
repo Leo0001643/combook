@@ -10,7 +10,7 @@ import {
   CloseOutlined, EnvironmentOutlined, SafetyCertificateOutlined,
   IdcardOutlined, ClockCircleOutlined, HistoryOutlined,
 } from '@ant-design/icons'
-import dayjs from 'dayjs'
+import { fmtTime } from '../../utils/time'
 import ContactCell from './ContactCell'
 import { usePortalScope } from '../../hooks/usePortalScope'
 import { useDict } from '../../hooks/useDict'
@@ -199,7 +199,7 @@ export default function MemberDetailDrawer({ open, detail, isAdmin, onClose, onB
       label: '注册时间',
       icon: <CalendarOutlined style={{ color: '#9ca3af' }} />,
       value: <Text style={{ fontSize: 12, color: '#6b7280' }}>
-        {dayjs(detail.createdAt).format('YYYY-MM-DD HH:mm')}
+        {fmtTime(detail.createdAt)}
       </Text>,
     },
     {
@@ -280,7 +280,7 @@ export default function MemberDetailDrawer({ open, detail, isAdmin, onClose, onB
         <div>
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>
             <CalendarOutlined style={{ marginRight: 4 }} />
-            注册于 {dayjs(detail.createdAt).format('YYYY年MM月DD日')}
+            注册于 {fmtTime(detail.createdAt, 'YYYY年MM月DD日')}
           </Text>
         </div>
       </div>
@@ -337,7 +337,7 @@ export default function MemberDetailDrawer({ open, detail, isAdmin, onClose, onB
                       <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{o.serviceName}</div>
                       <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
                         <ClockCircleOutlined style={{ marginRight: 3 }} />
-                        {dayjs(o.createTime).format('YYYY-MM-DD HH:mm')}
+                        {fmtTime(o.createTime, 'YYYY-MM-DD HH:mm')}
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>

@@ -1,5 +1,7 @@
 package com.cambook.common.context;
 
+import lombok.Data;
+
 /**
  * App 端用户请求上下文（ThreadLocal 持有）
  *
@@ -23,7 +25,7 @@ public final class MemberContext {
         return info != null ? info.memberId : null;
     }
 
-    /** 获取当前登录用户 ID（getMemberId 的语义别名，兼容旧代码） */
+    /** getMemberId 的语义别名，兼容旧代码 */
     public static Long currentId() {
         return getMemberId();
     }
@@ -38,21 +40,13 @@ public final class MemberContext {
         return info != null ? info.lang : null;
     }
 
-    // ── inner class ───────────────────────────────────────────────────────────
+    // ── inner VO ─────────────────────────────────────────────────────────────
 
+    @Data
     public static final class MemberInfo {
-
         private Long memberId;
         /** 用户类型：member / technician / merchant */
         private String userType;
         private String lang;
-
-        public Long getMemberId()   { return memberId; }
-        public String getUserType() { return userType; }
-        public String getLang()     { return lang; }
-
-        public void setMemberId(Long memberId)   { this.memberId = memberId; }
-        public void setUserType(String userType) { this.userType = userType; }
-        public void setLang(String lang)         { this.lang = lang; }
     }
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Table, Tabs, Tag, Button, Space,
-  Select, Typography, Badge, Spin, Divider,
+  Select, Typography, Badge, Spin,
 } from 'antd';
 import {
   DollarOutlined, WalletOutlined, UserOutlined,
@@ -14,6 +14,7 @@ import MerchantFinanceView from '../merchant/FinanceView';
 import PagePagination from '../../components/common/PagePagination';
 import { styledTableComponents } from '../../components/common/tableComponents';
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight';
+import { fmtTime } from '../../utils/time';
 
 const { Text } = Typography;
 
@@ -176,7 +177,7 @@ const AdminFinancePage: React.FC = () => {
     },
     {
       title: '时间', dataIndex: 'createTime',
-      render: v => v?.slice(0, 16),
+      render: v => (v != null && v !== '' ? fmtTime(v, 'YYYY-MM-DD HH:mm') : '—'),
     },
   ];
 

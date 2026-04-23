@@ -331,5 +331,55 @@
   "helpAndSupport": "Help & Support",
   "rateApp": "Rate App",
   "exitApp": "Exit App",
-  "exitAppConfirm": "Exit the application?"
+  "exitAppConfirm": "Exit the application?",
+  "todaySchedule": "Today's Schedule",
+  "allOrders": "All Orders",
+  "orderStatusPending": "Pending",
+  "orderStatusAccepted": "Accepted",
+  "orderStatusInProgress": "In Service",
+  "orderStatusCompleted": "Completed",
+  "orderStatusCancelled": "Cancelled",
+  "noScheduleToday": "No appointments today",
+  "keepOnlineHint": "Stay online to receive new orders ✨",
+  "myStats": "My Stats",
+  "totalOrders": "Total Orders",
+  "overallRating": "Overall Rating",
+  "currentBalance": "Current Balance",
+
+  "statTodayAppointments": "Today's Appts",
+  "statTodayCompleted": "Completed",
+  "statTodayCancelled": "Cancelled",
+
+  "schedOrderCount": "{n} Orders",
+  "@schedOrderCount": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+  "schedInService": "In Service",
+  "schedPending": "Pending",
+  "totalDuration": "Total Time",
+  "scheduleProgress": "{completed} / {total} done",
+  "@scheduleProgress": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total":     { "type": "int" }
+    }
+  },
+
+  "statusOnWay": "On Way",
+  "statusCancelling": "Cancelling",
+  "statusRefunding": "Refunding",
+  "statusRefunded": "Refunded",
+
+  "schedEndTime": "End {time} · {duration}min",
+  "@schedEndTime": {
+    "placeholders": {
+      "time":     { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "serviceInProgress": "In Service",
+  "estimatedIncome": "Est. {amount}",
+  "@estimatedIncome": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

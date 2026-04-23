@@ -45,11 +45,11 @@ public class OrderQueryDTO {
     @Schema(description = "服务方式：1=上门服务 2=到店服务")
     private Integer serviceMode;
 
-    @Schema(description = "开始日期（yyyy-MM-dd）", example = "2026-01-01")
-    private String startDate;
+    @Schema(description = "下单时间范围起始（UTC 秒级时间戳，含）", example = "1735689600")
+    private Long startDate;
 
-    @Schema(description = "结束日期（yyyy-MM-dd）", example = "2026-12-31")
-    private String endDate;
+    @Schema(description = "下单时间范围结束（UTC 秒级时间戳，含）", example = "1767139200")
+    private Long endDate;
 
     @Min(1) @Schema(description = "页码", defaultValue = "1")
     private int page = 1;

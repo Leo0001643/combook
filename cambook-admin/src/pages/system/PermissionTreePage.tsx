@@ -566,7 +566,7 @@ export default function PermissionTreePage() {
   const handleToggle = async (node: PermissionVO, field: 'visible' | 'status', val: boolean) => {
     setTogglingId(node.id)
     try {
-      await permissionApi.edit({ id: node.id, ...node, [field]: val ? 1 : 0 } as any)
+      await permissionApi.edit({ ...node, [field]: val ? 1 : 0 } as any)
       message.success(`已${val ? '启用' : '停用'}`)
       fetchTree(portal)
     } catch { /* ignore */ } finally { setTogglingId(null) }

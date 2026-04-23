@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -115,7 +114,7 @@ public class AppOrderService implements IAppOrderService {
             payment.setStatus(1);
             payment.setThirdPartyNo(result.getThirdPartyNo());
             payment.setRawResponse(result.getRawResponse());
-            payment.setPayTime(LocalDateTime.now());
+            payment.setPayTime(System.currentTimeMillis() / 1000L);
             paymentMapper.insert(payment);
 
             // 状态流转：待支付 → 待接单
@@ -124,7 +123,7 @@ public class AppOrderService implements IAppOrderService {
             orderMapper.update(null,
                     new LambdaUpdateWrapper<CbOrder>()
                             .set(CbOrder::getStatus, OrderStatus.PENDING_ACCEPT.getCode())
-                            .set(CbOrder::getPayTime, LocalDateTime.now())
+                            .set(CbOrder::getPayTime, System.currentTimeMillis() / 1000L)
                             .eq(CbOrder::getId, order.getId())
             );
             order.setStatus(OrderStatus.PENDING_ACCEPT.getCode());

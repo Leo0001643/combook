@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * 操作日志记录（不含逻辑删除，保留审计完整性）
@@ -26,5 +25,5 @@ public class SysOperLog implements Serializable {
     private String jsonResult;
     private Integer status;
     private String errorMsg;
-    private LocalDateTime operTime;
+    private Long operTime;
 }

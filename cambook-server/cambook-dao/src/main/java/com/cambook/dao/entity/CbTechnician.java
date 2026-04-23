@@ -1,11 +1,13 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 /**
  * 技师表
@@ -18,6 +20,8 @@ import java.time.LocalDate;
  */
 @TableName("cb_technician")
 @Schema(description = "技师信息")
+@Getter
+@Setter
 public class CbTechnician extends BaseEntity {
 
     private String techNo;
@@ -35,7 +39,7 @@ public class CbTechnician extends BaseEntity {
     private Integer gender;
     /** 国籍 */
     private String nationality;
-    private LocalDate birthday;
+    private String birthday;
     private String idCard;
     private String idCardFront;
     private String idCardBack;
@@ -93,7 +97,7 @@ public class CbTechnician extends BaseEntity {
     public String getVideoUrl()           { return videoUrl; }
     public Integer getGender()            { return gender; }
     public String getNationality()        { return nationality; }
-    public LocalDate getBirthday()        { return birthday; }
+    public String getBirthday()           { return birthday; }
     public String getIdCard()             { return idCard; }
     public String getIdCardFront()        { return idCardFront; }
     public String getIdCardBack()         { return idCardBack; }
@@ -108,18 +112,14 @@ public class CbTechnician extends BaseEntity {
     public BigDecimal getRating()         { return rating; }
     public Integer getReviewCount()       { return reviewCount; }
     public Integer getOrderCount()        { return orderCount; }
-    public BigDecimal getGoodReviewRate() { return goodReviewRate; }
     public BigDecimal getBalance()        { return balance; }
     public BigDecimal getTotalIncome()    { return totalIncome; }
     public Integer getAuditStatus()       { return auditStatus; }
     public String getRejectReason()       { return rejectReason; }
     public Integer getOnlineStatus()      { return onlineStatus; }
     public Long getMerchantId()           { return merchantId; }
-    public BigDecimal getCommissionRate() { return commissionRate; }
     public Integer getSettlementMode()    { return settlementMode; }
     public Integer getCommissionType()    { return commissionType; }
-    public BigDecimal getCommissionRatePct() { return commissionRatePct; }
-    public String getCommissionCurrency() { return commissionCurrency; }
     public String getSkillTags()          { return skillTags; }
     public String getServiceItemIds()     { return serviceItemIds; }
     public Integer getHeight()            { return height; }
@@ -142,7 +142,7 @@ public class CbTechnician extends BaseEntity {
     public void setVideoUrl(String videoUrl)                   { this.videoUrl = videoUrl; }
     public void setGender(Integer gender)                      { this.gender = gender; }
     public void setNationality(String nationality)             { this.nationality = nationality; }
-    public void setBirthday(LocalDate birthday)                { this.birthday = birthday; }
+    public void setBirthday(String birthday)                   { this.birthday = birthday; }
     public void setIdCard(String idCard)                       { this.idCard = idCard; }
     public void setIdCardFront(String idCardFront)             { this.idCardFront = idCardFront; }
     public void setIdCardBack(String idCardBack)               { this.idCardBack = idCardBack; }

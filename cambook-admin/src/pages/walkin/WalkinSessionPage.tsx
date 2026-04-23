@@ -15,9 +15,10 @@ import {
   UserOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined,
   DollarOutlined, WalletOutlined, QrcodeOutlined, ClockCircleOutlined,
   ShoppingCartOutlined, PhoneOutlined, CreditCardOutlined, IdcardOutlined,
-  DeleteOutlined, TagOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import { fmtTime, dayjsFromApi } from '../../utils/time'
 import type { ColumnsType } from 'antd/es/table'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
@@ -27,7 +28,7 @@ import { merchantPortalApi } from '../../api/api'
 import { useServiceCategories } from '../../hooks/useServiceCategories'
 import { useDict, parseRemark } from '../../hooks/useDict'
 
-const { Text, Title } = Typography
+const { Text } = Typography
 const { Option } = Select
 const { TextArea } = Input
 
@@ -90,7 +91,8 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
   let remaining = item.duration
 
   if (item.svcStatus === 1 && item.startTime) {
-    elapsed = now.diff(dayjs(item.startTime), 'minute')
+    const start = dayjsFromApi(item.startTime)
+    elapsed = start ? now.diff(start, 'minute') : 0
     pct = Math.min(100, Math.round((elapsed / item.duration) * 100))
     remaining = Math.max(0, item.duration - elapsed)
   } else if (item.svcStatus === 2) {
@@ -104,7 +106,7 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
   if (compact) {
     // ── 表格单元格内紧凑版 ──
     return (
-      <div style={{ marginBottom: 5, lastChild: { marginBottom: 0 } as any }}>
+      <div style={{ marginBottom: 5 }}>
         <style>{`
           @keyframes ${animId}-shimmer {
             0%   { background-position: -200% center; }
@@ -454,8 +456,6 @@ export default function WalkinSessionPage() {
     try {
       const tech = technicians.find((t: any) => t.id === values.technicianId)
       const totalAmount = orderItems.reduce((s, i) => s + i.unitPrice * i.qty, 0)
-      const serviceNames = orderItems.map(i => i.name).join(' + ')
-
       // 使用原子接口：session + 所有服务项在同一事务内完成，任一失败全部回滚
       const itemsJson = JSON.stringify(orderItems.map(i => ({
         serviceItemId:   i.serviceId,
@@ -600,7 +600,7 @@ export default function WalkinSessionPage() {
         if (!items.length) return <span style={{ fontSize: 12, color: '#9ca3af' }}>待录入</span>
         return (
           <div style={{ paddingTop: 2, paddingBottom: 2 }}>
-            {items.map((it, idx) => (
+            {items.map((it: { serviceId: number }, idx: number) => (
               <ServiceProgressBar key={it.serviceId} item={it} colorIdx={idx} compact svcStatusMap={SVC_STATUS_CFG} />
             ))}
           </div>
@@ -610,7 +610,7 @@ export default function WalkinSessionPage() {
     // ⑧ 到店时间（移至最后）
     {
       title: col(<ClockCircleOutlined style={{ color: '#64748b' }} />, '到店时间', 'left'), dataIndex: 'checkInTime', width: 115, align: 'left',
-      render: v => <Text style={{ fontSize: 12 }}>{v ? dayjs(v).format('MM-DD HH:mm') : '—'}</Text>,
+      render: v => <Text style={{ fontSize: 12 }}>{v != null && v !== '' ? fmtTime(v, 'MM-DD HH:mm') : '—'}</Text>,
     },
     // ⑨ 操作 — 固定右列
     {
@@ -1157,7 +1157,7 @@ export default function WalkinSessionPage() {
                       ))}
                     </div>
                     {/* 行 */}
-                    {serviceItems.map((item, i) => (
+                    {serviceItems.map((item: { name: string; qty: number; technician: string; unitPrice: number }, i: number) => (
                       <div key={i} style={{
                         display: 'grid', gridTemplateColumns: '1fr 80px 80px 90px',
                         padding: '10px 16px', gap: 12, alignItems: 'center',
@@ -1184,7 +1184,7 @@ export default function WalkinSessionPage() {
                     }}>
                       <span style={{ fontWeight: 700, color: '#065f46', fontSize: 13 }}>合计</span>
                       <span style={{ fontSize: 18, fontWeight: 900, color: '#10b981' }}>
-                        {symbol}{serviceItems.reduce((s, it) => s + it.unitPrice * it.qty, 0).toFixed(2)}
+                        {symbol}{serviceItems.reduce((s: number, it: { unitPrice: number; qty: number }) => s + it.unitPrice * it.qty, 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -1480,7 +1480,7 @@ export default function WalkinSessionPage() {
                 { label: '手环编号', value: editTarget.wristbandNo, icon: <QrcodeOutlined />, color: '#6366f1' },
                 { label: '客户姓名', value: editTarget.memberName || '散客', icon: <UserOutlined />, color: '#10b981' },
                 { label: '服务技师', value: editTarget.technicianName || '待分配', icon: <IdcardOutlined />, color: '#f59e0b' },
-                { label: '到店时间', value: dayjs(editTarget.checkInTime).format('MM-DD HH:mm'), icon: <ClockCircleOutlined />, color: '#3b82f6' },
+                { label: '到店时间', value: fmtTime(editTarget.checkInTime, 'MM-DD HH:mm'), icon: <ClockCircleOutlined />, color: '#3b82f6' },
               ].map((item, i) => (
                 <div key={i} style={{
                   flex: 1, padding: '10px 14px', borderRadius: 12,
@@ -1697,8 +1697,8 @@ export default function WalkinSessionPage() {
                   </span>
                 } />
                 <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11, marginTop: 4 }}>
-                  {dayjs(detail.checkInTime).format('YYYY-MM-DD HH:mm')} 到店
-                  {detail.checkOutTime && ` · ${dayjs(detail.checkOutTime).format('HH:mm')} 离店`}
+                  {fmtTime(detail.checkInTime, 'YYYY-MM-DD HH:mm')} 到店
+                  {detail.checkOutTime && ` · ${fmtTime(detail.checkOutTime, 'HH:mm')} 离店`}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>

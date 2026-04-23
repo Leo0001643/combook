@@ -5,87 +5,146 @@ import '../services/storage_service.dart';
 import '../utils/log_util.dart';
 import '../routes/app_routes.dart';
 
+/// 当前应用语言码（每次请求动态取，支持运行时切换）
+String get _currentLang => Get.locale?.languageCode ?? 'zh';
+
 /// 统一网络请求封装
-/// 用法：HttpUtil.get('/path') / HttpUtil.post('/path', data:{})
 class HttpUtil {
   HttpUtil._();
 
-  static const String _baseUrl = AppConfig.apiBaseUrl;
-  static const int    _timeout = 15000;
+  static const int _timeout = 15000;
 
   static late final Dio _dio;
   static bool _initialized = false;
 
-  /// 必须在 main() 初始化
+  /// 必须在 main() 中、runApp() 之前调用
   static void init() {
     if (_initialized) return;
+
     _dio = Dio(BaseOptions(
-      baseUrl: _baseUrl,
+      baseUrl:        AppConfig.apiBaseUrl,
+      // 使用表单参数提交，Spring @ModelAttribute 直接绑定
+      contentType:    'application/x-www-form-urlencoded',
+      responseType:   ResponseType.json,
       connectTimeout: const Duration(milliseconds: _timeout),
       receiveTimeout: const Duration(milliseconds: _timeout),
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-Merchant-Id': AppConfig.merchantId,   // 多商户标识
+        'Accept':        'application/json',
+        'X-Merchant-Id': '${AppConfig.merchantId}',
+        // Accept-Language 由 _I18nInterceptor 动态注入
       },
     ));
-    _dio.interceptors.addAll([_AuthInterceptor(), _LogInterceptor(), _ErrorInterceptor()]);
+
+    _dio.interceptors.addAll([
+      _I18nInterceptor(),
+      _AuthInterceptor(),
+      _LogInterceptor(),
+      _ErrorInterceptor(),
+    ]);
+
     _initialized = true;
   }
 
-  // ── GET ───────────────────────────────────────────────────────────
+  // ── GET ────────────────────────────────────────────────────────────
   static Future<T> get<T>(String path, {
     Map<String, dynamic>? params,
     T Function(dynamic)? fromJson,
-  }) async {
-    final resp = await _dio.get(path, queryParameters: params);
-    return _parse<T>(resp.data, fromJson);
-  }
+  }) => _call(() => _dio.get(path, queryParameters: params), fromJson);
 
-  // ── POST ──────────────────────────────────────────────────────────
+  // ── POST ───────────────────────────────────────────────────────────
   static Future<T> post<T>(String path, {
     dynamic data,
     T Function(dynamic)? fromJson,
-  }) async {
-    final resp = await _dio.post(path, data: data);
-    return _parse<T>(resp.data, fromJson);
-  }
+  }) => _call(
+    () => _dio.post(path, data: _encodeBody(data)),
+    fromJson,
+  );
 
-  // ── PUT ───────────────────────────────────────────────────────────
+  // ── PUT ────────────────────────────────────────────────────────────
   static Future<T> put<T>(String path, {
     dynamic data,
     T Function(dynamic)? fromJson,
-  }) async {
-    final resp = await _dio.put(path, data: data);
-    return _parse<T>(resp.data, fromJson);
-  }
+  }) => _call(
+    () => _dio.put(path, data: _encodeBody(data)),
+    fromJson,
+  );
 
-  // ── PATCH ─────────────────────────────────────────────────────────
+  // ── PATCH ──────────────────────────────────────────────────────────
   static Future<T> patch<T>(String path, {
     dynamic data,
     T Function(dynamic)? fromJson,
-  }) async {
-    final resp = await _dio.patch(path, data: data);
-    return _parse<T>(resp.data, fromJson);
+  }) => _call(
+    () => _dio.patch(path, data: _encodeBody(data)),
+    fromJson,
+  );
+
+  // ── DELETE ─────────────────────────────────────────────────────────
+  static Future<T> delete<T>(String path, {T Function(dynamic)? fromJson}) =>
+      _call(() => _dio.delete(path), fromJson);
+
+  // ── 私有：统一调用入口 ──────────────────────────────────────────────
+  static Future<T> _call<T>(
+    Future<Response> Function() request,
+    T Function(dynamic)? fromJson,
+  ) async {
+    try {
+      final resp = await request();
+      return _parse<T>(resp.data, fromJson);
+    } on DioException catch (e) {
+      throw _toApiException(e);
+    }
   }
 
-  // ── DELETE ────────────────────────────────────────────────────────
-  static Future<T> delete<T>(String path, {T Function(dynamic)? fromJson}) async {
-    final resp = await _dio.delete(path);
-    return _parse<T>(resp.data, fromJson);
-  }
+  /// 表单提交：Map 直接透传，Dio 自动 URL 编码；FormData/String/null 原样透传
+  static dynamic _encodeBody(dynamic data) => data;
 
+  /// 解析后端统一响应体 { code, message, data }
   static T _parse<T>(dynamic raw, T Function(dynamic)? fromJson) {
-    final body = raw is Map<String, dynamic> ? raw : {'data': raw};
-    if (body['code'] != null && body['code'] != 0 && body['code'] != 200) {
-      throw ApiException(body['msg'] ?? 'Server error', body['code']);
+    final body = raw is Map<String, dynamic>
+        ? raw
+        : <String, dynamic>{'data': raw};
+
+    final code = body['code'];
+    if (code != null && code != 0 && code != 200) {
+      final msg = body['message'] as String?
+          ?? body['msg'] as String?
+          ?? 'Server error';
+      throw ApiException(msg, code);
     }
     final data = body['data'] ?? body;
     return fromJson != null ? fromJson(data) : data as T;
   }
+
+  /// 将 DioException 统一转换为 ApiException（只暴露一种异常类型给业务层）
+  static ApiException _toApiException(DioException e) {
+    final respData = e.response?.data;
+    if (respData is Map) {
+      final msg  = respData['message'] as String?
+                ?? respData['msg'] as String?;
+      final code = respData['code'];
+      if (msg != null && msg.isNotEmpty) return ApiException(msg, code);
+    }
+    final fallback = switch (e.type) {
+      DioExceptionType.connectionTimeout ||
+      DioExceptionType.sendTimeout      ||
+      DioExceptionType.receiveTimeout   => 'Request timeout',
+      DioExceptionType.connectionError  => 'Network unavailable',
+      _                                 => e.message ?? 'Request failed',
+    };
+    return ApiException(fallback);
+  }
 }
 
-// ── 认证拦截器 ─────────────────────────────────────────────────────────────────
+// ── 国际化拦截器 ─────────────────────────────────────────────────────────────
+class _I18nInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions opts, RequestInterceptorHandler handler) {
+    opts.headers['Accept-Language'] = _currentLang;
+    handler.next(opts);
+  }
+}
+
+// ── 认证拦截器 ────────────────────────────────────────────────────────────────
 class _AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions opts, RequestInterceptorHandler handler) {
@@ -104,11 +163,12 @@ class _AuthInterceptor extends Interceptor {
   }
 }
 
-// ── 日志拦截器 ─────────────────────────────────────────────────────────────────
+// ── 日志拦截器（含请求体，方便排查编码问题）──────────────────────────────────
 class _LogInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions opts, RequestInterceptorHandler handler) {
-    LogUtil.d('[HTTP] ▶ ${opts.method} ${opts.path}');
+    LogUtil.d('[HTTP] ▶ ${opts.method} ${opts.uri}');
+    if (opts.data != null) LogUtil.d('[HTTP] body: ${opts.data}');
     handler.next(opts);
   }
 
@@ -120,35 +180,23 @@ class _LogInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    LogUtil.e('[HTTP] ✗ ${err.message}');
+    LogUtil.e('[HTTP] ✗ ${err.type.name} ${err.requestOptions.path} | '
+        'status=${err.response?.statusCode} | '
+        'body=${err.response?.data}');
     handler.next(err);
   }
 }
 
-// ── 统一错误处理拦截器 ────────────────────────────────────────────────────────
+// ── 错误拦截器（透传，由 _toApiException 统一转换）────────────────────────────
 class _ErrorInterceptor extends Interceptor {
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    String msg;
-    switch (err.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.receiveTimeout:
-        msg = 'Request timeout'; break;
-      case DioExceptionType.connectionError:
-        msg = 'Network unavailable'; break;
-      default:
-        msg = err.response?.data?['msg'] ?? 'Request failed';
-    }
-    handler.reject(DioException(
-      requestOptions: err.requestOptions, message: msg, error: err.error,
-    ));
-  }
+  void onError(DioException err, ErrorInterceptorHandler handler) =>
+      handler.next(err);
 }
 
-/// 业务异常
+/// 统一业务/网络异常（业务层只需 catch ApiException）
 class ApiException implements Exception {
-  final String message;
+  final String  message;
   final dynamic code;
   const ApiException(this.message, [this.code]);
   @override String toString() => message;

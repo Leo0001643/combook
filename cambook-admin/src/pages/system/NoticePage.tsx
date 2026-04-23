@@ -16,6 +16,7 @@ import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import { fmtTime } from '../../utils/time'
 
 interface Notice {
   id: number
@@ -139,7 +140,7 @@ export default function NoticePage() {
     },
     {
       title: col(<CalendarOutlined style={{ color: '#6366f1' }} />, '发布时间'), dataIndex: 'createTime', key: 'createTime',
-      render: (v: string) => v ? <span style={{ color: '#666', fontSize: 13 }}>{v.substring(0, 16)}</span> : '-',
+      render: (v: string | number) => v != null && v !== '' ? <span style={{ color: '#666', fontSize: 13 }}>{fmtTime(v, 'YYYY-MM-DD HH:mm')}</span> : '-',
     },
     {
       title: col(<SettingOutlined style={{ color: '#6366f1' }} />, '操作'), key: 'action', width: 225,
@@ -296,7 +297,7 @@ export default function NoticePage() {
                 {TYPE_CFG[viewing.type] && <Tag color={TYPE_CFG[viewing.type].color} icon={TYPE_CFG[viewing.type].icon}>{TYPE_CFG[viewing.type].label}</Tag>}
                 {viewing.status === 1 ? <Badge status="success" text="正常发布" /> : <Badge status="default" text="已关闭" />}
               </Space>
-              <div style={{ marginTop: 8, color: '#666', fontSize: 13 }}>发布时间：{viewing.createTime?.substring(0, 16)} | 发布人：{viewing.createBy}</div>
+              <div style={{ marginTop: 8, color: '#666', fontSize: 13 }}>发布时间：{viewing.createTime != null && viewing.createTime !== '' ? fmtTime(viewing.createTime, 'YYYY-MM-DD HH:mm') : '—'} | 发布人：{viewing.createBy}</div>
             </div>
             <Divider />
             <div style={{ fontSize: 15, lineHeight: 1.8, color: '#333', whiteSpace: 'pre-line' }}>

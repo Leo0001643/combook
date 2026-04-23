@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -156,7 +156,7 @@ public class MerchantWalkinController {
         long conflict = sessionMapper.selectCount(Wrappers.<CbWalkinSession>lambdaQuery()
                 .eq(CbWalkinSession::getMerchantId, merchantId)
                 .eq(CbWalkinSession::getWristbandNo, wristbandNo)
-                .ge(CbWalkinSession::getCheckInTime, LocalDate.now().atStartOfDay())
+                .ge(CbWalkinSession::getCheckInTime, LocalDate.now().atStartOfDay(ZoneOffset.UTC).toEpochSecond())
                 .notIn(CbWalkinSession::getStatus, 3, 4));  // 排除已结算/已取消
         if (conflict > 0) throw new BusinessException("手环编号 " + wristbandNo + " 今日已被使用");
 
@@ -177,7 +177,7 @@ public class MerchantWalkinController {
         session.setTotalAmount(BigDecimal.ZERO);
         session.setPaidAmount(BigDecimal.ZERO);
         session.setRemark(remark != null ? remark : "");
-        session.setCheckInTime(LocalDateTime.now());
+        session.setCheckInTime(System.currentTimeMillis() / 1000L);
         sessionMapper.insert(session);
 
         return detail(session.getId());
@@ -206,7 +206,7 @@ public class MerchantWalkinController {
         long conflict = sessionMapper.selectCount(Wrappers.<CbWalkinSession>lambdaQuery()
                 .eq(CbWalkinSession::getMerchantId, merchantId)
                 .eq(CbWalkinSession::getWristbandNo, wristbandNo)
-                .ge(CbWalkinSession::getCheckInTime, LocalDate.now().atStartOfDay())
+                .ge(CbWalkinSession::getCheckInTime, LocalDate.now().atStartOfDay(ZoneOffset.UTC).toEpochSecond())
                 .notIn(CbWalkinSession::getStatus, 3, 4));
         if (conflict > 0) throw new BusinessException("手环编号 " + wristbandNo + " 今日已被使用");
 
@@ -227,7 +227,7 @@ public class MerchantWalkinController {
         session.setTotalAmount(BigDecimal.ZERO);
         session.setPaidAmount(BigDecimal.ZERO);
         session.setRemark(remark != null ? remark : "");
-        session.setCheckInTime(LocalDateTime.now());
+        session.setCheckInTime(System.currentTimeMillis() / 1000L);
         sessionMapper.insert(session);   // ← 若后续步骤抛异常，此 INSERT 一并回滚
 
         // 解析并插入服务项
@@ -304,7 +304,7 @@ public class MerchantWalkinController {
         order.setServiceDuration(serviceDuration);
         order.setAddressId(0L);
         order.setAddressDetail("店内服务");
-        order.setAppointTime(LocalDateTime.now());
+        order.setAppointTime(System.currentTimeMillis() / 1000L);
         order.setOriginalAmount(unitPrice);
         order.setPayAmount(unitPrice);
         order.setStatus(2);   // 已确认，待服务
@@ -354,7 +354,7 @@ public class MerchantWalkinController {
         if (order.getStatus() != 2 && order.getStatus() != 1)
             throw new BusinessException("当前状态无法开始服务");
         order.setStatus(5);       // 服务中
-        order.setStartTime(LocalDateTime.now());
+        order.setStartTime(System.currentTimeMillis() / 1000L);
         orderMapper.updateById(order);
 
         if (session.getStatus() == 0) {
@@ -373,7 +373,7 @@ public class MerchantWalkinController {
         CbOrder order = requireOrder(orderId, id);
         if (order.getStatus() != 5) throw new BusinessException("服务未进行中，无法结束");
         order.setStatus(6);       // 已完成
-        order.setEndTime(LocalDateTime.now());
+        order.setEndTime(System.currentTimeMillis() / 1000L);
         orderMapper.updateById(order);
 
         // 若所有服务均已完成，session 进入待结算
@@ -401,7 +401,7 @@ public class MerchantWalkinController {
 
         session.setPaidAmount(paidAmount);
         session.setStatus(3);     // 已结算
-        session.setCheckOutTime(LocalDateTime.now());
+        session.setCheckOutTime(System.currentTimeMillis() / 1000L);
         if (remark != null) session.setRemark(remark);
         sessionMapper.updateById(session);
 
@@ -411,9 +411,9 @@ public class MerchantWalkinController {
             if (o.getStatus() != 7) {   // 排除已取消
                 if (o.getStatus() != 6) {
                     o.setStatus(6);
-                    o.setEndTime(LocalDateTime.now());
+                    o.setEndTime(System.currentTimeMillis() / 1000L);
                 }
-                o.setPayTime(LocalDateTime.now());
+                o.setPayTime(System.currentTimeMillis() / 1000L);
                 orderMapper.updateById(o);
             }
         }
@@ -439,7 +439,7 @@ public class MerchantWalkinController {
 
         session.setStatus(4);
         session.setRemark(reason != null ? reason : "");
-        session.setCheckOutTime(LocalDateTime.now());
+        session.setCheckOutTime(System.currentTimeMillis() / 1000L);
         sessionMapper.updateById(session);
 
         // 取消所有关联待服务订单
@@ -503,10 +503,8 @@ public class MerchantWalkinController {
         vo.put("status",           s.getStatus());
         vo.put("totalAmount",      s.getTotalAmount());
         vo.put("paidAmount",       s.getPaidAmount());
-        vo.put("checkInTime",      s.getCheckInTime() != null
-                ? s.getCheckInTime().toString().replace("T", " ") : null);
-        vo.put("checkOutTime",     s.getCheckOutTime() != null
-                ? s.getCheckOutTime().toString().replace("T", " ") : null);
+        vo.put("checkInTime",      s.getCheckInTime());
+        vo.put("checkOutTime",     s.getCheckOutTime());
         vo.put("remark",           s.getRemark());
         vo.put("orderItems",       items);
         return vo;
@@ -536,10 +534,8 @@ public class MerchantWalkinController {
         item.put("unitPrice",  o.getPayAmount() != null ? o.getPayAmount().doubleValue() : 0.0);
         item.put("qty",        1);
         item.put("svcStatus",  dbStatusToSvcStatus(o.getStatus()));
-        item.put("startTime",  o.getStartTime() != null
-                ? o.getStartTime().toString().replace("T", " ") : null);
-        item.put("endTime",    o.getEndTime() != null
-                ? o.getEndTime().toString().replace("T", " ") : null);
+        item.put("startTime",  o.getStartTime());
+        item.put("endTime",    o.getEndTime());
         item.put("dbStatus",   o.getStatus());
         return item;
     }
@@ -569,7 +565,7 @@ public class MerchantWalkinController {
         order.setServiceDuration(durObj == null ? 0 : Integer.parseInt(durObj.toString()));
         order.setAddressId(0L);
         order.setAddressDetail("店内服务");
-        order.setAppointTime(LocalDateTime.now());
+        order.setAppointTime(System.currentTimeMillis() / 1000L);
         order.setOriginalAmount(unitPrice);
         order.setPayAmount(unitPrice);
         order.setStatus(2);   // 已确认，待服务

@@ -18,7 +18,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -108,7 +107,7 @@ public class AuthService implements IAuthService {
         m.setLevel(0);
         m.setPoints(0);
         m.setLang("zh");
-        m.setRegisterTime(LocalDateTime.now());
+        m.setRegisterTime(System.currentTimeMillis() / 1000L);
         return m;
     }
 

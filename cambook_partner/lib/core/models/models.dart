@@ -1,3 +1,5 @@
+import '../utils/date_util.dart';
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 技师 / 用户模型
 // ─────────────────────────────────────────────────────────────────────────────
@@ -89,6 +91,35 @@ class OrderModel {
     this.distance, this.remark, this.startTime, this.endTime,
   });
 
+  /// 从后端 JSON 构建，时间字段均为 UTC 秒级时间戳。
+  factory OrderModel.fromJson(Map<String, dynamic> j) => OrderModel(
+    id:           j['id'] as int,
+    orderNo:      j['orderNo'] as String,
+    status:       _parseStatus(j['status'] as int? ?? 0),
+    serviceMode:  (j['serviceMode'] as int?) == 2 ? ServiceMode.store : ServiceMode.home,
+    customer:     j['member'] != null
+                    ? CustomerModel.fromJson(j['member'] as Map<String, dynamic>)
+                    : CustomerModel(id: 0, nickname: j['memberNickname'] ?? '', phone: ''),
+    services:     j['orderItems'] != null
+                    ? (j['orderItems'] as List).map((e) => ServiceItemModel.fromJson(e as Map<String, dynamic>)).toList()
+                    : [],
+    totalAmount:  (j['payAmount'] as num?)?.toDouble() ?? 0,
+    appointTime:  DateUtil.fromEpochSec(j['appointTime']),
+    createTime:   DateUtil.fromEpochSec(j['createTime']),
+    distance:     (j['distance'] as num?)?.toDouble(),
+    remark:       j['remark'] as String?,
+    startTime:    DateUtil.fromEpochSecNullable(j['startTime']),
+    endTime:      DateUtil.fromEpochSecNullable(j['endTime']),
+  );
+
+  static OrderStatus _parseStatus(int s) => switch (s) {
+    1     => OrderStatus.pending,
+    2 || 3 => OrderStatus.accepted,
+    4 || 5 => OrderStatus.inService,
+    6     => OrderStatus.completed,
+    _     => OrderStatus.cancelled,
+  };
+
   int get totalDuration => services.fold(0, (s, e) => s + e.duration);
 
   OrderModel copyWith({OrderStatus? status, DateTime? startTime, DateTime? endTime}) =>
@@ -112,6 +143,14 @@ class CustomerModel {
     required this.id, required this.nickname, required this.phone,
     this.avatar, this.address,
   });
+
+  factory CustomerModel.fromJson(Map<String, dynamic> j) => CustomerModel(
+    id:       j['id'] as int? ?? 0,
+    nickname: j['nickname'] as String? ?? '',
+    phone:    j['mobile'] as String? ?? j['phone'] as String? ?? '',
+    avatar:   j['avatar'] as String?,
+    address:  j['addressDetail'] as String?,
+  );
 }
 
 class ServiceItemModel {
@@ -124,6 +163,13 @@ class ServiceItemModel {
     required this.id, required this.name,
     required this.duration, required this.price,
   });
+
+  factory ServiceItemModel.fromJson(Map<String, dynamic> j) => ServiceItemModel(
+    id:       j['id'] as int? ?? j['serviceItemId'] as int? ?? 0,
+    name:     j['serviceName'] as String? ?? j['name'] as String? ?? '',
+    duration: j['serviceDuration'] as int? ?? j['duration'] as int? ?? 0,
+    price:    (j['unitPrice'] as num?)?.toDouble() ?? (j['price'] as num?)?.toDouble() ?? 0,
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -143,6 +189,15 @@ class IncomeRecordModel {
     required this.id, required this.orderNo, required this.amount,
     required this.date, required this.type, this.note,
   });
+
+  factory IncomeRecordModel.fromJson(Map<String, dynamic> j) => IncomeRecordModel(
+    id:      j['id'] as int? ?? 0,
+    orderNo: j['orderNo'] as String? ?? '',
+    amount:  (j['amount'] as num?)?.toDouble() ?? 0,
+    date:    DateUtil.fromEpochSec(j['createTime'] ?? j['date']),
+    type:    IncomeType.order,
+    note:    j['note'] as String?,
+  );
 }
 
 class IncomeTrendModel {
@@ -232,4 +287,14 @@ class ReviewModel {
     required this.id, required this.customerName, this.customerAvatar,
     required this.rating, this.comment, required this.tags, required this.date,
   });
+
+  factory ReviewModel.fromJson(Map<String, dynamic> j) => ReviewModel(
+    id:             j['id'] as int? ?? 0,
+    customerName:   j['memberNickname'] as String? ?? '',
+    customerAvatar: j['memberAvatar'] as String?,
+    rating:         (j['overallScore'] as num?)?.toDouble() ?? 0,
+    comment:        j['comment'] as String?,
+    tags:           (j['tags'] as List?)?.map((e) => e.toString()).toList() ?? [],
+    date:           DateUtil.fromEpochSec(j['createTime']),
+  );
 }

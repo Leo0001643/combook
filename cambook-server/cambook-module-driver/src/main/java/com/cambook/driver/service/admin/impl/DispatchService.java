@@ -21,7 +21,6 @@ import com.cambook.driver.service.admin.IDispatchService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -126,7 +125,7 @@ public class DispatchService implements IDispatchService {
                 .eq(CbDispatchOrder::getId, dispatchId);
 
         if (status == 5) {
-            wrapper.set(CbDispatchOrder::getFinishTime, LocalDateTime.now());
+            wrapper.set(CbDispatchOrder::getFinishTime, System.currentTimeMillis() / 1000L);
         }
         dispatchMapper.update(null, wrapper);
     }

@@ -62,6 +62,7 @@ class App extends StatelessWidget {
       initialRoute: initial,
       getPages: AppPages.pages,
       defaultTransition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 180),
     );
   }
 }

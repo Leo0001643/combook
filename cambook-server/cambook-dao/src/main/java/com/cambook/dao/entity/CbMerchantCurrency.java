@@ -1,12 +1,14 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 商户币种配置：每家商户可独立启用不同结算货币
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
  * @author CamBook
  */
 @TableName("cb_merchant_currency")
+@Getter
+@Setter
 public class CbMerchantCurrency implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -40,38 +44,12 @@ public class CbMerchantCurrency implements Serializable {
     /** 状态：0=停用 1=启用 */
     private Integer status;
 
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private Long createTime;
+    private Long updateTime;
 
     // ── Getters & Setters ─────────────────────────────────────────────────────
 
-    public Long getId()                       { return id; }
-    public void setId(Long id)               { this.id = id; }
+    public void setCreateTime(Long v){ this.createTime = v; }
 
-    public Long getMerchantId()              { return merchantId; }
-    public void setMerchantId(Long v)        { this.merchantId = v; }
-
-    public String getCurrencyCode()          { return currencyCode; }
-    public void setCurrencyCode(String v)    { this.currencyCode = v; }
-
-    public Integer getIsDefault()            { return isDefault; }
-    public void setIsDefault(Integer v)      { this.isDefault = v; }
-
-    public BigDecimal getCustomRate()        { return customRate; }
-    public void setCustomRate(BigDecimal v)  { this.customRate = v; }
-
-    public String getDisplayName()           { return displayName; }
-    public void setDisplayName(String v)     { this.displayName = v; }
-
-    public Integer getSortOrder()            { return sortOrder; }
-    public void setSortOrder(Integer v)      { this.sortOrder = v; }
-
-    public Integer getStatus()               { return status; }
-    public void setStatus(Integer v)         { this.status = v; }
-
-    public LocalDateTime getCreateTime()     { return createTime; }
-    public void setCreateTime(LocalDateTime v){ this.createTime = v; }
-
-    public LocalDateTime getUpdateTime()     { return updateTime; }
-    public void setUpdateTime(LocalDateTime v){ this.updateTime = v; }
+    public void setUpdateTime(Long v){ this.updateTime = v; }
 }

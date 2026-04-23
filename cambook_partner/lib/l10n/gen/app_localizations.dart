@@ -1800,6 +1800,174 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'确定退出应用程序？'**
   String get exitAppConfirm;
+
+  /// No description provided for @todaySchedule.
+  ///
+  /// In zh, this message translates to:
+  /// **'今日安排'**
+  String get todaySchedule;
+
+  /// No description provided for @allOrders.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部订单'**
+  String get allOrders;
+
+  /// No description provided for @orderStatusPending.
+  ///
+  /// In zh, this message translates to:
+  /// **'待确认'**
+  String get orderStatusPending;
+
+  /// No description provided for @orderStatusAccepted.
+  ///
+  /// In zh, this message translates to:
+  /// **'已接单'**
+  String get orderStatusAccepted;
+
+  /// No description provided for @orderStatusInProgress.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务中'**
+  String get orderStatusInProgress;
+
+  /// No description provided for @orderStatusCompleted.
+  ///
+  /// In zh, this message translates to:
+  /// **'已完成'**
+  String get orderStatusCompleted;
+
+  /// No description provided for @orderStatusCancelled.
+  ///
+  /// In zh, this message translates to:
+  /// **'已取消'**
+  String get orderStatusCancelled;
+
+  /// No description provided for @noScheduleToday.
+  ///
+  /// In zh, this message translates to:
+  /// **'今日暂无预约'**
+  String get noScheduleToday;
+
+  /// No description provided for @keepOnlineHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'保持在线，随时迎接新订单 ✨'**
+  String get keepOnlineHint;
+
+  /// No description provided for @myStats.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的数据'**
+  String get myStats;
+
+  /// No description provided for @totalOrders.
+  ///
+  /// In zh, this message translates to:
+  /// **'累计接单'**
+  String get totalOrders;
+
+  /// No description provided for @overallRating.
+  ///
+  /// In zh, this message translates to:
+  /// **'综合评分'**
+  String get overallRating;
+
+  /// No description provided for @currentBalance.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前余额'**
+  String get currentBalance;
+
+  /// No description provided for @statTodayAppointments.
+  ///
+  /// In zh, this message translates to:
+  /// **'今日预约'**
+  String get statTodayAppointments;
+
+  /// No description provided for @statTodayCompleted.
+  ///
+  /// In zh, this message translates to:
+  /// **'今日完成'**
+  String get statTodayCompleted;
+
+  /// No description provided for @statTodayCancelled.
+  ///
+  /// In zh, this message translates to:
+  /// **'今日取消'**
+  String get statTodayCancelled;
+
+  /// No description provided for @schedOrderCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{n}单'**
+  String schedOrderCount(int n);
+
+  /// No description provided for @schedInService.
+  ///
+  /// In zh, this message translates to:
+  /// **'进行中'**
+  String get schedInService;
+
+  /// No description provided for @schedPending.
+  ///
+  /// In zh, this message translates to:
+  /// **'待服务'**
+  String get schedPending;
+
+  /// No description provided for @totalDuration.
+  ///
+  /// In zh, this message translates to:
+  /// **'总时长'**
+  String get totalDuration;
+
+  /// No description provided for @scheduleProgress.
+  ///
+  /// In zh, this message translates to:
+  /// **'{completed} / {total} 单完成'**
+  String scheduleProgress(int completed, int total);
+
+  /// No description provided for @statusOnWay.
+  ///
+  /// In zh, this message translates to:
+  /// **'前往中'**
+  String get statusOnWay;
+
+  /// No description provided for @statusCancelling.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消中'**
+  String get statusCancelling;
+
+  /// No description provided for @statusRefunding.
+  ///
+  /// In zh, this message translates to:
+  /// **'退款中'**
+  String get statusRefunding;
+
+  /// No description provided for @statusRefunded.
+  ///
+  /// In zh, this message translates to:
+  /// **'已退款'**
+  String get statusRefunded;
+
+  /// No description provided for @schedEndTime.
+  ///
+  /// In zh, this message translates to:
+  /// **'结束 {time} · {duration}min'**
+  String schedEndTime(String time, String duration);
+
+  /// No description provided for @serviceInProgress.
+  ///
+  /// In zh, this message translates to:
+  /// **'服务进行中'**
+  String get serviceInProgress;
+
+  /// No description provided for @estimatedIncome.
+  ///
+  /// In zh, this message translates to:
+  /// **'预计 {amount}'**
+  String estimatedIncome(String amount);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

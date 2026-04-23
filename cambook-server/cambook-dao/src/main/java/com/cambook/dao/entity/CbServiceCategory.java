@@ -1,5 +1,8 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
@@ -7,6 +10,8 @@ import com.cambook.dao.entity.base.BaseEntity;
  * 服务类目实体
  */
 @TableName("cb_service_category")
+@Getter
+@Setter
 public class CbServiceCategory extends BaseEntity {
 
     /** 归属商户 ID（null = 平台公共类目） */
@@ -47,7 +52,6 @@ public class CbServiceCategory extends BaseEntity {
     public void    setNameKo(String v)      { this.nameKo = v; }
     public String  getIcon()               { return icon; }
     public void    setIcon(String v)       { this.icon = v; }
-    public java.math.BigDecimal getPrice() { return price; }
     public void    setPrice(java.math.BigDecimal v) { this.price = v; }
     public Integer getDuration()           { return duration; }
     public void    setDuration(Integer v)  { this.duration = v; }

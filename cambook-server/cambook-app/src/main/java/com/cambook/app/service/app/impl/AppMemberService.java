@@ -44,6 +44,7 @@ public class AppMemberService implements IAppMemberService {
                         .set(dto.getNickname() != null, CbMember::getNickname, dto.getNickname())
                         .set(dto.getAvatar()   != null, CbMember::getAvatar,   dto.getAvatar())
                         .set(dto.getGender()   != null, CbMember::getGender,   dto.getGender())
+                        .set(dto.getBirthday() != null, CbMember::getBirthday, dto.getBirthday())
                         .eq(CbMember::getId, memberId));
     }
 

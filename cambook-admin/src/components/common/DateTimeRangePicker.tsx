@@ -34,6 +34,7 @@ interface Props {
   style?: React.CSSProperties
   size?: 'small' | 'middle' | 'large'
   allowClear?: boolean
+  disabled?: boolean
 }
 
 export default function DateTimeRangePicker({
@@ -43,6 +44,7 @@ export default function DateTimeRangePicker({
   style,
   size = 'middle',
   allowClear = true,
+  disabled = false,
 }: Props) {
   return (
     <RangePicker
@@ -51,6 +53,7 @@ export default function DateTimeRangePicker({
       placeholder={placeholder}
       size={size}
       allowClear={allowClear}
+      disabled={disabled}
       showTime={{
         defaultValue: [
           dayjs('00:00:00', 'HH:mm:ss'),

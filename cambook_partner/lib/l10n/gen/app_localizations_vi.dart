@@ -870,4 +870,96 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Thoát khỏi ứng dụng?';
+
+  @override
+  String get todaySchedule => 'Lịch hôm nay';
+
+  @override
+  String get allOrders => 'Tất cả đơn hàng';
+
+  @override
+  String get orderStatusPending => 'Chờ xác nhận';
+
+  @override
+  String get orderStatusAccepted => 'Đã nhận';
+
+  @override
+  String get orderStatusInProgress => 'Đang phục vụ';
+
+  @override
+  String get orderStatusCompleted => 'Hoàn thành';
+
+  @override
+  String get orderStatusCancelled => 'Đã hủy';
+
+  @override
+  String get noScheduleToday => 'Hôm nay không có lịch hẹn';
+
+  @override
+  String get keepOnlineHint => 'Duy trì trực tuyến để nhận đơn mới ✨';
+
+  @override
+  String get myStats => 'Dữ liệu của tôi';
+
+  @override
+  String get totalOrders => 'Tổng đơn hàng';
+
+  @override
+  String get overallRating => 'Đánh giá tổng thể';
+
+  @override
+  String get currentBalance => 'Số dư hiện tại';
+
+  @override
+  String get statTodayAppointments => 'Đặt lịch hôm nay';
+
+  @override
+  String get statTodayCompleted => 'Hoàn thành hôm nay';
+
+  @override
+  String get statTodayCancelled => 'Huỷ hôm nay';
+
+  @override
+  String schedOrderCount(int n) {
+    return '$n đơn';
+  }
+
+  @override
+  String get schedInService => 'Đang phục vụ';
+
+  @override
+  String get schedPending => 'Chờ phục vụ';
+
+  @override
+  String get totalDuration => 'Tổng thời gian';
+
+  @override
+  String scheduleProgress(int completed, int total) {
+    return '$completed / $total hoàn thành';
+  }
+
+  @override
+  String get statusOnWay => 'Đang đến';
+
+  @override
+  String get statusCancelling => 'Đang huỷ';
+
+  @override
+  String get statusRefunding => 'Đang hoàn tiền';
+
+  @override
+  String get statusRefunded => 'Đã hoàn tiền';
+
+  @override
+  String schedEndTime(String time, String duration) {
+    return 'Kết thúc $time · ${duration}ph';
+  }
+
+  @override
+  String get serviceInProgress => 'Đang phục vụ';
+
+  @override
+  String estimatedIncome(String amount) {
+    return 'Dự tính $amount';
+  }
 }

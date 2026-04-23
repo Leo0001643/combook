@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
   Table, Button, Space, Typography, message, Modal, Form,
-  Input, InputNumber, Select, Badge, Row, Col, Tag, Tooltip, Popconfirm, Divider,
+  Input, InputNumber, Select, Badge, Row, Col, Tag, Tooltip, Popconfirm,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {

@@ -9,8 +9,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 /**
  * Banner 轮播图（Admin）
  *
@@ -65,9 +63,9 @@ public class BannerDTO {
     @Schema(description = "状态：1启用 0停用")
     private Integer status;
 
-    @Schema(description = "生效开始时间")
-    private LocalDateTime startTime;
+    @Schema(description = "生效开始时间（UTC 秒级时间戳）")
+    private Long startTime;
 
-    @Schema(description = "生效结束时间")
-    private LocalDateTime endTime;
+    @Schema(description = "生效结束时间（UTC 秒级时间戳）")
+    private Long endTime;
 }

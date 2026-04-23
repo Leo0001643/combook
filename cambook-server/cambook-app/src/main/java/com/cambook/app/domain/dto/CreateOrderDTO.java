@@ -1,13 +1,10 @@
 package com.cambook.app.domain.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 /**
  * 创建订单（App）
@@ -31,9 +28,8 @@ public class CreateOrderDTO {
     private Long addressId;
 
     @NotNull(message = "预约时间不能为空")
-    @Future(message = "预约时间必须是未来时间")
-    @Schema(description = "预约时间（yyyy-MM-dd HH:mm:ss）")
-    private LocalDateTime appointTime;
+    @Schema(description = "预约时间（UTC 秒级时间戳）")
+    private Long appointTime;
 
     @Schema(description = "使用的优惠券 ID")
     private Long couponId;

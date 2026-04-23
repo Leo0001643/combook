@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import {
-  Table, Button, Space, Tag, Input, Select, Badge, Tooltip, message, Divider,
+  Table, Button, Space, Tag, Input, Select, Badge, Tooltip, message,
 } from 'antd'
 import {
   ClockCircleOutlined, ReloadOutlined, SearchOutlined,

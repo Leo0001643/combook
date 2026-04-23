@@ -870,4 +870,96 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get exitAppConfirm => '앱을 종료하시겠습니까?';
+
+  @override
+  String get todaySchedule => '오늘 일정';
+
+  @override
+  String get allOrders => '전체 주문';
+
+  @override
+  String get orderStatusPending => '확인 대기';
+
+  @override
+  String get orderStatusAccepted => '수락됨';
+
+  @override
+  String get orderStatusInProgress => '서비스 중';
+
+  @override
+  String get orderStatusCompleted => '완료됨';
+
+  @override
+  String get orderStatusCancelled => '취소됨';
+
+  @override
+  String get noScheduleToday => '오늘 예약이 없습니다';
+
+  @override
+  String get keepOnlineHint => '온라인 유지하며 새 주문을 기다리세요 ✨';
+
+  @override
+  String get myStats => '내 데이터';
+
+  @override
+  String get totalOrders => '누적 주문';
+
+  @override
+  String get overallRating => '종합 평점';
+
+  @override
+  String get currentBalance => '현재 잔액';
+
+  @override
+  String get statTodayAppointments => '오늘 예약';
+
+  @override
+  String get statTodayCompleted => '오늘 완료';
+
+  @override
+  String get statTodayCancelled => '오늘 취소';
+
+  @override
+  String schedOrderCount(int n) {
+    return '$n건';
+  }
+
+  @override
+  String get schedInService => '진행 중';
+
+  @override
+  String get schedPending => '대기 중';
+
+  @override
+  String get totalDuration => '총 시간';
+
+  @override
+  String scheduleProgress(int completed, int total) {
+    return '$completed / $total 완료';
+  }
+
+  @override
+  String get statusOnWay => '이동 중';
+
+  @override
+  String get statusCancelling => '취소 중';
+
+  @override
+  String get statusRefunding => '환불 중';
+
+  @override
+  String get statusRefunded => '환불 완료';
+
+  @override
+  String schedEndTime(String time, String duration) {
+    return '종료 $time · $duration분';
+  }
+
+  @override
+  String get serviceInProgress => '서비스 중';
+
+  @override
+  String estimatedIncome(String amount) {
+    return '예상 $amount';
+  }
 }

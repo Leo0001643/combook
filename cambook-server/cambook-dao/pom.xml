@@ -18,6 +18,12 @@
             <groupId>com.cambook</groupId>
             <artifactId>cambook-common</artifactId>
         </dependency>
+        <!-- Lombok：消除实体样板代码（@Getter @Setter） -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
         <!-- MyBatis-Plus -->
         <dependency>
             <groupId>com.baomidou</groupId>

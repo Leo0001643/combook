@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/i18n/l10n_ext.dart';
-import '../../../core/mock/mock_data.dart';
+import '../../../core/network/api_endpoints.dart';
+import '../../../core/network/http_util.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/services/storage_service.dart';
 import '../../../core/services/user_service.dart';
@@ -11,7 +13,7 @@ import 'state.dart';
 class LoginLogic extends GetxController {
   final LoginState state = LoginState();
 
-  final accountCtrl = TextEditingController(); // phone OR techId
+  final accountCtrl = TextEditingController();
   final passCtrl    = TextEditingController();
 
   @override
@@ -42,19 +44,33 @@ class LoginLogic extends GetxController {
 
     state.loading.value = true;
     try {
-      await Future.delayed(const Duration(milliseconds: 800));
-      // 正式版:
-      // final res = await HttpUtil.instance.post(ApiEndpoints.login, data: {
-      //   'account': state.mode.value == 0
-      //       ? '${state.countryCode.value}$account' : account,
-      //   'loginType': state.mode.value == 0 ? 'phone' : 'techId',
-      //   'password': pass,
-      //   'merchantId': AppConfig.merchantId,
-      // });
-      Get.find<UserService>().login(MockData.technician, 'mock_token_abc');
+      final isPhone = state.mode.value == 0;
+      final fullAccount = isPhone
+          ? '${state.countryCode.value}$account'
+          : account;
+
+      final data = await HttpUtil.post<Map<String, dynamic>>(
+        ApiEndpoints.techLogin,
+        data: {
+          'loginType':  isPhone ? 'phone' : 'techId',
+          'account':    fullAccount,
+          'password':   pass,
+          'merchantId': AppConfig.merchantId,
+          'lang':       Get.locale?.languageCode ?? 'zh',
+        },
+      );
+
+      final token     = data['token'] as String;
+      final techInfo  = Map<String, dynamic>.from(data);
+
+      Get.find<StorageService>().saveToken(token);
+      Get.find<UserService>().loginFromApi(techInfo, token);
+
       ToastUtil.success(l.loginSuccess);
       Get.offAllNamed(AppRoutes.main);
-    } catch (e) {
+    } on ApiException catch (e) {
+      ToastUtil.error(e.message);
+    } catch (_) {
       ToastUtil.error(l.loginFailed);
     } finally {
       state.loading.value = false;

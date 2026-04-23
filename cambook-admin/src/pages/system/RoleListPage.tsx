@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import {
   Table, Button, Space, Tag, Typography, Modal,
-  Form, Input, message, Drawer, Spin, Row, Col, Popconfirm, Tree, Badge, Divider,
+  Form, Input, message, Drawer, Spin, Row, Col, Popconfirm, Tree, Badge,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { DataNode } from 'antd/es/tree'
+import type { AntTreeNodeProps } from 'antd/es/tree'
 import type { Key } from 'react'
 import {
   KeyOutlined, PlusOutlined, EditOutlined, DeleteOutlined,
@@ -20,6 +21,7 @@ import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents } from '../../components/common/tableComponents'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 import PagePagination from '../../components/common/PagePagination'
+import { fmtDate } from '../../utils/time'
 
 const { Text } = Typography
 
@@ -58,8 +60,10 @@ function buildTreeData(nodes: PermissionVO[]): DataNode[] {
     const cfg = TYPE_CFG[n.type as 1 | 2 | 3] ?? TYPE_CFG[2]
     return {
       key: String(n.id),
-      icon: ({ expanded }: { expanded: boolean }) =>
-        n.type === 1 ? (expanded ? <FolderOpenOutlined style={{ color: cfg.color }} /> : <FolderOutlined style={{ color: cfg.color }} />) : cfg.icon,
+      icon: (props: AntTreeNodeProps) => {
+        const expanded = !!props.expanded
+        return n.type === 1 ? (expanded ? <FolderOpenOutlined style={{ color: cfg.color }} /> : <FolderOutlined style={{ color: cfg.color }} />) : cfg.icon
+      },
       title: (
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <Tag
@@ -218,7 +222,7 @@ export default function RoleListPage() {
     {
       title: col(<ClockCircleOutlined style={{ color: '#94a3b8' }} />, '创建时间'),
       dataIndex: 'createTime', key: 'createTime',
-      render: (v: string) => v?.slice(0, 10),
+      render: (v: string | number) => (v != null && v !== '' ? fmtDate(v) : '—'),
     },
     {
       title: col(<SettingOutlined style={{ color: '#94a3b8' }} />, '操作'),

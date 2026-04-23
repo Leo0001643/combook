@@ -3,13 +3,11 @@ package com.cambook.driver.domain.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 创建派车单（App/Admin）
@@ -25,9 +23,8 @@ public class DispatchDTO {
     private Long orderId;
 
     @NotNull(message = "预约接送时间不能为空")
-    @Future(message = "接送时间必须是未来时间")
-    @Schema(description = "预约接送时间")
-    private LocalDateTime pickupTime;
+    @Schema(description = "预约接送时间（UTC 秒级时间戳）")
+    private Long pickupTime;
 
     @NotNull(message = "上车地址纬度不能为空")
     @DecimalMin(value = "-90.0",  message = "纬度范围-90到90")

@@ -1,5 +1,8 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
@@ -11,6 +14,8 @@ import java.time.LocalDate;
  * @author CamBook
  */
 @TableName("cb_driver")
+@Getter
+@Setter
 public class CbDriver extends BaseEntity {
 
     /** 关联会员 ID */
@@ -38,34 +43,25 @@ public class CbDriver extends BaseEntity {
     public Long   getMemberId()                        { return memberId; }
     public void   setMemberId(Long memberId)           { this.memberId = memberId; }
 
-    public String getRealName()                        { return realName; }
     public void   setRealName(String realName)         { this.realName = realName; }
 
-    public String getAvatar()                          { return avatar; }
     public void   setAvatar(String avatar)             { this.avatar = avatar; }
 
-    public String getMobile()                          { return mobile; }
     public void   setMobile(String mobile)             { this.mobile = mobile; }
 
-    public String getIdCard()                          { return idCard; }
     public void   setIdCard(String idCard)             { this.idCard = idCard; }
 
-    public String getDrivingLicenseFront()             { return drivingLicenseFront; }
     public void   setDrivingLicenseFront(String v)     { this.drivingLicenseFront = v; }
 
-    public String getDrivingLicenseBack()              { return drivingLicenseBack; }
     public void   setDrivingLicenseBack(String v)      { this.drivingLicenseBack = v; }
 
-    public String getLicenseType()                     { return licenseType; }
     public void   setLicenseType(String licenseType)   { this.licenseType = licenseType; }
 
     public Long   getVehicleId()                       { return vehicleId; }
     public void   setVehicleId(Long vehicleId)         { this.vehicleId = vehicleId; }
 
-    public Integer getStatus()                         { return status; }
     public void    setStatus(Integer status)           { this.status = status; }
 
-    public Integer getOnlineStatus()                   { return onlineStatus; }
     public void    setOnlineStatus(Integer v)          { this.onlineStatus = v; }
 
     public Double  getCurrentLat()                     { return currentLat; }
@@ -74,7 +70,6 @@ public class CbDriver extends BaseEntity {
     public Double  getCurrentLng()                     { return currentLng; }
     public void    setCurrentLng(Double currentLng)    { this.currentLng = currentLng; }
 
-    public Integer getTotalDispatch()                  { return totalDispatch; }
     public void    setTotalDispatch(Integer v)         { this.totalDispatch = v; }
 
     public Double  getRating()                         { return rating; }

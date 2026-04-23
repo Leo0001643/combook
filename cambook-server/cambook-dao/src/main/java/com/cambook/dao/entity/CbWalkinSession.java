@@ -1,10 +1,12 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 散客接待 Session 实体
@@ -24,6 +26,8 @@ import java.time.LocalDateTime;
  * @author CamBook
  */
 @TableName("cb_walkin_session")
+@Getter
+@Setter
 public class CbWalkinSession extends BaseEntity {
 
     private String      sessionNo;
@@ -41,8 +45,8 @@ public class CbWalkinSession extends BaseEntity {
     private BigDecimal  totalAmount;
     private BigDecimal  paidAmount;
     private String      remark;
-    private LocalDateTime checkInTime;
-    private LocalDateTime checkOutTime;
+    private Long        checkInTime;
+    private Long        checkOutTime;
 
     public String getSessionNo()           { return sessionNo; }
     public String getWristbandNo()         { return wristbandNo; }
@@ -59,8 +63,8 @@ public class CbWalkinSession extends BaseEntity {
     public BigDecimal getTotalAmount()     { return totalAmount; }
     public BigDecimal getPaidAmount()      { return paidAmount; }
     public String getRemark()              { return remark; }
-    public LocalDateTime getCheckInTime()  { return checkInTime; }
-    public LocalDateTime getCheckOutTime() { return checkOutTime; }
+    public Long getCheckInTime()           { return checkInTime; }
+    public Long getCheckOutTime()          { return checkOutTime; }
 
     public void setSessionNo(String sessionNo)               { this.sessionNo = sessionNo; }
     public void setWristbandNo(String wristbandNo)           { this.wristbandNo = wristbandNo; }
@@ -72,11 +76,10 @@ public class CbWalkinSession extends BaseEntity {
     public void setTechnicianId(Long technicianId)           { this.technicianId = technicianId; }
     public void setTechnicianName(String technicianName)     { this.technicianName = technicianName; }
     public void setTechnicianNo(String technicianNo)         { this.technicianNo = technicianNo; }
-    public void setTechnicianMobile(String technicianMobile) { this.technicianMobile = technicianMobile; }
     public void setStatus(Integer status)                    { this.status = status; }
     public void setTotalAmount(BigDecimal totalAmount)       { this.totalAmount = totalAmount; }
     public void setPaidAmount(BigDecimal paidAmount)         { this.paidAmount = paidAmount; }
     public void setRemark(String remark)                     { this.remark = remark; }
-    public void setCheckInTime(LocalDateTime checkInTime)    { this.checkInTime = checkInTime; }
-    public void setCheckOutTime(LocalDateTime checkOutTime)  { this.checkOutTime = checkOutTime; }
+    public void setCheckInTime(Long checkInTime)             { this.checkInTime = checkInTime; }
+    public void setCheckOutTime(Long checkOutTime)           { this.checkOutTime = checkOutTime; }
 }

@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * Admin 端 - 优惠券管理
@@ -50,11 +49,10 @@ public class CouponController {
                             @RequestParam(defaultValue = "0") BigDecimal minAmount,
                             @RequestParam Integer totalCount,
                             @RequestParam(required = false) Integer validDays,
-                            @RequestParam(required = false) String startTime,
-                            @RequestParam(required = false) String endTime) {
+                            @RequestParam(required = false) Long startTime,
+                            @RequestParam(required = false) Long endTime) {
         couponService.add(null, nameZh, nameEn, type, value, minAmount, totalCount, validDays,
-                startTime != null ? LocalDateTime.parse(startTime.replace(" ", "T")) : null,
-                endTime   != null ? LocalDateTime.parse(endTime.replace(" ", "T"))   : null);
+                startTime, endTime);
         return Result.success();
     }
 
@@ -69,13 +67,11 @@ public class CouponController {
                              @RequestParam(required = false) BigDecimal minAmount,
                              @RequestParam(required = false) Integer totalCount,
                              @RequestParam(required = false) Integer validDays,
-                             @RequestParam(required = false) String startTime,
-                             @RequestParam(required = false) String endTime,
+                             @RequestParam(required = false) Long startTime,
+                             @RequestParam(required = false) Long endTime,
                              @RequestParam(required = false) Integer status) {
         couponService.edit(null, id, nameZh, nameEn, type, value, minAmount, totalCount, validDays,
-                startTime != null ? LocalDateTime.parse(startTime.replace(" ", "T")) : null,
-                endTime   != null ? LocalDateTime.parse(endTime.replace(" ", "T"))   : null,
-                status);
+                startTime, endTime, status);
         return Result.success();
     }
 

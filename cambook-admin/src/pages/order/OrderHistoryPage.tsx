@@ -18,7 +18,9 @@ import {
   TagsOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import type { Dayjs } from 'dayjs'
 import type { OrderVO } from '../../api/api'
+import { fmtTime, toEpochSec, fromEpochSec } from '../../utils/time'
 import { merchantApi } from '../../api/api'
 import { usePortalScope } from '../../hooks/usePortalScope'
 import { useDict } from '../../hooks/useDict'
@@ -74,7 +76,7 @@ export default function OrderHistoryPage() {
   // Filters
   const [keyword, setKeyword]           = useState('')
   const [status, setStatus]             = useState<number | undefined>()
-  const [dateRange, setDateRange]       = useState<[string, string] | null>(null)
+  const [dateRange, setDateRange]       = useState<[number, number] | null>(null)
   const [merchantId, setMerchantId]     = useState<number | undefined>()
   const [merchantOpts, setMerchantOpts] = useState<{ value: number; label: string }[]>([])
   const [technicianName, setTechnicianName] = useState('')
@@ -160,7 +162,7 @@ export default function OrderHistoryPage() {
       r.orderNo, r.memberNickname, (r as any).memberMobile,
       r.technicianNickname, r.serviceName,
       STATUS_MAP[r.status]?.text ?? r.status,
-      r.payAmount, r.createTime, (r as any).finishTime ?? '',
+      r.payAmount, fmtTime(r.createTime), (r as any).finishTime != null ? fmtTime((r as any).finishTime) : '',
     ])
     const header = ['订单号', '客户', '手机号', '技师', '服务项目', '状态', '实付金额', '下单时间', '完成时间']
     const csv = [header, ...rows].map(row => row.join(',')).join('\n')
@@ -252,18 +254,18 @@ export default function OrderHistoryPage() {
     {
       title: col(<ClockCircleOutlined style={{ color: '#64748b' }} />, '下单时间', 'center'),
       dataIndex: 'createTime', width: 135, align: 'center',
-      render: (v: string) => (
+      render: (v: string | number) => (
         <Text type="secondary" style={{ fontSize: 12 }}>
-          {v ? dayjs(v).format('MM-DD HH:mm') : '—'}
+          {v != null && v !== '' ? fmtTime(v, 'MM-DD HH:mm') : '—'}
         </Text>
       ),
     },
     {
       title: col(<CalendarOutlined style={{ color: '#10b981' }} />, '完成时间', 'center'),
       dataIndex: 'finishTime', width: 135, align: 'center',
-      render: (v: string) => (
+      render: (v: string | number) => (
         <Text type="secondary" style={{ fontSize: 12 }}>
-          {v ? dayjs(v).format('MM-DD HH:mm') : '—'}
+          {v != null && v !== '' ? fmtTime(v, 'MM-DD HH:mm') : '—'}
         </Text>
       ),
     },
@@ -422,8 +424,16 @@ export default function OrderHistoryPage() {
           />
           <RangePicker
             style={{ width: 240 }}
-            onChange={(_, strs) => {
-              setDateRange(strs[0] && strs[1] ? [strs[0], strs[1]] : null)
+            value={(() => {
+              if (dateRange?.[0] == null || dateRange?.[1] == null) return null
+              const a = fromEpochSec(dateRange[0])
+              const b = fromEpochSec(dateRange[1])
+              return a && b ? ([a, b] as [Dayjs, Dayjs]) : null
+            })()}
+            onChange={dates => {
+              const s0 = dates?.[0] ? toEpochSec(dates[0]) : null
+              const s1 = dates?.[1] ? toEpochSec(dates[1]) : null
+              setDateRange(s0 != null && s1 != null ? [s0, s1] : null)
               setPage(1)
             }}
           />
@@ -568,10 +578,10 @@ export default function OrderHistoryPage() {
                 <Tag color="blue" style={{ borderRadius: 6 }}>{detail.serviceName}</Tag>
               </Descriptions.Item>
               <Descriptions.Item label="下单时间">
-                {detail.createTime ? dayjs(detail.createTime).format('YYYY-MM-DD HH:mm') : '—'}
+                {detail.createTime ? fmtTime(detail.createTime, 'YYYY-MM-DD HH:mm') : '—'}
               </Descriptions.Item>
               <Descriptions.Item label="完成时间">
-                {(detail as any).finishTime ? dayjs((detail as any).finishTime).format('YYYY-MM-DD HH:mm') : '—'}
+                {(detail as any).finishTime ? fmtTime((detail as any).finishTime, 'YYYY-MM-DD HH:mm') : '—'}
               </Descriptions.Item>
               {(detail as any).remark && (
                 <Descriptions.Item label="备注" span={2}>
@@ -594,7 +604,7 @@ export default function OrderHistoryPage() {
                       <div>
                         <div style={{ fontWeight: 600 }}>订单创建</div>
                         <div style={{ fontSize: 12, color: '#94a3b8' }}>
-                          {detail.createTime ? dayjs(detail.createTime).format('YYYY-MM-DD HH:mm:ss') : '—'}
+                          {detail.createTime ? fmtTime(detail.createTime) : '—'}
                         </div>
                       </div>
                     ),
@@ -627,7 +637,7 @@ export default function OrderHistoryPage() {
                         <div style={{ fontWeight: 700, color: '#10b981' }}>服务完成 ✓</div>
                         <div style={{ fontSize: 12, color: '#94a3b8' }}>
                           {(detail as any).finishTime
-                            ? dayjs((detail as any).finishTime).format('YYYY-MM-DD HH:mm:ss') : '—'}
+                            ? fmtTime((detail as any).finishTime) : '—'}
                         </div>
                       </div>
                     ),

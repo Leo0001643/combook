@@ -16,6 +16,7 @@ import {
   PictureOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import { fmtDate, dayjsFromApi } from '../../utils/time'
 import { usePortalScope } from '../../hooks/usePortalScope'
 import { useDict } from '../../hooks/useDict'
 import { merchantApi, uploadApi } from '../../api/api'
@@ -219,7 +220,8 @@ export default function VehicleListPage() {
 
   const isExpiringSoon = (expiry: string) => {
     if (!expiry) return false
-    return dayjs(expiry).diff(dayjs(), 'day') <= 30
+    const exp = dayjsFromApi(expiry)
+    return exp ? exp.diff(dayjs(), 'day') <= 30 : false
   }
 
   const stats = {
@@ -356,7 +358,7 @@ export default function VehicleListPage() {
           <Space size={4}>
             <CalendarOutlined style={{ color: soon ? '#f59e0b' : '#aaa' }} />
             <Text style={{ color: soon ? '#f59e0b' : undefined, fontSize: 12 }}>
-              {dayjs(v).format('YYYY-MM-DD')}
+              {fmtDate(v)}
             </Text>
             {soon && (
               <Tooltip title="年检即将到期（30天内）">
@@ -435,7 +437,7 @@ export default function VehicleListPage() {
       title: col(<ClockCircleOutlined style={{ color: '#9ca3af' }} />, '登记日期'),
       dataIndex: 'createTime',
       width: 120,
-      render: v => <Text type="secondary" style={{ fontSize: 12 }}>{v ? dayjs(v).format('YYYY-MM-DD') : '—'}</Text>,
+      render: v => <Text type="secondary" style={{ fontSize: 12 }}>{v != null && v !== '' ? fmtDate(v) : '—'}</Text>,
     },
     {
       title: col(<SettingOutlined style={{ color: '#9ca3af' }} />, '操作'),

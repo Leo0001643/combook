@@ -870,4 +870,96 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'ចង់ចេញពីកម្មវិធីមែនទេ?';
+
+  @override
+  String get todaySchedule => 'កម្មវិធីថ្ងៃនេះ';
+
+  @override
+  String get allOrders => 'ការបញ្ជាទិញទាំងអស់';
+
+  @override
+  String get orderStatusPending => 'រង់ចាំ';
+
+  @override
+  String get orderStatusAccepted => 'បានទទួល';
+
+  @override
+  String get orderStatusInProgress => 'កំពុងបម្រើ';
+
+  @override
+  String get orderStatusCompleted => 'បានបញ្ចប់';
+
+  @override
+  String get orderStatusCancelled => 'បានបោះបង់';
+
+  @override
+  String get noScheduleToday => 'គ្មានការណាត់ថ្ងៃនេះ';
+
+  @override
+  String get keepOnlineHint => 'បន្តអនឡាញ ដើម្បីទទួលការបញ្ជាទិញថ្មី ✨';
+
+  @override
+  String get myStats => 'ទិន្នន័យរបស់ខ្ញុំ';
+
+  @override
+  String get totalOrders => 'ការបញ្ជាទិញសរុប';
+
+  @override
+  String get overallRating => 'ការវាយតម្លៃទូទៅ';
+
+  @override
+  String get currentBalance => 'សមតុល្យបច្ចុប្បន្ន';
+
+  @override
+  String get statTodayAppointments => 'ការណាត់ថ្ងៃនេះ';
+
+  @override
+  String get statTodayCompleted => 'បានបញ្ចប់ថ្ងៃនេះ';
+
+  @override
+  String get statTodayCancelled => 'បានលុបថ្ងៃនេះ';
+
+  @override
+  String schedOrderCount(int n) {
+    return '$n ការបញ្ជាទិញ';
+  }
+
+  @override
+  String get schedInService => 'កំពុងបម្រើ';
+
+  @override
+  String get schedPending => 'រង់ចាំ';
+
+  @override
+  String get totalDuration => 'រយៈពេលសរុប';
+
+  @override
+  String scheduleProgress(int completed, int total) {
+    return '$completed / $total បានបញ្ចប់';
+  }
+
+  @override
+  String get statusOnWay => 'កំពុងទៅ';
+
+  @override
+  String get statusCancelling => 'កំពុងលុប';
+
+  @override
+  String get statusRefunding => 'កំពុងសងប្រាក់';
+
+  @override
+  String get statusRefunded => 'បានសងប្រាក់';
+
+  @override
+  String schedEndTime(String time, String duration) {
+    return 'ចប់ $time · $durationនាទី';
+  }
+
+  @override
+  String get serviceInProgress => 'កំពុងបម្រើ';
+
+  @override
+  String estimatedIncome(String amount) {
+    return 'ប្រហាក់ $amount';
+  }
 }

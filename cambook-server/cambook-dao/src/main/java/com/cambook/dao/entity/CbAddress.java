@@ -1,5 +1,8 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
@@ -11,6 +14,8 @@ import java.math.BigDecimal;
  * @author CamBook
  */
 @TableName("cb_address")
+@Getter
+@Setter
 public class CbAddress extends BaseEntity {
 
     private Long       memberId;
@@ -39,9 +44,7 @@ public class CbAddress extends BaseEntity {
     public void       setDistrict(String v)         { this.district = v; }
     public String     getDetailAddress()            { return detailAddress; }
     public void       setDetailAddress(String v)    { this.detailAddress = v; }
-    public BigDecimal getLat()                      { return lat; }
     public void       setLat(BigDecimal v)          { this.lat = v; }
-    public BigDecimal getLng()                      { return lng; }
     public void       setLng(BigDecimal v)          { this.lng = v; }
     public Integer    getIsDefault()                { return isDefault; }
     public void       setIsDefault(Integer v)       { this.isDefault = v; }

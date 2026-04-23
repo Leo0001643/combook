@@ -1,0 +1,15 @@
+{
+  "MERCHANT_ID": 16,
+  "MERCHANT_KEY": "skdjfalsdkjfasdf",
+  "MERCHANT_NAME": "CamBook",
+  "APP_NAME": "明玺修仙会所",
+  "API_BASE_URL": "http://192.168.21.211:8080",
+  "THEME_COLOR": "4F46E5",
+  "BANNER_URL": "",
+  "LOGO_URL": "",
+  "SUPPORT_PHONE": "+85512345678",
+  "ANDROID_APP_ID": "com.cambook.partner",
+  "IOS_BUNDLE_ID": "com.cambook.cambookPartner",
+  "VERSION_NAME": "1.0.0",
+  "VERSION_CODE": 1
+}

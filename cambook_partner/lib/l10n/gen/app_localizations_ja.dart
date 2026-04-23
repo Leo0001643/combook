@@ -870,4 +870,96 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'アプリを終了しますか？';
+
+  @override
+  String get todaySchedule => '本日のスケジュール';
+
+  @override
+  String get allOrders => 'すべての注文';
+
+  @override
+  String get orderStatusPending => '確認待ち';
+
+  @override
+  String get orderStatusAccepted => '受注済み';
+
+  @override
+  String get orderStatusInProgress => 'サービス中';
+
+  @override
+  String get orderStatusCompleted => '完了';
+
+  @override
+  String get orderStatusCancelled => 'キャンセル';
+
+  @override
+  String get noScheduleToday => '本日の予約はありません';
+
+  @override
+  String get keepOnlineHint => 'オンラインを維持して新規注文を待ちましょう ✨';
+
+  @override
+  String get myStats => '私のデータ';
+
+  @override
+  String get totalOrders => '累計受注';
+
+  @override
+  String get overallRating => '総合評価';
+
+  @override
+  String get currentBalance => '現在の残高';
+
+  @override
+  String get statTodayAppointments => '本日の予約';
+
+  @override
+  String get statTodayCompleted => '本日の完了';
+
+  @override
+  String get statTodayCancelled => '本日のキャンセル';
+
+  @override
+  String schedOrderCount(int n) {
+    return '$n件';
+  }
+
+  @override
+  String get schedInService => 'サービス中';
+
+  @override
+  String get schedPending => 'サービス待ち';
+
+  @override
+  String get totalDuration => '合計時間';
+
+  @override
+  String scheduleProgress(int completed, int total) {
+    return '$completed / $total 完了';
+  }
+
+  @override
+  String get statusOnWay => '移動中';
+
+  @override
+  String get statusCancelling => 'キャンセル中';
+
+  @override
+  String get statusRefunding => '返金中';
+
+  @override
+  String get statusRefunded => '返金済み';
+
+  @override
+  String schedEndTime(String time, String duration) {
+    return '終了 $time · $duration分';
+  }
+
+  @override
+  String get serviceInProgress => 'サービス中';
+
+  @override
+  String estimatedIncome(String amount) {
+    return '予定 $amount';
+  }
 }

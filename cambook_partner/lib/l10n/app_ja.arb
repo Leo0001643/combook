@@ -331,5 +331,55 @@
   "helpAndSupport": "ヘルプ & サポート",
   "rateApp": "アプリを評価する",
   "exitApp": "アプリを終了",
-  "exitAppConfirm": "アプリを終了しますか？"
+  "exitAppConfirm": "アプリを終了しますか？",
+  "todaySchedule": "本日のスケジュール",
+  "allOrders": "すべての注文",
+  "orderStatusPending": "確認待ち",
+  "orderStatusAccepted": "受注済み",
+  "orderStatusInProgress": "サービス中",
+  "orderStatusCompleted": "完了",
+  "orderStatusCancelled": "キャンセル",
+  "noScheduleToday": "本日の予約はありません",
+  "keepOnlineHint": "オンラインを維持して新規注文を待ちましょう ✨",
+  "myStats": "私のデータ",
+  "totalOrders": "累計受注",
+  "overallRating": "総合評価",
+  "currentBalance": "現在の残高",
+
+  "statTodayAppointments": "本日の予約",
+  "statTodayCompleted": "本日の完了",
+  "statTodayCancelled": "本日のキャンセル",
+
+  "schedOrderCount": "{n}件",
+  "@schedOrderCount": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+  "schedInService": "サービス中",
+  "schedPending": "サービス待ち",
+  "totalDuration": "合計時間",
+  "scheduleProgress": "{completed} / {total} 完了",
+  "@scheduleProgress": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total":     { "type": "int" }
+    }
+  },
+
+  "statusOnWay": "移動中",
+  "statusCancelling": "キャンセル中",
+  "statusRefunding": "返金中",
+  "statusRefunded": "返金済み",
+
+  "schedEndTime": "終了 {time} · {duration}分",
+  "@schedEndTime": {
+    "placeholders": {
+      "time":     { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "serviceInProgress": "サービス中",
+  "estimatedIncome": "予定 {amount}",
+  "@estimatedIncome": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

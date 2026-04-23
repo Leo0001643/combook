@@ -14,6 +14,12 @@
     <name>CamBook Common（枚举、工具、异常、国际化、Result）</name>
 
     <dependencies>
+        <!-- Lombok：消除样板代码 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
         <!-- Spring Context（ApplicationRunner、Component 等注解）-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -1,5 +1,7 @@
 package com.cambook.common.context;
 
+import lombok.Data;
+
 /**
  * 商户请求上下文（ThreadLocal 持有）
  *
@@ -35,7 +37,6 @@ public final class MerchantContext {
 
     /**
      * 员工 ID（员工账号登录时非空；商户主账号登录时为 null）
-     * 用于在 RBAC 链解析时精确匹配员工记录，避免依赖手机号可能产生的模糊查询。
      */
     public static Long getStaffId() {
         MerchantInfo info = HOLDER.get();
@@ -52,24 +53,14 @@ public final class MerchantContext {
         return HOLDER.get() != null;
     }
 
-    // ── inner class ──────────────────────────────────────────────────────────
+    // ── inner VO ─────────────────────────────────────────────────────────────
 
+    @Data
     public static final class MerchantInfo {
-
         private Long   merchantId;
         private String merchantName;
         private String mobile;
         /** 员工 ID；商户主登录时为 null */
         private Long   staffId;
-
-        public Long   getMerchantId()   { return merchantId; }
-        public String getMerchantName() { return merchantName; }
-        public String getMobile()       { return mobile; }
-        public Long   getStaffId()      { return staffId; }
-
-        public void setMerchantId(Long merchantId)       { this.merchantId = merchantId; }
-        public void setMerchantName(String merchantName) { this.merchantName = merchantName; }
-        public void setMobile(String mobile)             { this.mobile = mobile; }
-        public void setStaffId(Long staffId)             { this.staffId = staffId; }
     }
 }

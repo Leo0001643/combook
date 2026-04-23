@@ -3,7 +3,6 @@ package com.cambook.app.domain.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -49,5 +48,5 @@ public class StaffVO {
     private List<String> roleNames;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private Long createTime;
 }

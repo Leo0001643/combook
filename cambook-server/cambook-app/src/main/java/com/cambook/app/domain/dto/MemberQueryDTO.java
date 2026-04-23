@@ -4,9 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDate;
 
 /**
  * 会员列表查询（Admin / Merchant）
@@ -51,13 +48,11 @@ public class MemberQueryDTO {
     @Schema(description = "语言代码，如 zh / km / vi / en")
     private String lang;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Schema(description = "注册开始日期（yyyy-MM-dd）")
-    private LocalDate startDate;
+    @Schema(description = "注册时间范围起始（UTC 秒级时间戳，含）")
+    private Long startDate;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Schema(description = "注册结束日期（yyyy-MM-dd）")
-    private LocalDate endDate;
+    @Schema(description = "注册时间范围结束（UTC 秒级时间戳，含）")
+    private Long endDate;
 
     @Min(value = 1, message = "页码最小为1")
     @Schema(description = "页码", defaultValue = "1", example = "1")

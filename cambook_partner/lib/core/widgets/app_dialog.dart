@@ -71,10 +71,10 @@ class _ToastOverlayState extends State<_ToastOverlay>
   @override
   void initState() {
     super.initState();
-    _ctrl    = AnimationController(vsync: this, duration: const Duration(milliseconds: 340));
+    _ctrl    = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
     _opacity = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _scale   = Tween<double>(begin: 0.72, end: 1.0)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack));
+    _scale   = Tween<double>(begin: 0.82, end: 1.0)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
     _ctrl.forward();
   }
 
@@ -93,27 +93,15 @@ class _ToastOverlayState extends State<_ToastOverlay>
             child: ScaleTransition(
               scale: _scale,
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 300),
-                margin: const EdgeInsets.symmetric(horizontal: 40),
-                padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: cfg.color.withValues(alpha: 0.22),
-                      blurRadius: 32, spreadRadius: 0, offset: const Offset(0, 10),
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.07),
-                      blurRadius: 12, spreadRadius: 0, offset: const Offset(0, 3),
-                    ),
-                  ],
+                  color: const Color(0xCC3D3D3D),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, children: [
                   // ── 渐变图标圆 ────────────────────────────────────
                   Container(
-                    width: 46, height: 46,
+                    width: 36, height: 36,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft, end: Alignment.bottomRight,
@@ -121,21 +109,25 @@ class _ToastOverlayState extends State<_ToastOverlay>
                       ),
                       shape: BoxShape.circle,
                       boxShadow: [BoxShadow(
-                        color: cfg.color.withValues(alpha: 0.38),
-                        blurRadius: 10, offset: const Offset(0, 4),
+                        color: cfg.color.withValues(alpha: 0.35),
+                        blurRadius: 8, offset: const Offset(0, 3),
                       )],
                     ),
-                    child: Icon(cfg.icon, color: Colors.white, size: 22),
+                    child: Icon(cfg.icon, color: Colors.white, size: 18),
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 8),
                   // ── 消息文字 ──────────────────────────────────────
-                  Expanded(child: Text(
-                    widget.message,
-                    style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary, height: 1.35,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 220),
+                    child: Text(
+                      widget.message,
+                      style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w600,
+                        color: Colors.white, height: 1.35,
+                      ),
                     ),
-                  )),
+                  ),
+                  const SizedBox(width: 2),
                 ]),
               ),
             ),
@@ -205,11 +197,11 @@ abstract class AppDialog {
     barrierDismissible: false,
     barrierLabel: '',
     barrierColor: Colors.black.withValues(alpha: 0.55),
-    transitionDuration: const Duration(milliseconds: 320),
+    transitionDuration: const Duration(milliseconds: 200),
     pageBuilder: (_, __, ___) => dialog,
     transitionBuilder: (_, anim, __, child) => ScaleTransition(
-      scale: Tween<double>(begin: 0.82, end: 1.0).animate(
-          CurvedAnimation(parent: anim, curve: Curves.easeOutBack)),
+      scale: Tween<double>(begin: 0.88, end: 1.0).animate(
+          CurvedAnimation(parent: anim, curve: Curves.easeOut)),
       child: FadeTransition(opacity: anim, child: child),
     ),
   );
@@ -519,9 +511,9 @@ class _StatusToastOverlayState extends State<_StatusToastOverlay>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 320));
-    _scale = Tween<double>(begin: 0.65, end: 1.0).animate(
-        CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack));
+        vsync: this, duration: const Duration(milliseconds: 200));
+    _scale = Tween<double>(begin: 0.88, end: 1.0).animate(
+        CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
     _opacity = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
     _ctrl.forward();
   }
@@ -670,10 +662,10 @@ class _BannerOverlayState extends State<_BannerOverlay>
   @override
   void initState() {
     super.initState();
-    _ctrl  = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+    _ctrl  = AnimationController(vsync: this, duration: const Duration(milliseconds: 220));
     _opacity = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
     _slide   = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
     _ctrl.forward();
   }
 

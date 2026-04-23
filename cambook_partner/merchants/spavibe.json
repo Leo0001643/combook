@@ -1,0 +1,15 @@
+{
+  "MERCHANT_ID": 16,
+  "MERCHANT_KEY": "kasjdkflajsdfkl",
+  "MERCHANT_NAME": "明玺休闲会所",
+  "APP_NAME": "明玺休闲会所",
+  "API_BASE_URL": "http://192.168.21.211:8080",
+  "THEME_COLOR": "0EA472",
+  "BANNER_URL": "https://cdn.spavibe.io/banner.jpg",
+  "LOGO_URL": "https://cdn.spavibe.io/logo.png",
+  "SUPPORT_PHONE": "+63912345678",
+  "ANDROID_APP_ID": "com.spavibe.partner",
+  "IOS_BUNDLE_ID": "com.spavibe.partner",
+  "VERSION_NAME": "1.0.0",
+  "VERSION_CODE": 1
+}

@@ -21,6 +21,7 @@ import MerchantCreateModal from '../../components/merchant/MerchantCreateModal'
 import PermGuard from '../../components/common/PermGuard'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 import { useDict } from '../../hooks/useDict'
+import { fmtDate } from '../../utils/time'
 
 const { Text } = Typography
 
@@ -285,7 +286,7 @@ export default function MerchantListPage() {
       title: col(<ClockCircleOutlined style={{ color: '#64748b' }} />, '入驻时间'),
       dataIndex: 'createTime',
       width: 110,
-      render: v => <Text type="secondary" style={{ fontSize: 12 }}>{v?.slice(0, 10)}</Text>,
+      render: v => <Text type="secondary" style={{ fontSize: 12 }}>{fmtDate(v)}</Text>,
     },
     {
       title: col(<SettingOutlined style={{ color: '#6366f1' }} />, '操作'),
@@ -534,7 +535,7 @@ export default function MerchantListPage() {
               <Descriptions.Item label="所在城市">
                 {selected.city ? <Tag icon={<EnvironmentOutlined />} color="blue">{selected.city}</Tag> : '—'}
               </Descriptions.Item>
-              <Descriptions.Item label="入驻时间">{selected.createTime?.slice(0, 10)}</Descriptions.Item>
+              <Descriptions.Item label="入驻时间">{fmtDate(selected.createTime)}</Descriptions.Item>
               <Descriptions.Item label="详细地址" span={2}>{selected.addressZh || '—'}</Descriptions.Item>
             </Descriptions>
 

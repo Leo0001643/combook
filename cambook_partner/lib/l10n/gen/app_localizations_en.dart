@@ -870,4 +870,96 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exitAppConfirm => 'Exit the application?';
+
+  @override
+  String get todaySchedule => 'Today\'s Schedule';
+
+  @override
+  String get allOrders => 'All Orders';
+
+  @override
+  String get orderStatusPending => 'Pending';
+
+  @override
+  String get orderStatusAccepted => 'Accepted';
+
+  @override
+  String get orderStatusInProgress => 'In Service';
+
+  @override
+  String get orderStatusCompleted => 'Completed';
+
+  @override
+  String get orderStatusCancelled => 'Cancelled';
+
+  @override
+  String get noScheduleToday => 'No appointments today';
+
+  @override
+  String get keepOnlineHint => 'Stay online to receive new orders ✨';
+
+  @override
+  String get myStats => 'My Stats';
+
+  @override
+  String get totalOrders => 'Total Orders';
+
+  @override
+  String get overallRating => 'Overall Rating';
+
+  @override
+  String get currentBalance => 'Current Balance';
+
+  @override
+  String get statTodayAppointments => 'Today\'s Appts';
+
+  @override
+  String get statTodayCompleted => 'Completed';
+
+  @override
+  String get statTodayCancelled => 'Cancelled';
+
+  @override
+  String schedOrderCount(int n) {
+    return '$n Orders';
+  }
+
+  @override
+  String get schedInService => 'In Service';
+
+  @override
+  String get schedPending => 'Pending';
+
+  @override
+  String get totalDuration => 'Total Time';
+
+  @override
+  String scheduleProgress(int completed, int total) {
+    return '$completed / $total done';
+  }
+
+  @override
+  String get statusOnWay => 'On Way';
+
+  @override
+  String get statusCancelling => 'Cancelling';
+
+  @override
+  String get statusRefunding => 'Refunding';
+
+  @override
+  String get statusRefunded => 'Refunded';
+
+  @override
+  String schedEndTime(String time, String duration) {
+    return 'End $time · ${duration}min';
+  }
+
+  @override
+  String get serviceInProgress => 'In Service';
+
+  @override
+  String estimatedIncome(String amount) {
+    return 'Est. $amount';
+  }
 }

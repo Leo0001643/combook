@@ -9,7 +9,6 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   Input, Select, Button, Table, Tag, Badge, Space,
   Modal, Form, message, Tooltip, Typography, Popconfirm, Switch,
-  Divider,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
@@ -21,7 +20,7 @@ import {
 } from '@ant-design/icons'
 import RichTextInput from '../../components/common/RichTextInput'
 import { merchantPortalApi, type AnnouncementVO } from '../../api/api'
-import dayjs from 'dayjs'
+import { fmtTime } from '../../utils/time'
 import PermGuard from '../../components/common/PermGuard'
 import { styledTableComponents, col, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
@@ -158,7 +157,7 @@ export default function AnnouncePage({ type }: Props) {
           </Space>
           <Text type="secondary" style={{ fontSize: 12 }}>
             <ClockCircleOutlined style={{ marginRight: 4 }} />
-            {dayjs(row.createTime).format('MM-DD HH:mm')}
+            {fmtTime(row.createTime, 'MM-DD HH:mm')}
             {row.createBy && (
               <span style={{ marginLeft: 8 }}>
                 <UserOutlined style={{ marginRight: 3 }} />{row.createBy}
@@ -357,7 +356,7 @@ export default function AnnouncePage({ type }: Props) {
               {viewItem?.title}
             </Text>
             <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, marginTop: 6, display: 'flex', gap: 16 }}>
-              <span><ClockCircleOutlined style={{ marginRight: 4 }} />{dayjs(viewItem?.createTime).format('YYYY-MM-DD HH:mm')}</span>
+              <span><ClockCircleOutlined style={{ marginRight: 4 }} />{fmtTime(viewItem?.createTime, 'YYYY-MM-DD HH:mm')}</span>
               {viewItem?.createBy && <span><UserOutlined style={{ marginRight: 4 }} />{viewItem.createBy}</span>}
               <span>
                 {viewItem?.targetType === 2

@@ -1,5 +1,8 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
@@ -11,6 +14,8 @@ import java.time.LocalDate;
  * @author CamBook
  */
 @TableName("cb_vehicle")
+@Getter
+@Setter
 public class CbVehicle extends BaseEntity {
 
     private Long   merchantId;
@@ -43,7 +48,6 @@ public class CbVehicle extends BaseEntity {
     public String  getColor()                             { return color; }
     public void    setColor(String color)                 { this.color = color; }
 
-    public Integer getSeats()                             { return seats; }
     public void    setSeats(Integer seats)                { this.seats = seats; }
 
     public String  getInspectionCode()                    { return inspectionCode; }
@@ -58,7 +62,6 @@ public class CbVehicle extends BaseEntity {
     public String  getPhotos()                            { return photos; }
     public void    setPhotos(String photos)               { this.photos = photos; }
 
-    public Integer getStatus()                            { return status; }
     public void    setStatus(Integer status)              { this.status = status; }
 
     public String  getRemark()                            { return remark; }

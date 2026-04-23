@@ -34,7 +34,6 @@ abstract class AppPages {
       name: AppRoutes.register,
       page: () => const RegisterPage(),
       binding: RegisterBinding(),
-      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.main,
@@ -46,7 +45,6 @@ abstract class AppPages {
       name: AppRoutes.orderDetail,
       page: () => const OrderDetailPage(),
       binding: OrderDetailBinding(),
-      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.serviceActive,
@@ -58,31 +56,26 @@ abstract class AppPages {
       name: AppRoutes.chat,
       page: () => const ChatPage(),
       binding: ChatBinding(),
-      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.settings,
       page: () => const SettingsPage(),
       binding: SettingsBinding(),
-      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.skills,
       page: () => const SkillsPage(),
       binding: SkillsBinding(),
-      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.reviews,
       page: () => const ReviewsPage(),
       binding: ReviewsBinding(),
-      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.schedule,
       page: () => const SchedulePage(),
       binding: ScheduleBinding(),
-      transition: Transition.rightToLeft,
     ),
   ];
 }

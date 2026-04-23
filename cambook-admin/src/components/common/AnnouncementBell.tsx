@@ -15,7 +15,7 @@ import {
   ClockCircleOutlined, UserOutlined, CheckCircleOutlined,
 } from '@ant-design/icons'
 import { merchantPortalApi, type AnnouncementVO } from '../../api/api'
-import dayjs from 'dayjs'
+import { fmtTime } from '../../utils/time'
 import 'react-quill-new/dist/quill.snow.css'
 
 const { Text, Title } = Typography
@@ -117,7 +117,7 @@ export default function AnnouncementBell() {
                 <div style={{ marginTop: 4, display: 'flex', gap: 12 }}>
                   <Text type="secondary" style={{ fontSize: 11 }}>
                     <ClockCircleOutlined style={{ marginRight: 3 }} />
-                    {dayjs(item.createTime).format('MM-DD HH:mm')}
+                    {fmtTime(item.createTime, 'MM-DD HH:mm')}
                   </Text>
                   {item.createBy && (
                     <Text type="secondary" style={{ fontSize: 11 }}>
@@ -169,7 +169,7 @@ export default function AnnouncementBell() {
         trigger="click"
         placement="bottomRight"
         overlayStyle={{ paddingTop: 4 }}
-        styles={{ body: { padding: 12, borderRadius: 12, boxShadow: '0 8px 32px rgba(99,102,241,0.18)' } }}
+        overlayInnerStyle={{ padding: 12, borderRadius: 12, boxShadow: '0 8px 32px rgba(99,102,241,0.18)' }}
         arrow={false}
       >
         <Tooltip title="公告通知" placement="bottom">
@@ -221,7 +221,7 @@ export default function AnnouncementBell() {
             <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 12, marginTop: 8, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               <span>
                 <ClockCircleOutlined style={{ marginRight: 4 }} />
-                {dayjs(viewItem?.createTime).format('YYYY-MM-DD HH:mm')}
+                {fmtTime(viewItem?.createTime, 'YYYY-MM-DD HH:mm')}
               </span>
               {viewItem?.createBy && (
                 <span><UserOutlined style={{ marginRight: 4 }} />{viewItem.createBy}</span>

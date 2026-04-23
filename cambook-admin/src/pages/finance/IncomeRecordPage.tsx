@@ -4,14 +4,14 @@
 import React, { useState, useCallback } from 'react'
 import {
   Table, Input, Select, Button, Tag, Typography, Space,
-  Drawer, Descriptions, Row, Col,
+  Drawer, Descriptions,
 } from 'antd'
 import {
   SearchOutlined, ReloadOutlined, SettingOutlined,
   DollarOutlined, ShoppingCartOutlined, RiseOutlined, FileTextOutlined, WalletOutlined,
   UserOutlined, IdcardOutlined,
 } from '@ant-design/icons'
-import dayjs from 'dayjs'
+import { fmtTime } from '../../utils/time'
 import type { ColumnsType } from 'antd/es/table'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
@@ -19,7 +19,7 @@ import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 import { useDict } from '../../hooks/useDict'
 import DateTimeRangePicker from '../../components/common/DateTimeRangePicker'
 
-const { Text, Title } = Typography
+const { Text } = Typography
 const { Option } = Select
 
 const PAY_METHODS_FB: Record<number, { label: string; color: string; icon: React.ReactNode }> = {
@@ -108,7 +108,7 @@ export default function IncomeRecordPage() {
     },
     {
       title: col(<RiseOutlined style={{ color: '#64748b' }} />, '收款时间', 'center'), dataIndex: 'payTime', width: 150, align: 'center',
-      render: v => <Text style={{ fontSize: 12 }}>{dayjs(v).format('MM-DD HH:mm')}</Text>,
+      render: v => <Text style={{ fontSize: 12 }}>{fmtTime(v, 'MM-DD HH:mm')}</Text>,
     },
     {
       title: col(<SettingOutlined style={{ color: '#64748b' }} />, '操作', 'center'), key: 'action', fixed: 'right', width: 80, align: 'center',
@@ -211,7 +211,7 @@ export default function IncomeRecordPage() {
               <Descriptions.Item label="客户">{detail.memberName}</Descriptions.Item>
               {detail.technicianName && <Descriptions.Item label="技师">{detail.technicianName}</Descriptions.Item>}
               <Descriptions.Item label="支付方式">{PAY_METHODS[detail.payMethod]?.icon} {PAY_METHODS[detail.payMethod]?.label}</Descriptions.Item>
-              <Descriptions.Item label="收款时间">{dayjs(detail.payTime).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
+              <Descriptions.Item label="收款时间">{fmtTime(detail.payTime)}</Descriptions.Item>
               {detail.remark && <Descriptions.Item label="备注">{detail.remark}</Descriptions.Item>}
             </Descriptions>
           </>

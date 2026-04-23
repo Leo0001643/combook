@@ -16,6 +16,7 @@ import PermGuard from '../../components/common/PermGuard';
 import { col, styledTableComponents } from '../../components/common/tableComponents';
 import PagePagination from '../../components/common/PagePagination';
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import { fmtDate, fmtTime } from '../../utils/time';
 
 const { Text } = Typography;
 
@@ -157,7 +158,7 @@ const ReviewPage: React.FC = () => {
     },
     {
       title: col(<CalendarOutlined style={{ color: '#6366f1' }} />, '时间'), dataIndex: 'createTime',
-      render: v => v?.slice(0, 10),
+      render: v => (v != null && v !== '' ? fmtDate(v) : '—'),
     },
     {
       title: col(<SettingOutlined style={{ color: '#6366f1' }} />, '操作'), key: 'action', fixed: 'right', width: 225,
@@ -356,7 +357,7 @@ const ReviewPage: React.FC = () => {
             <Descriptions.Item label="准时评分">
               <Rate disabled value={selected.punctualScore} style={{ fontSize: 12 }} />
             </Descriptions.Item>
-            <Descriptions.Item label="评价时间">{selected.createTime?.slice(0, 16)}</Descriptions.Item>
+            <Descriptions.Item label="评价时间">{selected.createTime != null && selected.createTime !== '' ? fmtTime(selected.createTime, 'YYYY-MM-DD HH:mm') : '—'}</Descriptions.Item>
             <Descriptions.Item label="评价内容" span={2}>
               {selected.content || <Text type="secondary">无文字评价</Text>}
             </Descriptions.Item>

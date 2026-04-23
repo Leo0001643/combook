@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -206,7 +205,7 @@ public class MerchantAnnouncementController {
             r.setAnnouncementId(id);
             r.setReaderMobile(mobile);
             r.setMerchantId(merchantId);
-            r.setReadTime(LocalDateTime.now());
+            r.setReadTime(System.currentTimeMillis() / 1000L);
             readMapper.insert(r);
         }
 

@@ -1,9 +1,10 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
-
-import java.time.LocalDateTime;
 
 /**
  * Banner 轮播图实体
@@ -11,6 +12,8 @@ import java.time.LocalDateTime;
  * @author CamBook
  */
 @TableName("cb_banner")
+@Getter
+@Setter
 public class CbBanner extends BaseEntity {
 
     /** 归属商户 ID（null = 平台公共轮播图） */
@@ -25,8 +28,8 @@ public class CbBanner extends BaseEntity {
     private String        linkValue;
     private Integer       sort;
     private Integer       status;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private Long          startTime;
+    private Long          endTime;
 
     public Long          getMerchantId()             { return merchantId; }
     public void          setMerchantId(Long v)        { this.merchantId = v; }
@@ -50,8 +53,8 @@ public class CbBanner extends BaseEntity {
     public void          setSort(Integer v)          { this.sort = v; }
     public Integer       getStatus()                { return status; }
     public void          setStatus(Integer v)        { this.status = v; }
-    public LocalDateTime getStartTime()             { return startTime; }
-    public void          setStartTime(LocalDateTime v){ this.startTime = v; }
-    public LocalDateTime getEndTime()               { return endTime; }
-    public void          setEndTime(LocalDateTime v) { this.endTime = v; }
+    public Long          getStartTime()             { return startTime; }
+    public void          setStartTime(Long v)        { this.startTime = v; }
+    public Long          getEndTime()               { return endTime; }
+    public void          setEndTime(Long v)          { this.endTime = v; }
 }

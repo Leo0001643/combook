@@ -870,4 +870,96 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get exitAppConfirm => '确定退出应用程序？';
+
+  @override
+  String get todaySchedule => '今日安排';
+
+  @override
+  String get allOrders => '全部订单';
+
+  @override
+  String get orderStatusPending => '待确认';
+
+  @override
+  String get orderStatusAccepted => '已接单';
+
+  @override
+  String get orderStatusInProgress => '服务中';
+
+  @override
+  String get orderStatusCompleted => '已完成';
+
+  @override
+  String get orderStatusCancelled => '已取消';
+
+  @override
+  String get noScheduleToday => '今日暂无预约';
+
+  @override
+  String get keepOnlineHint => '保持在线，随时迎接新订单 ✨';
+
+  @override
+  String get myStats => '我的数据';
+
+  @override
+  String get totalOrders => '累计接单';
+
+  @override
+  String get overallRating => '综合评分';
+
+  @override
+  String get currentBalance => '当前余额';
+
+  @override
+  String get statTodayAppointments => '今日预约';
+
+  @override
+  String get statTodayCompleted => '今日完成';
+
+  @override
+  String get statTodayCancelled => '今日取消';
+
+  @override
+  String schedOrderCount(int n) {
+    return '$n单';
+  }
+
+  @override
+  String get schedInService => '进行中';
+
+  @override
+  String get schedPending => '待服务';
+
+  @override
+  String get totalDuration => '总时长';
+
+  @override
+  String scheduleProgress(int completed, int total) {
+    return '$completed / $total 单完成';
+  }
+
+  @override
+  String get statusOnWay => '前往中';
+
+  @override
+  String get statusCancelling => '取消中';
+
+  @override
+  String get statusRefunding => '退款中';
+
+  @override
+  String get statusRefunded => '已退款';
+
+  @override
+  String schedEndTime(String time, String duration) {
+    return '结束 $time · ${duration}min';
+  }
+
+  @override
+  String get serviceInProgress => '服务进行中';
+
+  @override
+  String estimatedIncome(String amount) {
+    return '预计 $amount';
+  }
 }

@@ -104,7 +104,9 @@ class ChatPage extends StatelessWidget {
           child: Obx(() {
             final msgs = state.messages;
             if (msgs.isEmpty) {
-              return EmptyView(message: l.noChatMessages, icon: Icons.chat_bubble_outline_rounded);
+              return EmptyView(
+                message: l.noChatMessages,
+                iconWidget: WeChatBubbleIcon(color: AppColors.textHint, size: 64));
             }
             return ListView.builder(
               controller: logic.scrollCtrl,

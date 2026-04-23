@@ -25,6 +25,26 @@ class UserService extends GetxService {
     Get.find<StorageService>().saveToken(token);
   }
 
+  /// 从后端 API 响应（TechLoginVO）登录
+  void loginFromApi(Map<String, dynamic> data, String token) {
+    technician.value = TechnicianModel(
+      id:              (data['techId']  as num?)?.toInt()    ?? 0,
+      nickname:         data['nickname'] as String?           ?? '',
+      techNo:           data['techNo']   as String?           ?? '',
+      phone:            data['mobile']   as String?           ?? '',
+      avatar:           data['avatar']   as String?,
+      level:            TechLevel.normal,
+      rating:          (data['rating']  as num?)?.toDouble() ?? 0.0,
+      completedOrders: (data['orderCount'] as num?)?.toInt() ?? 0,
+      balance:         (data['balance'] as num?)?.toDouble() ?? 0.0,
+      skills:           const [],
+      memberSince:      '',
+      merchantId:      (data['merchantId'] ?? '').toString(),
+      merchantName:     '',
+    );
+    Get.find<StorageService>().saveToken(token);
+  }
+
   void logout() {
     technician.value = null;
     Get.find<StorageService>().clear();

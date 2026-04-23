@@ -12,22 +12,24 @@
  *  - 结算单详情抽屉（含订单明细列表）
  *  - 撤销结算
  */
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Avatar, Badge, Button, Col, DatePicker, Descriptions, Divider, Drawer,
   Form, Input, InputNumber, message, Modal, Popconfirm, Progress,
   Row, Select, Space, Steps, Table, Tag,
 } from 'antd'
 import {
-  BankOutlined, BarChartOutlined, CalendarOutlined, CheckCircleFilled, CheckCircleOutlined,
+  BankOutlined, BarChartOutlined, CalendarOutlined, CheckCircleOutlined,
   ClockCircleOutlined, DollarOutlined, EditOutlined, IdcardOutlined,
   FileTextOutlined, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined,
   RedoOutlined, ReloadOutlined, SearchOutlined, SendOutlined, SettingOutlined,
-  TrophyOutlined, UserOutlined, WalletOutlined,
+  UserOutlined, WalletOutlined,
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
+import type { Dayjs } from 'dayjs'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import { fmtTime, fmtDate, toEpochSec, fromEpochSec } from '../../utils/time'
 import { useDict, parseRemark } from '../../hooks/useDict'
 import PagePagination from '../../components/common/PagePagination'
 import { col } from '../../components/common/tableComponents'
@@ -59,54 +61,6 @@ const PAY_METHODS_FB = [
   { value: 'alipay',  label: '💙 支付宝' },
   { value: 'other',   label: '🔗 其他' },
 ]
-
-// ── Summary KPI Card ──────────────────────────────────────────────────────────
-
-interface KpiCardProps {
-  label: string; value: string | number; sub?: string
-  icon: React.ReactNode; gradient: [string, string]; trend?: { value: number; up?: boolean }
-}
-
-function KpiCard({ label, value, sub, icon, gradient, trend }: KpiCardProps) {
-  return (
-    <div style={{
-      borderRadius: 16, padding: '20px 24px',
-      background: `linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})`,
-      boxShadow: `0 4px 20px ${gradient[0]}44`,
-      color: '#fff', position: 'relative', overflow: 'hidden',
-    }}>
-      <div style={{
-        position: 'absolute', top: -16, right: -16, width: 80, height: 80,
-        borderRadius: '50%', background: 'rgba(255,255,255,0.12)',
-      }} />
-      <div style={{
-        position: 'absolute', bottom: -20, right: 20, width: 50, height: 50,
-        borderRadius: '50%', background: 'rgba(255,255,255,0.08)',
-      }} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <div style={{ fontSize: 12, opacity: 0.85, marginBottom: 6 }}>{label}</div>
-          <div style={{ fontSize: 28, fontWeight: 800, lineHeight: 1 }}>{value}</div>
-          {sub && <div style={{ fontSize: 11, opacity: 0.75, marginTop: 6 }}>{sub}</div>}
-          {trend && (
-            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 4, fontSize: 12 }}>
-              <span style={{ opacity: 0.9 }}>
-                {trend.up === undefined ? '' : trend.up ? '↑' : '↓'} {Math.abs(trend.value)}%
-              </span>
-              <span style={{ opacity: 0.6 }}>较上期</span>
-            </div>
-          )}
-        </div>
-        <div style={{
-          fontSize: 28, opacity: 0.85, background: 'rgba(255,255,255,0.15)',
-          borderRadius: 12, padding: '10px 12px', lineHeight: 1,
-        }}>
-          {icon}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // ── Settlement Mode Badge ─────────────────────────────────────────────────────
 
@@ -165,7 +119,7 @@ export default function TechnicianSettlementPage() {
   const [technicianId, setTechnicianId]   = useState<number | undefined>()
   const [modeFilter, setModeFilter]       = useState<number | undefined>()
   const [statusFilter, setStatusFilter]   = useState<number | undefined>()
-  const [dateRange, setDateRange]         = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null)
+  const [dateRange, setDateRange]         = useState<[number, number] | null>(null)
 
   // Technician list (for selector)
   const [technicians, setTechnicians] = useState<any[]>([])
@@ -228,8 +182,8 @@ export default function TechnicianSettlementPage() {
         technicianId: technicianId || undefined,
         settlementMode: modeFilter,
         status: statusFilter,
-        startDate: dateRange?.[0]?.format('YYYY-MM-DD'),
-        endDate:   dateRange?.[1]?.format('YYYY-MM-DD'),
+        startDate: dateRange?.[0],
+        endDate:   dateRange?.[1],
       })
       const d = res.data?.data
       const list: any[] = d?.list ?? d?.records ?? []
@@ -243,7 +197,7 @@ export default function TechnicianSettlementPage() {
           pendingCount:  list.filter((r: any) => r.status === 0).length,
           pendingAmount: list.filter((r: any) => r.status === 0).reduce((a: number, r: any) => a + (r.finalAmount ?? 0), 0),
           settledAmount: list.filter((r: any) => r.status === 1).reduce((a: number, r: any) => a + (r.finalAmount ?? 0), 0),
-          monthAmount:   list.filter((r: any) => r.status === 1 && (r.paidTime ?? '').startsWith(dayjs().format('YYYY-MM'))).reduce((a: number, r: any) => a + (r.finalAmount ?? 0), 0),
+          monthAmount:   list.filter((r: any) => r.status === 1 && fmtTime(r.paidTime, 'YYYY-MM') === dayjs().format('YYYY-MM')).reduce((a: number, r: any) => a + (r.finalAmount ?? 0), 0),
         })
       }
     } catch {
@@ -407,7 +361,7 @@ export default function TechnicianSettlementPage() {
       render: (v, row) => (
         <div>
           <div style={{ fontWeight: 700, fontSize: 12, color: '#6366f1', fontFamily: 'monospace' }}>{v}</div>
-          <div style={{ fontSize: 11, color: '#999' }}>{dayjs(row.createTime).format('MM-DD HH:mm')}</div>
+          <div style={{ fontSize: 11, color: '#999' }}>{fmtTime(row.createTime, 'MM-DD HH:mm')}</div>
         </div>
       ),
     },
@@ -505,7 +459,7 @@ export default function TechnicianSettlementPage() {
             } />
             {row.status === 1 && row.paidTime && (
               <div style={{ fontSize: 10, color: '#999', marginTop: 2 }}>
-                {dayjs(row.paidTime).format('MM-DD HH:mm')}
+                {fmtTime(row.paidTime, 'MM-DD HH:mm')}
               </div>
             )}
           </div>
@@ -653,8 +607,17 @@ export default function TechnicianSettlementPage() {
             }))}
           />
           <RangePicker
-            value={dateRange}
-            onChange={v => setDateRange(v as any)}
+            value={(() => {
+              if (dateRange?.[0] == null || dateRange?.[1] == null) return null
+              const a = fromEpochSec(dateRange[0])
+              const b = fromEpochSec(dateRange[1])
+              return a && b ? ([a, b] as [Dayjs, Dayjs]) : null
+            })()}
+            onChange={dates => {
+              const s0 = dates?.[0] ? toEpochSec(dates[0]) : null
+              const s1 = dates?.[1] ? toEpochSec(dates[1]) : null
+              setDateRange(s0 != null && s1 != null ? [s0, s1] : null)
+            }}
             style={{ width: 260 }}
           />
           <Button icon={<ReloadOutlined />} style={{ borderRadius: 8 }} onClick={() => {
@@ -862,7 +825,7 @@ export default function TechnicianSettlementPage() {
 
                 <Row gutter={[16, 12]}>
                   {[
-                    { label: '周期', value: `${dayjs(genPreview.periodStart).format('YYYY/MM/DD')} ~ ${dayjs(genPreview.periodEnd).format('YYYY/MM/DD')}` },
+                    { label: '周期', value: `${fmtDate(genPreview.periodStart).replace(/-/g, '/')} ~ ${fmtDate(genPreview.periodEnd).replace(/-/g, '/')}` },
                     { label: '订单数', value: `${genPreview.orderCount ?? 0} 单` },
                     { label: '总营业额', value: `${genPreview.currencyCode} ${parseFloat(genPreview.totalRevenue ?? 0).toLocaleString()}` },
                     { label: '提成方式', value: genPreview.commissionType === 0 ? `按比例 ${genPreview.commissionRate}%` : `固定 ${genPreview.commissionRate}/单` },
@@ -1117,7 +1080,7 @@ export default function TechnicianSettlementPage() {
                     {PAY_METHODS.find(m => m.value === detail.paymentMethod)?.label ?? detail.paymentMethod ?? '—'}
                   </Descriptions.Item>
                   <Descriptions.Item label="打款时间">
-                    {detail.paidTime ? dayjs(detail.paidTime).format('YYYY-MM-DD HH:mm') : '—'}
+                    {detail.paidTime ? fmtTime(detail.paidTime, 'YYYY-MM-DD HH:mm') : '—'}
                   </Descriptions.Item>
                   {detail.paymentRef && (
                     <Descriptions.Item label="流水号">{detail.paymentRef}</Descriptions.Item>

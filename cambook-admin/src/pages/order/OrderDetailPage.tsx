@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons';
 import { usePortalScope } from '../../hooks/usePortalScope';
 import { useDict } from '../../hooks/useDict';
+import { fmtTime } from '../../utils/time';
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -163,7 +164,7 @@ const OrderDetailPage: React.FC = () => {
                 )}
                 {order.appointmentTime && (
                   <Descriptions.Item label="预约时间">
-                    <Space><ClockCircleOutlined style={{ color: '#6366F1' }} />{order.appointmentTime}</Space>
+                    <Space><ClockCircleOutlined style={{ color: '#6366F1' }} />{fmtTime(order.appointmentTime)}</Space>
                   </Descriptions.Item>
                 )}
                 {order.serviceAddress && (
@@ -250,7 +251,7 @@ const OrderDetailPage: React.FC = () => {
                         <br />
                         <Text type="secondary" style={{ fontSize: 12 }}>{item.desc}</Text>
                         <br />
-                        <Text type="secondary" style={{ fontSize: 11, color: '#9CA3AF' }}>{item.time}</Text>
+                        <Text type="secondary" style={{ fontSize: 11, color: '#9CA3AF' }}>{fmtTime(item.time)}</Text>
                       </div>
                     ),
                   }))}
@@ -290,10 +291,10 @@ const OrderDetailPage: React.FC = () => {
                   <Descriptions.Item label="优惠券">{order.coupon.name}</Descriptions.Item>
                 )}
                 {order.createTime && (
-                  <Descriptions.Item label="下单时间">{order.createTime}</Descriptions.Item>
+                  <Descriptions.Item label="下单时间">{fmtTime(order.createTime)}</Descriptions.Item>
                 )}
                 {order.payTime && (
-                  <Descriptions.Item label="支付时间">{order.payTime}</Descriptions.Item>
+                  <Descriptions.Item label="支付时间">{fmtTime(order.payTime)}</Descriptions.Item>
                 )}
               </Descriptions>
             </Card>

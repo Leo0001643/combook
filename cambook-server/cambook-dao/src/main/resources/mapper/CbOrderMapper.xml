@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cambook.dao.mapper.CbOrderMapper">
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         技师首页统计
+         appoint_time / create_time 已迁移为 BIGINT（UTC 秒），使用 FROM_UNIXTIME 转日期
+         ══════════════════════════════════════════════════════════════════════ -->
+
+    <!--
+        今日订单数（排除待支付/取消中/已取消/已退款）
+        状态：0=待支付 7=取消中 8=已取消 9=已退款
+    -->
+    <select id="countTodayOrders" resultType="int">
+        SELECT COUNT(*)
+        FROM cb_order
+        WHERE technician_id = #{techId}
+          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
+          AND status NOT IN (0, 7, 8, 9)
+          AND deleted = 0
+    </select>
+
+    <!--
+        今日完成订单数（status=6 已完成）
+    -->
+    <select id="countTodayCompleted" resultType="int">
+        SELECT COUNT(*)
+        FROM cb_order
+        WHERE technician_id = #{techId}
+          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
+          AND status = 6
+          AND deleted = 0
+    </select>
+
+    <!--
+        今日全部预约订单数（排除待支付 0，包含进行中/取消/退款）
+        反映技师今日实际被预约的总量
+    -->
+    <select id="countTodayAppointments" resultType="int">
+        SELECT COUNT(*)
+        FROM cb_order
+        WHERE technician_id = #{techId}
+          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
+          AND status != 0
+          AND deleted = 0
+    </select>
+
+    <!--
+        今日取消/退款订单数（status IN (7,8,9)）
+        7=取消中 8=退款中 9=已退款
+    -->
+    <select id="countTodayCancelled" resultType="int">
+        SELECT COUNT(*)
+        FROM cb_order
+        WHERE technician_id = #{techId}
+          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
+          AND status IN (7, 8, 9)
+          AND deleted = 0
+    </select>
+
+    <!--
+        今日已结算订单的技师实际收入总和
+        仅 status=6（已完成并结算），服务中(5) 的订单尚未结算不计入
+    -->
+    <select id="sumTodayIncome" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(tech_income), 0)
+        FROM cb_order
+        WHERE technician_id = #{techId}
+          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
+          AND status = 6
+          AND tech_income IS NOT NULL
+          AND deleted = 0
+    </select>
+
+    <!--
+        今日安排列表（按预约时间升序，关联会员昵称与头像）
+        appoint_time 已是 BIGINT，直接返回给前端，无需二次转换
+        排除 0=待支付 8=已取消 9=已退款；7=取消中 仍展示
+    -->
+    <select id="selectTodaySchedule" resultType="map">
+        SELECT
+            o.id                  AS orderId,
+            o.order_no            AS orderNo,
+            o.appoint_time        AS appointTime,
+            o.service_name        AS serviceName,
+            o.service_duration    AS serviceDuration,
+            o.status,
+            o.pay_amount          AS payAmount,
+            COALESCE(o.tech_income, 0) AS techIncome,
+            m.nickname            AS memberNickname,
+            m.avatar              AS memberAvatar
+        FROM cb_order o
+        LEFT JOIN cb_member m ON m.id = o.member_id AND m.deleted = 0
+        WHERE o.technician_id = #{techId}
+          AND FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
+          AND o.status NOT IN (0, 8, 9)
+          AND o.deleted = 0
+        ORDER BY o.appoint_time ASC
+    </select>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         管理员看板聚合查询（SQL 级聚合，避免全表加载到内存）
+         ══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- 已完成订单 pay_amount 总和（status 5=待评价 6=已完成） -->
+    <select id="sumRevenue" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(pay_amount), 0)
+        FROM cb_order
+        WHERE deleted = 0
+          AND status IN (5, 6)
+        <if test="from != null">AND create_time &gt;= #{from}</if>
+        <if test="to   != null">AND create_time &lt;  #{to}  </if>
+    </select>
+
+    <!-- 已完成订单 platform_income 总和 -->
+    <select id="sumPlatformIncome" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(platform_income), 0)
+        FROM cb_order
+        WHERE deleted = 0
+          AND status IN (5, 6)
+        <if test="from != null">AND create_time &gt;= #{from}</if>
+        <if test="to   != null">AND create_time &lt;  #{to}  </if>
+    </select>
+
+    <!-- 订单总数（from/to/merchantId 均可选） -->
+    <select id="countOrders" resultType="long">
+        SELECT COUNT(*)
+        FROM cb_order
+        WHERE deleted = 0
+        <if test="from       != null">AND create_time &gt;= #{from}      </if>
+        <if test="to         != null">AND create_time &lt;  #{to}        </if>
+        <if test="merchantId != null">AND merchant_id  =   #{merchantId} </if>
+    </select>
+
+    <!-- 订单状态分布 [{status, cnt}] -->
+    <select id="statusDistribution" resultType="map">
+        SELECT status, COUNT(*) AS cnt
+        FROM cb_order
+        WHERE deleted = 0
+        GROUP BY status
+    </select>
+
+    <!-- 商户营收排行 Top N [{merchantId, revenue, orderCount}] -->
+    <select id="merchantRevenueRank" resultType="map">
+        SELECT
+            merchant_id              AS merchantId,
+            COALESCE(SUM(pay_amount), 0) AS revenue,
+            COUNT(*)                 AS orderCount
+        FROM cb_order
+        WHERE deleted = 0
+          AND status IN (5, 6)
+          AND merchant_id IS NOT NULL
+        GROUP BY merchant_id
+        ORDER BY revenue DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 技师绩效排行 Top N [{technicianId, orderCount, revenue}] -->
+    <select id="techOrderRank" resultType="map">
+        SELECT
+            technician_id                AS technicianId,
+            COUNT(*)                     AS orderCount,
+            COALESCE(SUM(pay_amount), 0) AS revenue
+        FROM cb_order
+        WHERE deleted = 0
+          AND status IN (5, 6)
+          AND technician_id IS NOT NULL
+        GROUP BY technician_id
+        ORDER BY orderCount DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 营收趋势：按小时聚合（day 维度）[{hour, revenue, orders}] -->
+    <select id="revenueTrendByHour" resultType="map">
+        SELECT
+            FROM_UNIXTIME(create_time, '%H')     AS hour,
+            COALESCE(SUM(pay_amount), 0)          AS revenue,
+            COUNT(*)                              AS orders
+        FROM cb_order
+        WHERE deleted = 0
+          AND status IN (5, 6)
+          AND create_time &gt;= #{from}
+          AND create_time &lt;  #{to}
+        GROUP BY hour
+        ORDER BY hour
+    </select>
+
+    <!-- 营收趋势：按天聚合（week/month 维度）[{label, ymd, revenue, orders}] -->
+    <select id="revenueTrendByDay" resultType="map">
+        SELECT
+            FROM_UNIXTIME(create_time, '%m-%d')   AS label,
+            FROM_UNIXTIME(create_time, '%Y-%m-%d') AS ymd,
+            COALESCE(SUM(pay_amount), 0)            AS revenue,
+            COUNT(*)                                AS orders
+        FROM cb_order
+        WHERE deleted = 0
+          AND status IN (5, 6)
+          AND create_time &gt;= #{from}
+          AND create_time &lt;  #{to}
+        GROUP BY ymd, label
+        ORDER BY ymd
+    </select>
+
+    <!-- 技师待执行预约订单数（状态 1-4，用于底部导航 FAB 角标） -->
+    <select id="pendingOrderCount" resultType="int">
+        SELECT COUNT(*)
+        FROM cb_order
+        WHERE technician_id = #{techId}
+          AND deleted = 0
+          AND status IN (1, 2, 3, 4)
+    </select>
+
+    <!-- 营收趋势：按月聚合（year 维度）[{month, revenue, orders}] -->
+    <select id="revenueTrendByMonth" resultType="map">
+        SELECT
+            FROM_UNIXTIME(create_time, '%Y-%m') AS month,
+            COALESCE(SUM(pay_amount), 0)         AS revenue,
+            COUNT(*)                             AS orders
+        FROM cb_order
+        WHERE deleted = 0
+          AND status IN (5, 6)
+          AND create_time &gt;= #{from}
+          AND create_time &lt;  #{to}
+        GROUP BY month
+        ORDER BY month
+    </select>
+
+</mapper>

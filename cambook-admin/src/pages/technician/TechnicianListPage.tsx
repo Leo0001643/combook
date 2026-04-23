@@ -28,6 +28,7 @@ import { col, styledTableComponents, INPUT_STYLE } from '../../components/common
 import ContactFilter, { type ContactFilterType } from '../../components/common/ContactFilter'
 import ImageLightbox from '../../components/common/ImageLightbox'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import { fmtTime, toEpochMs } from '../../utils/time'
 
 const { Text } = Typography
 
@@ -74,14 +75,14 @@ function CurrentServiceTab({ activeOrder, loading, rating, goodReviewRate, order
   // 已服务时长倒计时（每秒更新）
   useEffect(() => {
     if (!activeOrder) { setElapsed(0); return }
-    const startMs = new Date(activeOrder.serviceTime).getTime()
+    const startMs = toEpochMs(activeOrder.serviceTime) ?? 0
     const update  = () => setElapsed(Math.floor((Date.now() - startMs) / 1000))
     update()
     const timer = setInterval(update, 1000)
     return () => clearInterval(timer)
   }, [activeOrder])
 
-  const fmtTime = (secs: number) => {
+  const formatElapsedClock = (secs: number) => {
     const h = Math.floor(secs / 3600)
     const m = Math.floor((secs % 3600) / 60)
     const s = secs % 60
@@ -159,7 +160,7 @@ function CurrentServiceTab({ activeOrder, loading, rating, goodReviewRate, order
               {/* 计时器 */}
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div style={{ fontSize: 32, fontWeight: 900, fontFamily: 'monospace', letterSpacing: 2 }}>
-                  {fmtTime(elapsed)}
+                  {formatElapsedClock(elapsed)}
                 </div>
                 <div style={{ fontSize: 11, opacity: 0.7 }}>已服务时长</div>
               </div>
@@ -169,7 +170,7 @@ function CurrentServiceTab({ activeOrder, loading, rating, goodReviewRate, order
             <div style={{ marginTop: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, opacity: 0.8, marginBottom: 6 }}>
                 <span>服务进度</span>
-                <span>剩余 {fmtTime(remaining)}</span>
+                <span>剩余 {formatElapsedClock(remaining)}</span>
               </div>
               <div style={{ height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.2)' }}>
                 <div style={{
@@ -195,7 +196,7 @@ function CurrentServiceTab({ activeOrder, loading, rating, goodReviewRate, order
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
               {[
                 { label: '订单号', value: activeOrder.orderNo, mono: true },
-                { label: '开始时间', value: activeOrder.serviceTime },
+                { label: '开始时间', value: fmtTime(activeOrder.serviceTime) },
                 { label: '服务项目', value: activeOrder.serviceName },
                 { label: '订单金额', value: `$${(activeOrder.amount ?? 0).toLocaleString()}`, bold: true, color: '#6366f1' },
               ].map(item => (

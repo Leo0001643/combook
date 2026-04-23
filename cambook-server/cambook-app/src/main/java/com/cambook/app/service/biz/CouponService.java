@@ -9,7 +9,6 @@ import com.cambook.dao.mapper.CbCouponTemplateMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 优惠券管理公共服务
@@ -50,7 +49,7 @@ public class CouponService {
     public void add(Long merchantId, String nameZh, String nameEn,
                     Integer type, BigDecimal value, BigDecimal minAmount,
                     Integer totalCount, Integer validDays,
-                    LocalDateTime startTime, LocalDateTime endTime) {
+                    Long startTime, Long endTime) {
         CbCouponTemplate c = new CbCouponTemplate();
         c.setMerchantId(merchantId);
         c.setNameZh(nameZh);
@@ -71,7 +70,7 @@ public class CouponService {
     public void edit(Long merchantId, Long id, String nameZh, String nameEn,
                      Integer type, BigDecimal value, BigDecimal minAmount,
                      Integer totalCount, Integer validDays,
-                     LocalDateTime startTime, LocalDateTime endTime, Integer status) {
+                     Long startTime, Long endTime, Integer status) {
         CbCouponTemplate c = getAndVerify(id, merchantId);
         if (nameZh     != null) c.setNameZh(nameZh);
         if (nameEn     != null) c.setNameEn(nameEn);

@@ -21,7 +21,8 @@ class MessageListPage extends StatelessWidget {
         final convs = logic.conversations;
         if (convs.isEmpty) {
           return EmptyView(
-              message: l.noMessages, icon: Icons.chat_bubble_outline_rounded);
+              message: l.noMessages,
+              iconWidget: WeChatBubbleIcon(color: AppColors.textHint, size: 64));
         }
         return RefreshIndicator(
           color: AppColors.primary,

@@ -19,9 +19,6 @@ import com.cambook.dao.mapper.CbTechnicianMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,12 +54,8 @@ public class AdminOrderService implements IAdminOrderService {
                 .like(StringUtils.isNotBlank(query.getOrderNo()), CbOrder::getOrderNo, query.getOrderNo())
                 .eq(query.getStatus() != null, CbOrder::getStatus, query.getStatus())
                 .eq(query.getServiceMode() != null, CbOrder::getServiceMode, query.getServiceMode())
-                .ge(StringUtils.isNotBlank(query.getStartDate()), CbOrder::getCreateTime,
-                        StringUtils.isNotBlank(query.getStartDate())
-                                ? LocalDateTime.of(LocalDate.parse(query.getStartDate()), LocalTime.MIN) : null)
-                .le(StringUtils.isNotBlank(query.getEndDate()), CbOrder::getCreateTime,
-                        StringUtils.isNotBlank(query.getEndDate())
-                                ? LocalDateTime.of(LocalDate.parse(query.getEndDate()), LocalTime.MAX) : null)
+                .ge(query.getStartDate() != null, CbOrder::getCreateTime, query.getStartDate())
+                .le(query.getEndDate() != null, CbOrder::getCreateTime, query.getEndDate())
                 .orderByDesc(CbOrder::getCreateTime);
 
         Page<CbOrder> p = orderMapper.selectPage(new Page<>(query.getPage(), query.getSize()), wrapper);
@@ -121,7 +114,7 @@ public class AdminOrderService implements IAdminOrderService {
         upd.setStatus(6); // 6=完成
         upd.setPayAmount(paidAmount);
         upd.setPayRecords(payRecords);
-        upd.setPayTime(LocalDateTime.now());
+        upd.setPayTime(System.currentTimeMillis() / 1000L);
         orderMapper.updateById(upd);
     }
 

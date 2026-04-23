@@ -8,8 +8,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDate;
-
 /**
  * 修改个人资料（App）
  *
@@ -34,5 +32,5 @@ public class MemberProfileDTO {
     private Integer gender;
 
     @Schema(description = "生日（yyyy-MM-dd）", example = "1995-06-15")
-    private LocalDate birthday;
+    private String birthday;
 }

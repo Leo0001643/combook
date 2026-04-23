@@ -331,5 +331,55 @@
   "helpAndSupport": "도움말 & 지원",
   "rateApp": "앱 평가하기",
   "exitApp": "앱 종료",
-  "exitAppConfirm": "앱을 종료하시겠습니까?"
+  "exitAppConfirm": "앱을 종료하시겠습니까?",
+  "todaySchedule": "오늘 일정",
+  "allOrders": "전체 주문",
+  "orderStatusPending": "확인 대기",
+  "orderStatusAccepted": "수락됨",
+  "orderStatusInProgress": "서비스 중",
+  "orderStatusCompleted": "완료됨",
+  "orderStatusCancelled": "취소됨",
+  "noScheduleToday": "오늘 예약이 없습니다",
+  "keepOnlineHint": "온라인 유지하며 새 주문을 기다리세요 ✨",
+  "myStats": "내 데이터",
+  "totalOrders": "누적 주문",
+  "overallRating": "종합 평점",
+  "currentBalance": "현재 잔액",
+
+  "statTodayAppointments": "오늘 예약",
+  "statTodayCompleted": "오늘 완료",
+  "statTodayCancelled": "오늘 취소",
+
+  "schedOrderCount": "{n}건",
+  "@schedOrderCount": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+  "schedInService": "진행 중",
+  "schedPending": "대기 중",
+  "totalDuration": "총 시간",
+  "scheduleProgress": "{completed} / {total} 완료",
+  "@scheduleProgress": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total":     { "type": "int" }
+    }
+  },
+
+  "statusOnWay": "이동 중",
+  "statusCancelling": "취소 중",
+  "statusRefunding": "환불 중",
+  "statusRefunded": "환불 완료",
+
+  "schedEndTime": "종료 {time} · {duration}분",
+  "@schedEndTime": {
+    "placeholders": {
+      "time":     { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "serviceInProgress": "서비스 중",
+  "estimatedIncome": "예상 {amount}",
+  "@estimatedIncome": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

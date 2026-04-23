@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import type { Dayjs } from 'dayjs'
+import { fmtDate, toEpochSec, dayjsFromApi } from '../../utils/time'
 import { usePortalScope } from '../../hooks/usePortalScope'
 import { useDict } from '../../hooks/useDict'
 import PermGuard from '../../components/common/PermGuard'
@@ -137,8 +138,8 @@ export default function UserListPage() {
         lang,
         telegram:  (contactType === 'telegram' && contactValue) ? contactValue : undefined,
         address:   address   || undefined,
-        startDate: dateRange?.[0]?.format('YYYY-MM-DD HH:mm:ss'),
-        endDate:   dateRange?.[1]?.format('YYYY-MM-DD HH:mm:ss'),
+        startDate: toEpochSec(dateRange?.[0]) ?? undefined,
+        endDate:   toEpochSec(dateRange?.[1]) ?? undefined,
       })
       const d = res.data?.data
       setData(d?.list ?? [])
@@ -172,7 +173,10 @@ export default function UserListPage() {
     { label: '注册会员', value: total,                                                            color: '#6366f1', bg: 'rgba(99,102,241,0.1)',  border: 'rgba(99,102,241,0.25)',  icon: '👥' },
     { label: '活跃（当页）',  value: data.filter(d => d.status === 1).length,                        color: '#10b981', bg: 'rgba(16,185,129,0.1)',  border: 'rgba(16,185,129,0.25)',  icon: '🟢' },
     { label: '封禁（当页）',  value: data.filter(d => d.status !== 1).length,                        color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.25)',   icon: '🔴' },
-    { label: '近7天新增（当页）', value: data.filter(d => dayjs(d.createdAt).isAfter(dayjs().subtract(7,'day'))).length, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)', icon: '🆕' },
+    { label: '近7天新增（当页）', value: data.filter(d => {
+      const ca = dayjsFromApi(d.createdAt)
+      return ca ? ca.isAfter(dayjs().subtract(7, 'day')) : false
+    }).length, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.25)', icon: '🆕' },
   ]
 
   const columns: ColumnsType<MemberVO> = [
@@ -288,10 +292,10 @@ export default function UserListPage() {
     {
       title: col(<ClockCircleOutlined style={{ color: '#9ca3af' }} />, '注册时间'),
       dataIndex: 'createdAt', width: 100, align: 'center',
-      render: (v: string) => (
+      render: (v: string | number) => (
         <Text type="secondary" style={{ fontSize: 11 }}>
           <CalendarOutlined style={{ marginRight: 4, color: '#d1d5db' }} />
-          {dayjs(v).format('YYYY-MM-DD')}
+          {fmtDate(v)}
         </Text>
       ),
     },

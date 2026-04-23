@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   Row, Col, Table, Input, Select, Space, Avatar,
-  Button, Typography, message, Modal, Form, Tooltip, Badge, Popconfirm, Divider,
+  Button, Typography, message, Modal, Form, Tooltip, Badge, Popconfirm,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
@@ -12,8 +12,8 @@ import {
   SendOutlined, FileTextOutlined,
   SafetyCertificateOutlined, ClockCircleOutlined,
 } from '@ant-design/icons'
-import dayjs from 'dayjs'
 import { merchantPortalApi } from '../../api/api'
+import { fmtDate } from '../../utils/time'
 import PermDrawer, { type PermTarget } from '../../components/merchant/PermDrawer'
 import RichTextInput from '../../components/common/RichTextInput'
 import PermGuard from '../../components/common/PermGuard'
@@ -230,7 +230,7 @@ export default function MerchantStaffPage() {
         <Space size={4}>
           <ClockCircleOutlined style={{ color: '#d1d5db', fontSize: 11 }} />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {v ? dayjs(v).format('YYYY-MM-DD') : '—'}
+            {v ? fmtDate(v) : '—'}
           </Text>
         </Space>
       ),

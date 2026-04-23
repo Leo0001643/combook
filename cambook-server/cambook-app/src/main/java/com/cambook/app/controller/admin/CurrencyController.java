@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,7 +66,7 @@ public class CurrencyController {
                 .eq(SysCurrency::getCurrencyCode, currency.getCurrencyCode().toUpperCase()));
         if (exist > 0) throw new BusinessException("货币代码已存在：" + currency.getCurrencyCode());
         currency.setCurrencyCode(currency.getCurrencyCode().toUpperCase());
-        currency.setRateUpdateTime(LocalDateTime.now());
+        currency.setRateUpdateTime(System.currentTimeMillis() / 1000L);
         currency.setStatus(currency.getStatus() == null ? 1 : currency.getStatus());
         currencyMapper.insert(currency);
         return Result.success();
@@ -92,7 +91,7 @@ public class CurrencyController {
                 Wrappers.<SysCurrency>lambdaUpdate()
                         .eq(SysCurrency::getCurrencyCode, code.toUpperCase())
                         .set(SysCurrency::getRateToUsd, rateToUsd)
-                        .set(SysCurrency::getRateUpdateTime, LocalDateTime.now()));
+                        .set(SysCurrency::getRateUpdateTime, System.currentTimeMillis() / 1000L));
         if (rows == 0) throw new BusinessException("币种不存在：" + code);
         return Result.success();
     }

@@ -11,13 +11,13 @@ import '../login/logic.dart';
 import 'logic.dart';
 
 const _kRegisterCountries = [
-  ('+855', '🇰🇭', 'Cambodia'), ('+1',  '🇺🇸', 'USA'),
-  ('+44',  '🇬🇧', 'UK'),       ('+86', '🇨🇳', 'China'),
-  ('+84',  '🇻🇳', 'Vietnam'),  ('+82', '🇰🇷', 'Korea'),
-  ('+81',  '🇯🇵', 'Japan'),    ('+66', '🇹🇭', 'Thailand'),
-  ('+60',  '🇲🇾', 'Malaysia'), ('+65', '🇸🇬', 'Singapore'),
-  ('+62',  '🇮🇩', 'Indonesia'), ('+63', '🇵🇭', 'Philippines'),
-  ('+91',  '🇮🇳', 'India'),    ('+61', '🇦🇺', 'Australia'),
+  ('+855', '🇰🇭', 'Cambodia'), ('+63',  '🇵🇭', 'Philippines'),
+  ('+1',   '🇺🇸', 'USA'),      ('+84',  '🇻🇳', 'Vietnam'),
+  ('+82',  '🇰🇷', 'Korea'),    ('+81',  '🇯🇵', 'Japan'),
+  ('+86',  '🇨🇳', 'China'),    ('+66',  '🇹🇭', 'Thailand'),
+  ('+65',  '🇸🇬', 'Singapore'),('+60',  '🇲🇾', 'Malaysia'),
+  ('+62',  '🇮🇩', 'Indonesia'),('+91',  '🇮🇳', 'India'),
+  ('+44',  '🇬🇧', 'UK'),       ('+61',  '🇦🇺', 'Australia'),
   ('+33',  '🇫🇷', 'France'),   ('+49', '🇩🇪', 'Germany'),
 ];
 

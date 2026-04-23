@@ -18,6 +18,7 @@ import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
 import PagePagination from '../../components/common/PagePagination'
+import { fmtDate } from '../../utils/time'
 
 const { Text } = Typography
 const { Option } = Select
@@ -182,7 +183,7 @@ export default function PositionListPage() {
       title: col(<ClockCircleOutlined style={{ color: '#94a3b8' }} />, '创建时间'),
       dataIndex: 'createTime',
       width: 120,
-      render: v => <Text type="secondary" style={{ fontSize: 12 }}>{v ? v.slice(0, 10) : '—'}</Text>,
+      render: v => <Text type="secondary" style={{ fontSize: 12 }}>{v ? fmtDate(v) : '—'}</Text>,
     },
     {
       title: col(<SettingOutlined style={{ color: '#94a3b8' }} />, '操作'),

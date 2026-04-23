@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
@@ -65,17 +66,16 @@ class _BounceTapState extends State<BounceTap>
   @override
   void initState() {
     super.initState();
-    // 正向：快速压下；反向：用 easeOutBack 弹回，产生弹跳感
     _ctrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 60),
-      reverseDuration: const Duration(milliseconds: 220),
+      reverseDuration: const Duration(milliseconds: 160),
     );
     _scale = Tween<double>(begin: 1.0, end: widget.pressScale).animate(
       CurvedAnimation(
         parent: _ctrl,
         curve: Curves.easeIn,
-        reverseCurve: Curves.easeOutBack,
+        reverseCurve: Curves.easeOut,   // 去掉 easeOutBack 过冲，弹回更干脆
       ),
     );
   }
@@ -83,19 +83,24 @@ class _BounceTapState extends State<BounceTap>
   @override
   void dispose() { _ctrl.dispose(); super.dispose(); }
 
-  // 立即跳到「完全按下」状态，保证轻触也有明显效果
-  void _down(TapDownDetails _) => _ctrl.value = 1.0;
-  void _up(TapUpDetails _)     { _ctrl.reverse(); widget.onTap?.call(); }
-  void _cancel()               => _ctrl.reverse();
+  void _down(TapDownDetails _) {
+    HapticFeedback.lightImpact();
+    _ctrl.stop();
+    _ctrl.value = 1.0;
+  }
+  // onTapUp 只负责弹回动画，不触发业务回调
+  void _up(TapUpDetails _)  => _ctrl.reverse();
+  void _cancel()            => _ctrl.reverse();
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-    // onTapDown 永远注册，这样包裹任何子 Widget（含 Button/ListTile）
-    // 都能在触摸瞬间产生缩放；子控件赢得手势竞争后，外层收到 onTapCancel，
-    // 触发 reverse() 弹回，效果同样可见。
+    // opaque：整个矩形区域（含透明空隙）均响应触摸，避免"点透"漏触
+    behavior: HitTestBehavior.opaque,
     onTapDown:   _down,
     onTapUp:     _up,
     onTapCancel: _cancel,
+    // onTap 由手势竞技场确认后才触发，比 onTapUp 更可靠
+    onTap:       widget.onTap,
     onLongPress: widget.onLongPress,
     child: AnimatedBuilder(
       animation: _scale,
@@ -135,15 +140,18 @@ class AppCard extends StatelessWidget {
 class EmptyView extends StatelessWidget {
   final String? message;
   final IconData icon;
+  /// 传入自定义图标 Widget（优先于 [icon]）
+  final Widget? iconWidget;
 
-  const EmptyView({super.key, this.message, this.icon = Icons.inbox_rounded});
+  const EmptyView({super.key, this.message,
+    this.icon = Icons.inbox_rounded, this.iconWidget});
 
   @override
   Widget build(BuildContext context) => Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 64, color: AppColors.textHint),
+        iconWidget ?? Icon(icon, size: 64, color: AppColors.textHint),
         const SizedBox(height: 12),
         Text(message ?? '暂无数据',
             style: AppTextStyles.body2.copyWith(color: AppColors.textSecond)),
@@ -343,7 +351,7 @@ void showMainMoreDrawer(BuildContext context) {
     barrierDismissible: true,
     barrierLabel: '',
     barrierColor: Colors.black54,
-    transitionDuration: const Duration(milliseconds: 300),
+    transitionDuration: const Duration(milliseconds: 180),
     pageBuilder: (_, __, ___) => Align(
       alignment: Alignment.centerRight,
       child: Material(
@@ -357,7 +365,7 @@ void showMainMoreDrawer(BuildContext context) {
     ),
     transitionBuilder: (_, anim, __, child) => SlideTransition(
       position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-          .animate(CurvedAnimation(parent: anim, curve: Curves.easeOutCubic)),
+          .animate(CurvedAnimation(parent: anim, curve: Curves.easeOut)),
       child: child,
     ),
   );
@@ -690,4 +698,65 @@ class _DotGridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_DotGridPainter _) => false;
+}
+
+// ─── 微信风格双气泡图标 ────────────────────────────────────────────────────────
+/// 与微信图标高度一致：左大右小两个圆角椭圆气泡，各带两个白色眼睛圆点。
+/// [color]  气泡填充颜色（与其他 Icon 保持统一）
+/// [size]   图标整体尺寸
+class WeChatBubbleIcon extends StatelessWidget {
+  final Color color;
+  final double size;
+  const WeChatBubbleIcon({super.key, required this.color, this.size = 24});
+
+  @override
+  Widget build(BuildContext context) => CustomPaint(
+    size: Size(size, size),
+    painter: _WeChatBubblePainter(color: color),
+  );
+}
+
+class _WeChatBubblePainter extends CustomPainter {
+  final Color color;
+  const _WeChatBubblePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size s) {
+    final fill  = Paint()..color = color..style = PaintingStyle.fill;
+    final white = Paint()..color = Colors.white..style = PaintingStyle.fill;
+    final w = s.width;
+    final h = s.height;
+
+    // ── 左侧气泡（较大，在后层）─────────────────────────────────────────────
+    final leftR = RRect.fromLTRBR(
+      0,        0,
+      w * 0.72, h * 0.64,
+      Radius.circular(h * 0.24),
+    );
+    canvas.drawRRect(leftR, fill);
+
+    // 左气泡 · 两个白色眼睛
+    canvas.drawOval(Rect.fromCenter(
+      center: Offset(w * 0.245, h * 0.30), width: w * 0.12, height: h * 0.105), white);
+    canvas.drawOval(Rect.fromCenter(
+      center: Offset(w * 0.455, h * 0.30), width: w * 0.12, height: h * 0.105), white);
+
+    // ── 右侧气泡（较小，在前层，覆盖左气泡右下角）────────────────────────────
+    // 先用背景色抹掉被右气泡遮住的左气泡边缘（制造"穿透"感）
+    final rightR = RRect.fromLTRBR(
+      w * 0.27, h * 0.36,
+      w * 1.0,  h * 1.0,
+      Radius.circular(h * 0.20),
+    );
+    canvas.drawRRect(rightR, fill);
+
+    // 右气泡 · 两个白色眼睛
+    canvas.drawOval(Rect.fromCenter(
+      center: Offset(w * 0.515, h * 0.685), width: w * 0.10, height: h * 0.09), white);
+    canvas.drawOval(Rect.fromCenter(
+      center: Offset(w * 0.705, h * 0.685), width: w * 0.10, height: h * 0.09), white);
+  }
+
+  @override
+  bool shouldRepaint(_WeChatBubblePainter old) => old.color != color;
 }

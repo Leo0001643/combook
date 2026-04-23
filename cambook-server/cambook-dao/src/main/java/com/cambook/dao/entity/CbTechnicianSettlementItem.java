@@ -1,12 +1,14 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 技师结算明细：本次结算批次包含的每一笔订单
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
  * @author CamBook
  */
 @TableName("cb_technician_settlement_item")
+@Getter
+@Setter
 public class CbTechnicianSettlementItem implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -33,7 +37,7 @@ public class CbTechnicianSettlementItem implements Serializable {
     /** 本单提成金额 */
     private BigDecimal commissionAmount;
 
-    private LocalDateTime serviceTime;
+    private Long serviceTime;
 
     // ── Getters & Setters ─────────────────────────────────────────────────────
 
@@ -59,8 +63,7 @@ public class CbTechnicianSettlementItem implements Serializable {
     public void setCommissionRate(BigDecimal v)   { this.commissionRate = v; }
 
     public BigDecimal getCommissionAmount()       { return commissionAmount; }
-    public void setCommissionAmount(BigDecimal v) { this.commissionAmount = v; }
 
-    public LocalDateTime getServiceTime()         { return serviceTime; }
-    public void setServiceTime(LocalDateTime v)   { this.serviceTime = v; }
+    public Long getServiceTime()         { return serviceTime; }
+    public void setServiceTime(Long v)   { this.serviceTime = v; }
 }

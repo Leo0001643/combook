@@ -1,5 +1,8 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
@@ -11,6 +14,8 @@ import java.math.BigDecimal;
  * @author CamBook
  */
 @TableName("cb_merchant")
+@Getter
+@Setter
 public class CbMerchant extends BaseEntity {
 
     private String      merchantNo;
@@ -88,17 +93,13 @@ public class CbMerchant extends BaseEntity {
     public void       setAddressVi(String v)              { this.addressVi = v; }
     public String     getAddressKm()                      { return addressKm; }
     public void       setAddressKm(String v)              { this.addressKm = v; }
-    public BigDecimal getLat()                            { return lat; }
     public void       setLat(BigDecimal v)                { this.lat = v; }
-    public BigDecimal getLng()                            { return lng; }
     public void       setLng(BigDecimal v)                { this.lng = v; }
     public String     getBusinessHours()                  { return businessHours; }
     public void       setBusinessHours(String v)          { this.businessHours = v; }
     public Integer    getTechCount()                      { return techCount; }
     public void       setTechCount(Integer v)             { this.techCount = v; }
-    public BigDecimal getBalance()                        { return balance; }
     public void       setBalance(BigDecimal v)            { this.balance = v; }
-    public BigDecimal getCommissionRate()                 { return commissionRate; }
     public void       setCommissionRate(BigDecimal v)     { this.commissionRate = v; }
     public Integer    getBusinessType()                   { return businessType; }
     public void       setBusinessType(Integer v)          { this.businessType = v; }

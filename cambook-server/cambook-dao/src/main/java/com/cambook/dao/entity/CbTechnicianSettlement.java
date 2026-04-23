@@ -1,13 +1,14 @@
 package com.cambook.dao.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * 技师结算批次
@@ -23,6 +24,8 @@ import java.time.LocalDateTime;
  * @author CamBook
  */
 @TableName("cb_technician_settlement")
+@Getter
+@Setter
 public class CbTechnicianSettlement implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -39,10 +42,10 @@ public class CbTechnicianSettlement implements Serializable {
     private Integer settlementMode;
 
     /** 结算周期开始日期 */
-    private LocalDate periodStart;
+    private String periodStart;
 
     /** 结算周期结束日期 */
-    private LocalDate periodEnd;
+    private String periodEnd;
 
     /** 本批次订单数量 */
     private Integer orderCount;
@@ -84,91 +87,14 @@ public class CbTechnicianSettlement implements Serializable {
     private Integer status;
 
     /** 实际打款时间 */
-    private LocalDateTime paidTime;
+    private Long paidTime;
 
     private String remark;
     private String operator;
 
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private Long createTime;
+    private Long updateTime;
 
     // ── Getters & Setters ─────────────────────────────────────────────────────
 
-    public Long getId()                            { return id; }
-    public void setId(Long id)                     { this.id = id; }
-
-    public Long getMerchantId()                    { return merchantId; }
-    public void setMerchantId(Long v)              { this.merchantId = v; }
-
-    public Long getTechnicianId()                  { return technicianId; }
-    public void setTechnicianId(Long v)            { this.technicianId = v; }
-
-    public String getTechnicianName()              { return technicianName; }
-    public void setTechnicianName(String v)        { this.technicianName = v; }
-
-    public String getSettlementNo()                { return settlementNo; }
-    public void setSettlementNo(String v)          { this.settlementNo = v; }
-
-    public Integer getSettlementMode()             { return settlementMode; }
-    public void setSettlementMode(Integer v)       { this.settlementMode = v; }
-
-    public LocalDate getPeriodStart()              { return periodStart; }
-    public void setPeriodStart(LocalDate v)        { this.periodStart = v; }
-
-    public LocalDate getPeriodEnd()                { return periodEnd; }
-    public void setPeriodEnd(LocalDate v)          { this.periodEnd = v; }
-
-    public Integer getOrderCount()                 { return orderCount; }
-    public void setOrderCount(Integer v)           { this.orderCount = v; }
-
-    public BigDecimal getTotalRevenue()            { return totalRevenue; }
-    public void setTotalRevenue(BigDecimal v)      { this.totalRevenue = v; }
-
-    public BigDecimal getCommissionRate()          { return commissionRate; }
-    public void setCommissionRate(BigDecimal v)    { this.commissionRate = v; }
-
-    public Integer getCommissionType()             { return commissionType; }
-    public void setCommissionType(Integer v)       { this.commissionType = v; }
-
-    public BigDecimal getCommissionAmount()        { return commissionAmount; }
-    public void setCommissionAmount(BigDecimal v)  { this.commissionAmount = v; }
-
-    public BigDecimal getBonusAmount()             { return bonusAmount; }
-    public void setBonusAmount(BigDecimal v)       { this.bonusAmount = v; }
-
-    public BigDecimal getDeductionAmount()         { return deductionAmount; }
-    public void setDeductionAmount(BigDecimal v)   { this.deductionAmount = v; }
-
-    public BigDecimal getFinalAmount()             { return finalAmount; }
-    public void setFinalAmount(BigDecimal v)       { this.finalAmount = v; }
-
-    public String getCurrencyCode()                { return currencyCode; }
-    public void setCurrencyCode(String v)          { this.currencyCode = v; }
-
-    public String getCurrencySymbol()              { return currencySymbol; }
-    public void setCurrencySymbol(String v)        { this.currencySymbol = v; }
-
-    public String getPaymentMethod()               { return paymentMethod; }
-    public void setPaymentMethod(String v)         { this.paymentMethod = v; }
-
-    public String getPaymentRef()                  { return paymentRef; }
-    public void setPaymentRef(String v)            { this.paymentRef = v; }
-
-    public Integer getStatus()                     { return status; }
-    public void setStatus(Integer v)               { this.status = v; }
-
-    public LocalDateTime getPaidTime()             { return paidTime; }
-    public void setPaidTime(LocalDateTime v)       { this.paidTime = v; }
-
-    public String getRemark()                      { return remark; }
-    public void setRemark(String v)                { this.remark = v; }
-
-    public String getOperator()                    { return operator; }
-    public void setOperator(String v)              { this.operator = v; }
-
-    public LocalDateTime getCreateTime()           { return createTime; }
-    public void setCreateTime(LocalDateTime v)     { this.createTime = v; }
-
-    public LocalDateTime getUpdateTime()           { return updateTime; }
-    public void setUpdateTime(LocalDateTime v)     { this.updateTime = v; }
 }

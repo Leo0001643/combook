@@ -62,7 +62,7 @@ export interface RoleVO {
   sort: number
   status: number
   permissionIds?: number[]
-  createTime?: string
+  createTime?: number
 }
 
 export interface MemberVO {
@@ -72,7 +72,7 @@ export interface MemberVO {
   avatar?: string
   gender: number
   status: number
-  createdAt: string
+  createdAt: number
   orderCount: number
   totalAmount: number
 }
@@ -116,7 +116,7 @@ export interface TechnicianVO {
   commissionType?: number
   commissionRatePct?: number
   commissionCurrency?: string
-  createTime: string
+  createTime: number
 }
 
 export interface OrderVO {
@@ -129,7 +129,7 @@ export interface OrderVO {
   serviceName: string
   serviceDuration?: number
   addressDetail?: string
-  appointTime?: string
+  appointTime?: number
   originalAmount?: number
   discountAmount?: number
   payAmount?: number
@@ -137,7 +137,7 @@ export interface OrderVO {
   status: number
   isReviewed?: number
   remark?: string
-  createTime: string
+  createTime: number
 }
 
 export interface BannerVO {
@@ -147,7 +147,7 @@ export interface BannerVO {
   linkUrl?: string
   sort: number
   status: number
-  createdAt: string
+  createdAt: number
 }
 
 export interface VehicleVO {
@@ -159,7 +159,7 @@ export interface VehicleVO {
   memberId: number
   memberNickname?: string
   status: number
-  createdAt: string
+  createdAt: number
 }
 
 export interface StaffVO {
@@ -174,7 +174,7 @@ export interface StaffVO {
   status: number
   roleIds?: number[]
   roleNames?: string[]
-  createTime?: string
+  createTime?: number
 }
 
 export interface PositionVO {
@@ -187,7 +187,7 @@ export interface PositionVO {
   status: number
   /** 1=全量权限（如总裁），0=按分配 */
   fullAccess?: number
-  createTime?: string
+  createTime?: number
 }
 
 export interface AnnouncementVO {
@@ -204,7 +204,7 @@ export interface AnnouncementVO {
   /** 0=草稿  1=已发布 */
   status: number
   createBy?: string
-  createTime?: string
+  createTime?: number
 }
 
 // ──────────────────────────────────────────────────────────────────────────────

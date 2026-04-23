@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  Card, Descriptions, Avatar, Tag, Spin, Image, Row, Col, Typography, Space, Divider,
+  Card, Descriptions, Avatar, Tag, Spin, Image, Row, Col, Typography, Space,
 } from 'antd'
 import {
   ShopOutlined, PhoneOutlined, EnvironmentOutlined, AuditOutlined,

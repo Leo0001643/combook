@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   Table, Button, Space, Tag, Input, Select, message,
-  Popconfirm, Badge, Drawer, Divider, Tooltip, Typography,
+  Popconfirm, Badge, Drawer, Tooltip, Typography,
 } from 'antd'
 import {
   FileTextOutlined, DeleteOutlined, ReloadOutlined, SearchOutlined,
@@ -15,6 +15,7 @@ import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import { fmtTime, fmtDate } from '../../utils/time'
 
 const { Text } = Typography
 
@@ -141,7 +142,7 @@ export default function LogManagePage() {
     },
     {
       title: col(<CalendarOutlined style={{ color: '#6366f1' }} />, '时间'), dataIndex: 'operTime', key: 'operTime',
-      render: (v: string) => <span style={{ color: '#666', fontSize: 12 }}>{v ? v.substring(0, 19) : '-'}</span>,
+      render: (v: string | number) => <span style={{ color: '#666', fontSize: 12 }}>{v != null && v !== '' ? fmtTime(v) : '-'}</span>,
     },
     {
       title: col(<SettingOutlined style={{ color: '#6366f1' }} />, '操作'), key: 'action', width: 145,
@@ -183,7 +184,7 @@ export default function LogManagePage() {
               <span>✕</span><span style={{ fontSize: 12, color: '#6b7280' }}>失败</span><span style={{ fontSize: 13, fontWeight: 700, color: '#ef4444' }}>{failCount}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 20, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)' }}>
-              <span>📅</span><span style={{ fontSize: 12, color: '#6b7280' }}>今日</span><span style={{ fontSize: 13, fontWeight: 700, color: '#2563eb' }}>{logs.filter(l => l.operTime?.startsWith(new Date().toISOString().substring(0, 10))).length}</span>
+              <span>📅</span><span style={{ fontSize: 12, color: '#6b7280' }}>今日</span><span style={{ fontSize: 13, fontWeight: 700, color: '#2563eb' }}>{logs.filter(l => l.operTime != null && l.operTime !== '' && fmtDate(l.operTime) === fmtDate(Math.floor(Date.now() / 1000))).length}</span>
             </div>
           </div>
           <div style={{ flex: 1 }} />
@@ -242,7 +243,7 @@ export default function LogManagePage() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                 <div style={{ minWidth: 120 }}><div style={{ color: '#999', fontSize: 12 }}>请求方式</div><Tag color={METHOD_COLORS[viewing.requestMethod]}>{viewing.requestMethod}</Tag></div>
                 <div style={{ minWidth: 120 }}><div style={{ color: '#999', fontSize: 12 }}>操作状态</div>{viewing.status === 0 ? <Badge status="success" text="成功" /> : <Badge status="error" text="失败" />}</div>
-                <div style={{ minWidth: 120 }}><div style={{ color: '#999', fontSize: 12 }}>操作时间</div><div style={{ fontSize: 12 }}>{viewing.operTime?.substring(0, 19)}</div></div>
+                <div style={{ minWidth: 120 }}><div style={{ color: '#999', fontSize: 12 }}>操作时间</div><div style={{ fontSize: 12 }}>{viewing.operTime != null && viewing.operTime !== '' ? fmtTime(viewing.operTime) : '—'}</div></div>
               </div>
             </div>
             <div style={{ marginBottom: 12 }}>

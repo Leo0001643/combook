@@ -10,10 +10,9 @@ import {
 } from 'antd'
 import {
   ApartmentOutlined, SolutionOutlined,
-  LockOutlined, UnlockOutlined, EditOutlined,
+  UnlockOutlined, EditOutlined,
   TeamOutlined, CheckCircleOutlined, InfoCircleOutlined,
   SafetyCertificateOutlined, SettingOutlined, ReloadOutlined,
-  // LockOutlined kept for DeptPermBadge
 } from '@ant-design/icons'
 import PermDrawer, { type PermTarget, MENU_GROUPS, MENU_OPERATIONS } from '../../components/merchant/PermDrawer'
 import { merchantPortalApi } from '../../api/api'

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   Row, Col, Table, Input, Select, Space, Tag, Avatar,
   Button, Typography, message, Modal, Form, Drawer,
-  Badge, Popconfirm, Divider,
+  Badge, Popconfirm,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
@@ -13,8 +13,8 @@ import {
   SafetyCertificateOutlined, SolutionOutlined,
   ClockCircleOutlined, SettingOutlined, KeyOutlined,
 } from '@ant-design/icons'
-import dayjs from 'dayjs'
 import { staffApi, positionApi, roleApi, type StaffVO, type PositionVO, type RoleVO } from '../../api/api'
+import { fmtDate } from '../../utils/time'
 import PermGuard from '../../components/common/PermGuard'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
@@ -214,7 +214,7 @@ export default function StaffListPage() {
         <Space size={4}>
           <ClockCircleOutlined style={{ color: '#d1d5db', fontSize: 11 }} />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {v ? dayjs(v).format('YYYY-MM-DD') : '—'}
+            {v ? fmtDate(v) : '—'}
           </Text>
         </Space>
       ),

@@ -13,6 +13,7 @@ import {
   EnvironmentOutlined, DollarOutlined, CheckCircleOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import { fmtTime } from '../../utils/time'
 import type { ColumnsType } from 'antd/es/table'
 import { col, styledTableComponents, INPUT_STYLE } from '../../components/common/tableComponents'
 import PagePagination from '../../components/common/PagePagination'
@@ -224,8 +225,8 @@ export default function VehicleDispatchPage() {
       key: 'time', width: 180,
       render: (_, r) => (
         <div style={{ fontSize: 12 }}>
-          <div><span style={{ color: '#6b7280' }}>出:</span> {r.departTime ? dayjs(r.departTime).format('MM-DD HH:mm') : '—'}</div>
-          <div><span style={{ color: '#6b7280' }}>返:</span> {r.returnTime ? dayjs(r.returnTime).format('MM-DD HH:mm') : <Text type="secondary">未返回</Text>}</div>
+          <div><span style={{ color: '#6b7280' }}>出:</span> {r.departTime ? fmtTime(r.departTime, 'MM-DD HH:mm') : '—'}</div>
+          <div><span style={{ color: '#6b7280' }}>返:</span> {r.returnTime ? fmtTime(r.returnTime, 'MM-DD HH:mm') : <Text type="secondary">未返回</Text>}</div>
         </div>
       ),
     },
@@ -503,8 +504,8 @@ export default function VehicleDispatchPage() {
                 <Descriptions.Item label="驾驶员">{detail.driverName}</Descriptions.Item>
                 <Descriptions.Item label="目的地">{detail.destination || '—'}</Descriptions.Item>
                 <Descriptions.Item label="乘客信息">{detail.passengerInfo || '—'}</Descriptions.Item>
-                <Descriptions.Item label="出发时间">{detail.departTime ? dayjs(detail.departTime).format('YYYY-MM-DD HH:mm') : '—'}</Descriptions.Item>
-                <Descriptions.Item label="返回时间">{detail.returnTime ? dayjs(detail.returnTime).format('YYYY-MM-DD HH:mm') : '—'}</Descriptions.Item>
+                <Descriptions.Item label="出发时间">{fmtTime(detail.departTime, 'YYYY-MM-DD HH:mm')}</Descriptions.Item>
+                <Descriptions.Item label="返回时间">{fmtTime(detail.returnTime, 'YYYY-MM-DD HH:mm')}</Descriptions.Item>
                 {detail.mileage && <Descriptions.Item label="行驶里程">{detail.mileage} km</Descriptions.Item>}
                 <Descriptions.Item label="备注">{detail.remark || '—'}</Descriptions.Item>
               </Descriptions>

@@ -1,6 +1,7 @@
 package com.cambook.app.common.config;
 
 import com.cambook.app.common.filter.AuthFilter;
+import com.cambook.app.common.filter.RequestLogFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -49,10 +50,25 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + uploadPath + "/");
     }
 
+    /**
+     * 请求日志过滤器（order=0，最先执行）
+     *
+     * <p>直接 new 实例而非注入 Bean，避免 Spring 再次自动注册造成双重执行。
+     * 已跳过 Swagger / 静态资源路径。
+     */
+    @Bean
+    public FilterRegistrationBean<RequestLogFilter> requestLogFilterRegistration() {
+        FilterRegistrationBean<RequestLogFilter> bean = new FilterRegistrationBean<>(new RequestLogFilter());
+        bean.addUrlPatterns("/*");
+        bean.setOrder(0);   // 早于 AuthFilter（order=1）执行
+        return bean;
+    }
+
+    /** 认证过滤器（order=1，在日志过滤器之后） */
     @Bean
     public FilterRegistrationBean<AuthFilter> authFilterRegistration(AuthFilter authFilter) {
         FilterRegistrationBean<AuthFilter> bean = new FilterRegistrationBean<>(authFilter);
-        bean.addUrlPatterns("/app/*", "/admin/*", "/merchant/*");
+        bean.addUrlPatterns("/app/*", "/admin/*", "/merchant/*", "/tech/*");
         bean.setOrder(1);
         return bean;
     }

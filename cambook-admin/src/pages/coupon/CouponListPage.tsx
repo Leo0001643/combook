@@ -20,6 +20,7 @@ import PermGuard from '../../components/common/PermGuard';
 import PagePagination from '../../components/common/PagePagination';
 import { col, INPUT_STYLE, styledTableComponents } from '../../components/common/tableComponents';
 import { useTableBodyHeight } from '../../hooks/useTableBodyHeight'
+import { fmtDate } from '../../utils/time'
 
 const { Text } = Typography;
 
@@ -252,7 +253,7 @@ const CouponListPage: React.FC = () => {
       key: 'validity',
       render: (_, r) => r.validDays
         ? <Tag color="cyan">{r.validDays} 天</Tag>
-        : r.endTime ? <Text style={{ fontSize: 12 }}>{r.endTime?.slice(0, 10)}</Text>
+        : r.endTime ? <Text style={{ fontSize: 12 }}>{fmtDate(r.endTime)}</Text>
           : <Text type="secondary">—</Text>,
     },
     {

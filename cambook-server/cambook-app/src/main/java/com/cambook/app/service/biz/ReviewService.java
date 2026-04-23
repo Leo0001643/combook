@@ -11,7 +11,6 @@ import com.cambook.dao.mapper.CbOrderMapper;
 import com.cambook.dao.mapper.CbReviewMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +98,7 @@ public class ReviewService {
         }
 
         review.setReply(reply);
-        review.setReplyTime(LocalDateTime.now());
+        review.setReplyTime(System.currentTimeMillis() / 1000L);
         reviewMapper.updateById(review);
     }
 

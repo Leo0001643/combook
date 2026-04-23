@@ -331,5 +331,55 @@
   "helpAndSupport": "Trợ giúp & Hỗ trợ",
   "rateApp": "Đánh giá ứng dụng",
   "exitApp": "Thoát ứng dụng",
-  "exitAppConfirm": "Thoát khỏi ứng dụng?"
+  "exitAppConfirm": "Thoát khỏi ứng dụng?",
+  "todaySchedule": "Lịch hôm nay",
+  "allOrders": "Tất cả đơn hàng",
+  "orderStatusPending": "Chờ xác nhận",
+  "orderStatusAccepted": "Đã nhận",
+  "orderStatusInProgress": "Đang phục vụ",
+  "orderStatusCompleted": "Hoàn thành",
+  "orderStatusCancelled": "Đã hủy",
+  "noScheduleToday": "Hôm nay không có lịch hẹn",
+  "keepOnlineHint": "Duy trì trực tuyến để nhận đơn mới ✨",
+  "myStats": "Dữ liệu của tôi",
+  "totalOrders": "Tổng đơn hàng",
+  "overallRating": "Đánh giá tổng thể",
+  "currentBalance": "Số dư hiện tại",
+
+  "statTodayAppointments": "Đặt lịch hôm nay",
+  "statTodayCompleted": "Hoàn thành hôm nay",
+  "statTodayCancelled": "Huỷ hôm nay",
+
+  "schedOrderCount": "{n} đơn",
+  "@schedOrderCount": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+  "schedInService": "Đang phục vụ",
+  "schedPending": "Chờ phục vụ",
+  "totalDuration": "Tổng thời gian",
+  "scheduleProgress": "{completed} / {total} hoàn thành",
+  "@scheduleProgress": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total":     { "type": "int" }
+    }
+  },
+
+  "statusOnWay": "Đang đến",
+  "statusCancelling": "Đang huỷ",
+  "statusRefunding": "Đang hoàn tiền",
+  "statusRefunded": "Đã hoàn tiền",
+
+  "schedEndTime": "Kết thúc {time} · {duration}ph",
+  "@schedEndTime": {
+    "placeholders": {
+      "time":     { "type": "String" },
+      "duration": { "type": "String" }
+    }
+  },
+  "serviceInProgress": "Đang phục vụ",
+  "estimatedIncome": "Dự tính {amount}",
+  "@estimatedIncome": {
+    "placeholders": { "amount": { "type": "String" } }
+  }
 }

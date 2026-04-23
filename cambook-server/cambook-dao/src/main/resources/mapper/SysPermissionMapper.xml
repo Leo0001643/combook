@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cambook.dao.mapper.SysPermissionMapper">
+
+    <!-- 通过用户 ID 查询其所有角色下的权限标识（用于缓存） -->
+    <select id="selectPermCodesByUserId" resultType="String">
+        SELECT DISTINCT p.code
+        FROM sys_permission p
+        INNER JOIN sys_role_permission rp ON rp.permission_id = p.id
+        INNER JOIN sys_user_role ur ON ur.role_id = rp.role_id
+        WHERE ur.user_id = #{userId}
+          AND p.deleted = 0
+          AND p.status = 1
+          AND p.code IS NOT NULL
+    </select>
+
+    <!-- 查询管理端所有可见菜单（portal_type=0），用于动态菜单构建 -->
+    <select id="selectAllVisibleMenus" resultType="com.cambook.dao.entity.SysPermission">
+        SELECT *
+        FROM sys_permission
+        WHERE deleted = 0
+          AND status = 1
+          AND visible = 1
+          AND type IN (1, 2)
+          AND portal_type = 0
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 查询商户端所有可见菜单（portal_type=1），用于动态菜单构建与 RBAC 分配 -->
+    <select id="selectAllVisibleMerchantMenus" resultType="com.cambook.dao.entity.SysPermission">
+        SELECT *
+        FROM sys_permission
+        WHERE deleted = 0
+          AND status = 1
+          AND visible = 1
+          AND type IN (1, 2)
+          AND portal_type = 1
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 按门户类型查询完整权限树（含按钮级），用于管理员权限配置页 -->
+    <select id="selectAllByPortalType" resultType="com.cambook.dao.entity.SysPermission">
+        SELECT *
+        FROM sys_permission
+        WHERE deleted = 0
+          AND portal_type = #{portalType}
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 查询指定用户可访问的菜单权限标识（type=1,2 且有 code） -->
+    <select id="selectMenuCodesByUserId" resultType="String">
+        SELECT DISTINCT p.code
+        FROM sys_permission p
+        INNER JOIN sys_role_permission rp ON rp.permission_id = p.id
+        INNER JOIN sys_user_role ur ON ur.role_id = rp.role_id
+        WHERE ur.user_id = #{userId}
+          AND p.deleted = 0
+          AND p.status = 1
+          AND p.type IN (1, 2)
+          AND p.code IS NOT NULL
+    </select>
+
+    <!-- 判断用户是否拥有 SUPER_ADMIN 角色（用于通配符权限注入） -->
+    <select id="isSuperAdmin" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM sys_user_role ur
+        INNER JOIN sys_role r ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId}
+          AND r.role_code = 'SUPER_ADMIN'
+          AND r.deleted = 0
+    </select>
+
+</mapper>

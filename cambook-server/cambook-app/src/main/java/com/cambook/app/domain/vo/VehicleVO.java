@@ -3,8 +3,6 @@ package com.cambook.app.domain.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 /**
  * 车辆信息 VO
  *
@@ -51,10 +49,10 @@ public class VehicleVO {
     private String remark;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private Long createTime;
 
     @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
+    private Long updateTime;
 
     public static VehicleVO from(com.cambook.dao.entity.CbVehicle v) {
         VehicleVO vo = new VehicleVO();

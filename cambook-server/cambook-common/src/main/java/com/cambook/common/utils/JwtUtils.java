@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -32,6 +33,14 @@ public class JwtUtils {
 
     @Value("${cambook.jwt.expire-seconds:604800}")
     private long expireSeconds;
+
+    @PostConstruct
+    private void init() {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            log.warn("[JWT] secret 不足 32 字节，已零填充至 32 字节。" +
+                     "生产环境请在配置中设置足够熵的密钥（建议 ≥ 64 字节随机字符串）");
+        }
+    }
 
     /**
      * 生成 Token

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cambook.dao.mapper.CbReviewMapper">
+
+    <!--
+        今日平均综合评分（overall_score，1-5星）
+        create_time 已迁移为 BIGINT（UTC 秒级时间戳），使用 FROM_UNIXTIME 转换后比较日期
+        无今日评价时返回 null，由 Service 层决定展示策略（如显示"- -"）
+        只统计正常显示状态（status=1）、未删除的评价
+    -->
+    <select id="avgTodayRating" resultType="java.math.BigDecimal">
+        SELECT ROUND(AVG(overall_score), 1)
+        FROM cb_review
+        WHERE technician_id = #{techId}
+          AND FROM_UNIXTIME(create_time, '%Y-%m-%d') = CURDATE()
+          AND status = 1
+          AND deleted = 0
+    </select>
+
+</mapper>

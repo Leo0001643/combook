@@ -86,18 +86,6 @@ function buildParentOptions(
   return walk(nodes)
 }
 
-/** 根据 id 在树中找到节点 */
-function findNode(nodes: PermissionVO[], id: number): PermissionVO | null {
-  for (const n of nodes) {
-    if (n.id === id) return n
-    if (n.children) {
-      const found = findNode(n.children, id)
-      if (found) return found
-    }
-  }
-  return null
-}
-
 /** 获取节点的面包屑路径 */
 function getBreadcrumb(nodes: PermissionVO[], targetId: number, path: string[] = []): string[] | null {
   for (const n of nodes) {

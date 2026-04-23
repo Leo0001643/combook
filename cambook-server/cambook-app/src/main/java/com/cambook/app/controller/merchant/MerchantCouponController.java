@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 商户端 - 优惠券管理（薄包装层）
@@ -53,8 +52,8 @@ public class MerchantCouponController {
                             @RequestParam BigDecimal minAmount,
                             @RequestParam Integer    totalCount,
                             @RequestParam(required = false) Integer    validDays,
-                            @RequestParam(required = false) LocalDateTime startTime,
-                            @RequestParam(required = false) LocalDateTime endTime) {
+                            @RequestParam(required = false) Long startTime,
+                            @RequestParam(required = false) Long endTime) {
         couponService.add(requireMerchantId(), nameZh, nameEn, type, value, minAmount, totalCount, validDays, startTime, endTime);
         return Result.success();
     }
@@ -69,8 +68,8 @@ public class MerchantCouponController {
                              @RequestParam(required = false) BigDecimal minAmount,
                              @RequestParam(required = false) Integer    totalCount,
                              @RequestParam(required = false) Integer    validDays,
-                             @RequestParam(required = false) LocalDateTime startTime,
-                             @RequestParam(required = false) LocalDateTime endTime,
+                             @RequestParam(required = false) Long startTime,
+                             @RequestParam(required = false) Long endTime,
                              @RequestParam(required = false) Integer    status) {
         couponService.edit(requireMerchantId(), id, nameZh, nameEn, type, value, minAmount, totalCount, validDays, startTime, endTime, status);
         return Result.success();

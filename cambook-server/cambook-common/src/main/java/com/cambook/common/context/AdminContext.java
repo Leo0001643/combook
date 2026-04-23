@@ -1,5 +1,7 @@
 package com.cambook.common.context;
 
+import lombok.Data;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -36,21 +38,13 @@ public final class AdminContext {
         return info != null ? info.permissions : Collections.emptySet();
     }
 
-    // ── inner class ───────────────────────────────────────────────────────────
+    // ── inner VO ─────────────────────────────────────────────────────────────
 
+    @Data
     public static final class AdminInfo {
-
         private Long userId;
         private String username;
         /** 权限标识集合，如 {"member:list", "order:delete"} */
         private Set<String> permissions;
-
-        public Long getUserId()             { return userId; }
-        public String getUsername()         { return username; }
-        public Set<String> getPermissions() { return permissions; }
-
-        public void setUserId(Long userId)                 { this.userId = userId; }
-        public void setUsername(String username)           { this.username = username; }
-        public void setPermissions(Set<String> permissions) { this.permissions = permissions; }
     }
 }
