@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/technician/TechHomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/technician/TechHomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/technician/TechOrderItemController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/technician/TechOrderItemController.java" afterDir="false" />
-    </list>
+    <list default="true" id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -93,7 +90,7 @@
       <workItem from="1776052316523" duration="1270000" />
       <workItem from="1776070209993" duration="54286000" />
       <workItem from="1776360112895" duration="43286000" />
-      <workItem from="1776826414056" duration="1585000" />
+      <workItem from="1776826414056" duration="3567000" />
     </task>
     <servers />
   </component>
