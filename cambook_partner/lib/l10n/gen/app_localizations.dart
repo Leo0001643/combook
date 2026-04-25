@@ -475,6 +475,12 @@ abstract class AppLocalizations {
   /// **'已接单'**
   String get tabAccepted;
 
+  /// No description provided for @statusReception.
+  ///
+  /// In zh, this message translates to:
+  /// **'接待中'**
+  String get statusReception;
+
   /// No description provided for @tabInService.
   ///
   /// In zh, this message translates to:
@@ -1968,6 +1974,108 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'预计 {amount}'**
   String estimatedIncome(String amount);
+
+  /// No description provided for @sessionExpiredTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'登出提醒'**
+  String get sessionExpiredTitle;
+
+  /// No description provided for @sessionExpiredMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'您已经登出，请重新登录后继续操作'**
+  String get sessionExpiredMessage;
+
+  /// No description provided for @goToLogin.
+  ///
+  /// In zh, this message translates to:
+  /// **'前往登录'**
+  String get goToLogin;
+
+  /// No description provided for @networkTimeout.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络超时，请检查网络连接'**
+  String get networkTimeout;
+
+  /// No description provided for @networkUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络不可用，请检查连接'**
+  String get networkUnavailable;
+
+  /// No description provided for @networkError.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络请求失败，请稍后重试'**
+  String get networkError;
+
+  /// No description provided for @orderTypeOnline.
+  ///
+  /// In zh, this message translates to:
+  /// **'在线预约'**
+  String get orderTypeOnline;
+
+  /// No description provided for @orderTypeWalkin.
+  ///
+  /// In zh, this message translates to:
+  /// **'门店散客'**
+  String get orderTypeWalkin;
+
+  /// No description provided for @walkinGuest.
+  ///
+  /// In zh, this message translates to:
+  /// **'散客'**
+  String get walkinGuest;
+
+  /// No description provided for @sessionNo.
+  ///
+  /// In zh, this message translates to:
+  /// **'接待单'**
+  String get sessionNo;
+
+  /// No description provided for @walkinOrderTip.
+  ///
+  /// In zh, this message translates to:
+  /// **'门店订单由前台管理，技师按服务项操作即可。'**
+  String get walkinOrderTip;
+
+  /// No description provided for @notificationSound.
+  ///
+  /// In zh, this message translates to:
+  /// **'提示音'**
+  String get notificationSound;
+
+  /// No description provided for @vibration.
+  ///
+  /// In zh, this message translates to:
+  /// **'震动'**
+  String get vibration;
+
+  /// No description provided for @rating.
+  ///
+  /// In zh, this message translates to:
+  /// **'评分'**
+  String get rating;
+
+  /// No description provided for @myOrders.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的订单'**
+  String get myOrders;
+
+  /// No description provided for @reviews.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的评价'**
+  String get reviews;
+
+  /// No description provided for @langHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择您偏好的显示语言'**
+  String get langHint;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -21,11 +21,22 @@ import static com.cambook.app.domain.vo.OrderVO.OrderItemVO;
 @Schema(description = "今日安排列表项")
 public class ScheduleItemVO {
 
-    @Schema(description = "订单 ID")
+    @Schema(description = "订单 ID（在线订单为 cb_order.id；门店订单为 cb_walkin_session.id）")
     private Long orderId;
 
     @Schema(description = "订单号")
     private String orderNo;
+
+    /**
+     * 订单来源类型：
+     * <ul>
+     *   <li>1 = 在线预约订单（cb_order, order_type=1）</li>
+     *   <li>2 = 门店散客订单（cb_walkin_session）</li>
+     * </ul>
+     * Flutter 端可据此决定点击跳转的详情页路由。
+     */
+    @Schema(description = "订单来源：1=在线预约 2=门店散客")
+    private int orderType = 1;
 
     @Schema(description = "预约服务时间（UTC 秒级时间戳，客户端按本地时区显示）")
     private Long appointTime;

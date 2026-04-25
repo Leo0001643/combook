@@ -9,7 +9,10 @@ import '../models/models.dart';
 import '../routes/app_routes.dart';
 import '../services/storage_service.dart';
 import '../services/user_service.dart';
+import '../services/order_service.dart';
+import '../utils/format_util.dart';
 import 'app_dialog.dart';
+import '../../features/shell/shell_controller.dart';
 
 // ─── 渐变头部容器 ──────────────────────────────────────────────────────────────
 class GradientHeader extends StatelessWidget {
@@ -179,7 +182,7 @@ class OrderStatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(AppSizes.radiusFull)),
-      child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
+      child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: fg)),
     );
   }
 }
@@ -204,9 +207,9 @@ class ServiceModeTag extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(isHome ? Icons.home_rounded : Icons.store_rounded, size: 10, color: color),
+          Icon(isHome ? Icons.home_rounded : Icons.store_rounded, size: 12, color: color),
           const SizedBox(width: 3),
-          Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color)),
+          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color)),
         ],
       ),
     );
@@ -291,48 +294,21 @@ Color orderStatusColor(OrderStatus s) => switch (s) {
 };
 
 // ─── 语言切换按钮（AppBar actions 使用）────────────────────────────────────────
-/// 用法: AppBar(actions: [LangMenuButton(onChanged: (code) => logic.changeLocale(code))])
+/// 用法: AppBar(actions: [LangMenuButton()])
+/// 点击直接跳转语言选择页面，不再使用下拉弹出菜单。
 class LangMenuButton extends StatelessWidget {
-  final void Function(String code) onChanged;
+  final void Function(String code)? onChanged;  // 保留兼容，实际不使用
   final Color? color;
 
-  static const _langs = [
-    ('zh', '🇨🇳', '中文'),
-    ('en', '🇺🇸', 'English'),
-    ('vi', '🇻🇳', 'Tiếng Việt'),
-    ('km', '🇰🇭', 'ភាសាខ្មែរ'),
-    ('ko', '🇰🇷', '한국어'),
-    ('ja', '🇯🇵', '日本語'),
-  ];
-
-  const LangMenuButton({super.key, required this.onChanged, this.color});
+  const LangMenuButton({super.key, this.onChanged, this.color});
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<String>(
+    return IconButton(
       icon: Icon(Icons.language_rounded, color: color ?? Colors.white, size: 22),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 8,
-      offset: const Offset(0, 48),
-      onSelected: onChanged,
-      itemBuilder: (_) => _langs.map((lang) {
-        final active = Localizations.localeOf(context).languageCode == lang.$1;
-        return PopupMenuItem<String>(
-          value: lang.$1,
-          child: Row(children: [
-            Text(lang.$2, style: const TextStyle(fontSize: 20)),
-            const SizedBox(width: 10),
-            Text(lang.$3, style: TextStyle(
-              fontWeight: active ? FontWeight.w700 : FontWeight.w400,
-              color: active ? AppColors.primary : null,
-            )),
-            if (active) ...[
-              const Spacer(),
-              const Icon(Icons.check_rounded, size: 16, color: AppColors.primary),
-            ],
-          ]),
-        );
-      }).toList(),
+      onPressed: () => Get.toNamed(AppRoutes.language),
+      padding: const EdgeInsets.all(10),
+      splashRadius: 20,
     );
   }
 }
@@ -376,110 +352,439 @@ class _MainMorePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l    = context.l10n;
-    final tech = Get.find<UserService>().technician.value;
-    return Column(children: [
-      // ── 顶部用户信息 ─────────────────────────────────────────────
-      Container(
-        width: double.infinity,
-        padding: EdgeInsets.fromLTRB(
-            20, MediaQuery.of(context).padding.top + 20, 12, 24),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft, end: Alignment.bottomRight,
-            colors: [Color(0xFF1E1B4B), Color(0xFF312E81), Color(0xFF6D28D9)],
-          ),
-        ),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          CircleAvatar(
-            radius: 26,
-            backgroundColor: Colors.white24,
-            child: Text(
-              (tech?.nickname ?? 'T').substring(0, 1).toUpperCase(),
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SizedBox(height: 4),
-            Text(tech?.nickname ?? '',
-                style: const TextStyle(
-                    color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 4),
-            Row(children: [
-              const Icon(Icons.badge_rounded, color: Colors.white54, size: 12),
-              const SizedBox(width: 4),
-              Text(tech?.techNo ?? '',
-                  style: const TextStyle(
-                      color: Colors.white60, fontSize: 12, fontWeight: FontWeight.w500)),
-            ]),
-          ])),
-          BounceTap(
-            pressScale: 0.80,
-            onTap: () => Navigator.of(context).pop(),
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Icon(Icons.close_rounded, color: Colors.white54, size: 20),
-            ),
-          ),
-        ]),
-      ),
-      // ── 菜单列表 ─────────────────────────────────────────────────
-      Expanded(child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+    final l        = context.l10n;
+    final userSvc  = Get.find<UserService>();
+    final orderSvc = Get.find<OrderService>();
+    final safePad  = MediaQuery.paddingOf(context);
+
+    return Obx(() {
+      final tech = userSvc.technician.value;
+      final nick = tech?.nickname ?? '';
+      final initial = nick.isNotEmpty ? nick[0].toUpperCase() : 'T';
+
+      return Column(
         children: [
-          _DrawerItem(
-            icon: Icons.campaign_rounded, color: const Color(0xFF4F46E5),
-            label: l.announcements,
-            onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
+          // ─────────────────────────────────────────────────────────────────
+          // ① 顶部用户信息（深色渐变）
+          // ─────────────────────────────────────────────────────────────────
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(20, safePad.top + 20, 16, 22),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft, end: Alignment.bottomRight,
+                colors: [Color(0xFF1A1744), Color(0xFF2D2880), Color(0xFF4C1D95)],
+              ),
+            ),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                // 头像
+                Container(
+                  width: 56, height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white38, width: 2.5),
+                  ),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white.withValues(alpha: 0.18),
+                    child: Text(initial,
+                      style: const TextStyle(
+                          color: Colors.white, fontSize: 22,
+                          fontWeight: FontWeight.w800)),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // 昵称 + 工号
+                Expanded(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 4),
+                    Row(children: [
+                      Flexible(
+                        child: Text(nick,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 17,
+                              fontWeight: FontWeight.w800),
+                          overflow: TextOverflow.ellipsis),
+                      ),
+                      const SizedBox(width: 8),
+                      // 技师等级徽章
+                      if (tech?.level != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFD97706), Color(0xFFF59E0B)]),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            tech!.level.name.toUpperCase(),
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 10,
+                                fontWeight: FontWeight.w800, height: 1.2),
+                          ),
+                        ),
+                    ]),
+                    const SizedBox(height: 5),
+                    Row(children: [
+                      const Icon(Icons.badge_rounded, color: Colors.white38, size: 12),
+                      const SizedBox(width: 4),
+                      Text(tech?.techNo ?? '',
+                        style: const TextStyle(
+                            color: Colors.white54, fontSize: 12,
+                            fontWeight: FontWeight.w500)),
+                    ]),
+                  ],
+                )),
+                // 关闭按钮
+                BounceTap(
+                  pressScale: 0.78,
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close_rounded,
+                        color: Colors.white70, size: 17),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 18),
+              // 统计数据行
+              Row(children: [
+                _StatChip(
+                  label: l.todayOrders,
+                  value: '${orderSvc.todayCount}',
+                  icon: Icons.receipt_long_rounded,
+                ),
+                const SizedBox(width: 10),
+                _StatChip(
+                  label: l.todayIncome,
+                  value: FormatUtil.money(orderSvc.todayIncome),
+                  icon: Icons.monetization_on_rounded,
+                ),
+                const SizedBox(width: 10),
+                _StatChip(
+                  label: l.rating,
+                  value: (tech?.rating ?? 0).toStringAsFixed(1),
+                  icon: Icons.star_rounded,
+                  iconColor: const Color(0xFFFACC15),
+                ),
+              ]),
+            ]),
           ),
-          _DrawerLangItem(label: l.langTitle, onDismiss: () => Navigator.of(context).pop()),
-          _DrawerItem(
-            icon: Icons.settings_rounded, color: const Color(0xFF0284C7),
-            label: l.settingsMenu,
-            onTap: () { Navigator.of(context).pop(); Get.toNamed(AppRoutes.settings); },
+
+          // ─────────────────────────────────────────────────────────────────
+          // ② 功能快捷入口 2×4 图标网格
+          // ─────────────────────────────────────────────────────────────────
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.fromLTRB(8, 20, 8, 12),
+            child: GridView.count(
+              crossAxisCount: 4,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              childAspectRatio: 0.9,
+              children: [
+                _GridShortcut(
+                  icon: Icons.receipt_long_rounded,
+                  color: const Color(0xFF4F46E5),
+                  label: l.myOrders,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Get.find<ShellController>().switchTab(ShellController.tabOrders);
+                  },
+                ),
+                _GridShortcut(
+                  icon: Icons.account_balance_wallet_rounded,
+                  color: const Color(0xFF0EA5E9),
+                  label: l.navIncome,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Get.find<ShellController>().switchTab(ShellController.tabIncome);
+                  },
+                ),
+                _GridShortcut(
+                  icon: Icons.star_rounded,
+                  color: const Color(0xFFF59E0B),
+                  label: l.reviews,
+                  onTap: () { Navigator.of(context).pop(); Get.toNamed(AppRoutes.reviews); },
+                ),
+                _GridShortcut(
+                  icon: Icons.settings_rounded,
+                  color: const Color(0xFF6B7280),
+                  label: l.settingsMenu,
+                  onTap: () { Navigator.of(context).pop(); Get.toNamed(AppRoutes.settings); },
+                ),
+                _GridShortcut(
+                  icon: Icons.campaign_rounded,
+                  color: const Color(0xFFEC4899),
+                  label: l.announcements,
+                  onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
+                ),
+                _GridShortcut(
+                  icon: Icons.shield_rounded,
+                  color: const Color(0xFF059669),
+                  label: l.privacyPolicy,
+                  onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
+                ),
+                _GridShortcut(
+                  icon: Icons.description_rounded,
+                  color: const Color(0xFF0284C7),
+                  label: l.terms,
+                  onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
+                ),
+                _GridShortcut(
+                  icon: Icons.help_rounded,
+                  color: const Color(0xFFD97706),
+                  label: l.helpAndSupport,
+                  onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
+                ),
+              ],
+            ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-            child: Divider(color: Color(0xFFF0F0F6)),
+
+          // ─────────────────────────────────────────────────────────────────
+          // ③ 设置列表（带分割线）
+          // ─────────────────────────────────────────────────────────────────
+          Expanded(
+            child: Container(
+              color: const Color(0xFFF5F6FA),
+              child: ListView(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                children: [
+                  _SettingCard(children: [
+                    _DrawerLangItem(label: l.langTitle,
+                        onDismiss: () => Navigator.of(context).pop()),
+                  ]),
+                  const SizedBox(height: 8),
+                  _SettingCard(children: [
+                    _ToggleTile(
+                      icon: Icons.notifications_active_rounded,
+                      iconColor: const Color(0xFF4F46E5),
+                      label: l.notificationSound,
+                      value: true,
+                      onChanged: (_) => AppToast.info(l.comingSoon),
+                    ),
+                    const _Divider(),
+                    _ToggleTile(
+                      icon: Icons.vibration_rounded,
+                      iconColor: const Color(0xFF059669),
+                      label: l.vibration,
+                      value: true,
+                      onChanged: (_) => AppToast.info(l.comingSoon),
+                    ),
+                  ]),
+                  const SizedBox(height: 8),
+                  _SettingCard(children: [
+                    _DrawerItem(
+                      icon: Icons.share_rounded,
+                      color: const Color(0xFFEC4899),
+                      label: l.rateApp,
+                      onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
+                    ),
+                  ]),
+                ],
+              ),
+            ),
           ),
-          _DrawerItem(
-            icon: Icons.shield_outlined, color: const Color(0xFF059669),
-            label: l.privacyPolicy,
-            onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
-          ),
-          _DrawerItem(
-            icon: Icons.description_outlined, color: const Color(0xFF0284C7),
-            label: l.terms,
-            onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
-          ),
-          _DrawerItem(
-            icon: Icons.help_outline_rounded, color: const Color(0xFFD97706),
-            label: l.helpAndSupport,
-            onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
-          ),
-          _DrawerItem(
-            icon: Icons.star_outline_rounded, color: const Color(0xFFF59E0B),
-            label: l.rateApp,
-            onTap: () { Navigator.of(context).pop(); AppToast.info(l.comingSoon); },
+
+          // ─────────────────────────────────────────────────────────────────
+          // ④ 退出按钮
+          // ─────────────────────────────────────────────────────────────────
+          Container(
+            color: const Color(0xFFF5F6FA),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, safePad.bottom + 16),
+            child: BounceTap(
+              pressScale: 0.96,
+              onTap: () async {
+                final ok = await AppDialog.confirm(
+                  title:   l.logout,
+                  content: l.logoutConfirm,
+                  confirmText: l.logout,
+                  type: DialogType.warning,
+                );
+                if (!ok) return;
+                if (context.mounted) Navigator.of(context).pop();
+                Get.find<UserService>().logout();
+              },
+              child: Container(
+                width: double.infinity,
+                height: 52,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFEF4444), Color(0xFFDC2626)]),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [BoxShadow(
+                    color: const Color(0xFFEF4444).withValues(alpha: 0.35),
+                    blurRadius: 12, offset: const Offset(0, 4),
+                  )],
+                ),
+                alignment: Alignment.center,
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  const Icon(Icons.logout_rounded, color: Colors.white, size: 20),
+                  const SizedBox(width: 10),
+                  Text(l.logout,
+                    style: const TextStyle(
+                        color: Colors.white, fontSize: 16,
+                        fontWeight: FontWeight.w700, letterSpacing: 1)),
+                  const SizedBox(width: 16),
+                  const Icon(Icons.chevron_right_rounded,
+                      color: Colors.white60, size: 20),
+                ]),
+              ),
+            ),
           ),
         ],
-      )),
-      // ── 版本号 ───────────────────────────────────────────────────
-      Padding(
-        padding: EdgeInsets.fromLTRB(
-            20, 8, 20, MediaQuery.of(context).padding.bottom + 16),
-        child: const Row(children: [
-          Icon(Icons.info_outline_rounded, size: 14, color: Color(0xFFD1D5DB)),
-          SizedBox(width: 6),
-          Text('v1.0.0',
-              style: TextStyle(
-                  color: Color(0xFF9CA3AF), fontSize: 12, fontWeight: FontWeight.w500)),
-        ]),
-      ),
-    ]);
+      );
+    });
   }
+}
+
+// ── 统计徽章 ──────────────────────────────────────────────────────────────────
+class _StatChip extends StatelessWidget {
+  final String label, value;
+  final IconData icon;
+  final Color iconColor;
+  const _StatChip({
+    required this.label, required this.value, required this.icon,
+    this.iconColor = Colors.white,
+  });
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+      ),
+      child: Column(children: [
+        Icon(icon, size: 16, color: iconColor),
+        const SizedBox(height: 5),
+        Text(value,
+          style: const TextStyle(
+              color: Colors.white, fontSize: 14, fontWeight: FontWeight.w800,
+              height: 1.1),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 2),
+        Text(label,
+          style: const TextStyle(
+              color: Colors.white60, fontSize: 10, fontWeight: FontWeight.w500),
+          textAlign: TextAlign.center, overflow: TextOverflow.ellipsis,
+        ),
+      ]),
+    ),
+  );
+}
+
+// ── 功能快捷入口（网格项）────────────────────────────────────────────────────
+class _GridShortcut extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final VoidCallback onTap;
+  const _GridShortcut({
+    required this.icon, required this.color,
+    required this.label, required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) => BounceTap(
+    pressScale: 0.82,
+    onTap: onTap,
+    child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+        width: 48, height: 48,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.10),
+          shape: BoxShape.circle,
+          border: Border.all(color: color.withValues(alpha: 0.18)),
+        ),
+        child: Icon(icon, color: color, size: 22),
+      ),
+      const SizedBox(height: 7),
+      Text(label,
+        style: const TextStyle(
+            fontSize: 12, fontWeight: FontWeight.w600,
+            color: Color(0xFF374151)),
+        textAlign: TextAlign.center,
+        maxLines: 1, overflow: TextOverflow.ellipsis,
+      ),
+    ]),
+  );
+}
+
+// ── 设置白色卡片容器 ─────────────────────────────────────────────────────────
+class _SettingCard extends StatelessWidget {
+  final List<Widget> children;
+  const _SettingCard({required this.children});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    margin: const EdgeInsets.symmetric(horizontal: 12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      boxShadow: [BoxShadow(
+        color: Colors.black.withValues(alpha: 0.04),
+        blurRadius: 8, offset: const Offset(0, 2),
+      )],
+    ),
+    child: Column(children: children),
+  );
+}
+
+// ── Toggle 行 ─────────────────────────────────────────────────────────────────
+class _ToggleTile extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  const _ToggleTile({
+    required this.icon, required this.iconColor, required this.label,
+    required this.value, required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+    child: Row(children: [
+      Container(
+        width: 34, height: 34,
+        decoration: BoxDecoration(
+          color: iconColor.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(9),
+        ),
+        child: Icon(icon, size: 17, color: iconColor),
+      ),
+      const SizedBox(width: 12),
+      Expanded(child: Text(label,
+        style: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600,
+            color: Color(0xFF1F2937)))),
+      Switch.adaptive(
+        value: value,
+        onChanged: onChanged,
+        activeColor: AppColors.primary,
+      ),
+    ]),
+  );
+}
+
+// ── 分割线 ────────────────────────────────────────────────────────────────────
+class _Divider extends StatelessWidget {
+  const _Divider();
+  @override
+  Widget build(BuildContext context) => const Padding(
+    padding: EdgeInsets.only(left: 60),
+    child: Divider(height: 1, color: Color(0xFFF3F4F6)),
+  );
 }
 
 class _DrawerItem extends StatelessWidget {
@@ -517,53 +822,42 @@ class _DrawerLangItem extends StatelessWidget {
   final VoidCallback onDismiss;
   const _DrawerLangItem({required this.label, required this.onDismiss});
 
-  static const _langs = [
-    ('zh', '🇨🇳', '中文'),
-    ('en', '🇺🇸', 'English'),
-    ('vi', '🇻🇳', 'Tiếng Việt'),
-    ('km', '🇰🇭', 'ភាសាខ្មែរ'),
-    ('ko', '🇰🇷', '한국어'),
-    ('ja', '🇯🇵', '日本語'),
-  ];
+  static const _kFlagMap = {
+    'zh': '🇨🇳', 'en': '🇺🇸', 'vi': '🇻🇳',
+    'km': '🇰🇭', 'ko': '🇰🇷', 'ja': '🇯🇵',
+  };
 
   @override
   Widget build(BuildContext context) {
     final current = Localizations.localeOf(context).languageCode;
-    return PopupMenuButton<String>(
-      onSelected: (code) { onDismiss(); changeAppLocale(code); },
-      itemBuilder: (_) => _langs.map((lang) {
-        final active = current == lang.$1;
-        return PopupMenuItem<String>(
-          value: lang.$1,
-          child: Row(children: [
-            Text(lang.$2, style: const TextStyle(fontSize: 18)),
-            const SizedBox(width: 10),
-            Text(lang.$3, style: TextStyle(
-                fontSize: 14,
-                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                color: active ? AppColors.primary : const Color(0xFF374151))),
-            if (active) ...[
-              const Spacer(),
-              const Icon(Icons.check_rounded, size: 16, color: AppColors.primary),
-            ],
-          ]),
-        );
-      }).toList(),
-      offset: const Offset(-10, 40),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    final flag    = _kFlagMap[current] ?? '🌐';
+
+    return BounceTap(
+      onTap: () {
+        onDismiss();
+        Get.toNamed(AppRoutes.language);
+      },
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
         leading: Container(
           width: 38, height: 38,
           decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(10)),
-          child: const Icon(Icons.language_rounded, size: 18, color: AppColors.primary),
+            color: AppColors.primary.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(Icons.language_rounded,
+              size: 18, color: AppColors.primary),
         ),
         title: Text(label,
             style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1F2937))),
-        trailing: const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFFD1D5DB)),
+                fontSize: 14, fontWeight: FontWeight.w600,
+                color: Color(0xFF1F2937))),
+        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+          Text(flag, style: const TextStyle(fontSize: 18)),
+          const SizedBox(width: 4),
+          const Icon(Icons.chevron_right_rounded,
+              size: 18, color: Color(0xFFD1D5DB)),
+        ]),
       ),
     );
   }
@@ -580,7 +874,7 @@ class MainAppBarActions extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     children: [
       _AppBarIcon(icon: Icons.notifications_rounded, onTap: () => AppToast.info(context.l10n.comingSoon)),
-      if (showLang) const LangMenuButton(color: Colors.white, onChanged: changeAppLocale),
+      if (showLang) const LangMenuButton(color: Colors.white),
       _AppBarIcon(icon: Icons.more_horiz_rounded, onTap: () => showMainMoreDrawer(context)),
       const SizedBox(width: 4),
     ],

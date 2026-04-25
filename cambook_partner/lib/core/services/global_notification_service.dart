@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../events/app_events.dart';
@@ -12,9 +14,12 @@ import '../models/models.dart';
 import '../routes/app_routes.dart';
 import '../widgets/app_dialog.dart';
 import 'order_service.dart';
+import 'tech_ws_service.dart';
 
 /// 全局通知监听器 —— 在 main.dart 通过 initServices 启动
 class GlobalNotificationService extends GetxService with EventBusMixin {
+  StreamSubscription<Map<String, dynamic>>? _wsNewOrderSub;
+
   Future<GlobalNotificationService> init() async {
     _subscribeAll();
     return this;
@@ -29,16 +34,47 @@ class GlobalNotificationService extends GetxService with EventBusMixin {
     subscribe<BalanceChangedEvent>(_onBalanceChanged);
     subscribe<SystemNoticeEvent>(_onSystemNotice);
     subscribe<GrabExpiredEvent>(_onGrabExpired);
+    // WS 新订单实时推送：刷新订单列表并触发 NewOrderEvent（音频+横幅+弹窗）
+    _wsNewOrderSub = Get.find<TechWsService>()
+        .newOrderStream
+        .listen(_onWsNewOrder);
     LogUtil.i('[GlobalNotification] 已订阅所有事件');
   }
 
   void _onNewOrder(NewOrderEvent e) {
+    // 前台：播放提示音
     AudioUtil.playNewOrder();
+    // 后台 & 前台：同时发送本地通知（确保息屏 / 切后台时也有系统级提醒）
+    AudioUtil.notifyNewOrder(
+      title: gL10n.newOrder,
+      body:  '${e.order.customer.nickname.isNotEmpty ? e.order.customer.nickname : "新客户"} '
+             '预约了 ${e.order.services.isNotEmpty ? e.order.services.first.name : "服务"}，请及时接单！',
+    );
     if (e.isGrabMode) {
       _showGrabOrderDialog(e);
     } else {
       _showNewOrderBanner(e.order);
     }
+  }
+
+  /// WS 推送新订单：刷新订单列表后通过 [OrderService.pushNewOrder] 触发标准流程
+  Future<void> _onWsNewOrder(Map<String, dynamic> data) async {
+    final orderId = (data['orderId'] as num?)?.toInt();
+    if (orderId == null) return;
+
+    final orderService = Get.find<OrderService>();
+    // 拉取最新订单列表，确保新订单已进入本地缓存
+    await orderService.fetchFromApi();
+
+    final order = orderService.getById(orderId);
+    if (order == null) {
+      LogUtil.w('[GlobalNotification] WS new order #$orderId not found after fetchFromApi');
+      return;
+    }
+
+    // 门店散客订单(orderType=2)：横幅提示；在线订单：抢单倒计时弹窗
+    final grabMode = order.orderType != 2;
+    orderService.pushNewOrder(order, grabMode: grabMode);
   }
 
   void _onOrderStatusChanged(OrderStatusChangedEvent e) {
@@ -87,9 +123,15 @@ class GlobalNotificationService extends GetxService with EventBusMixin {
 
   // ── 新订单横幅 ────────────────────────────────────────────────────────────
   void _showNewOrderBanner(OrderModel order) {
+    final name     = order.customer.nickname.isNotEmpty
+        ? order.customer.nickname : '新客户';
+    final svcPart  = order.services.isNotEmpty
+        ? ' · ${order.services.first.name}' : '';
+    final amtPart  = order.totalAmount > 0
+        ? ' · \$${order.totalAmount.toStringAsFixed(0)}' : '';
     AppBanner.show(
       title: '🔔 ${gL10n.newOrder}',
-      subtitle: '${order.customer.nickname} · \$${order.totalAmount.toStringAsFixed(0)} · ${order.services.first.name}',
+      subtitle: '$name$amtPart$svcPart',
       actionLabel: gL10n.btnDetail,
       onAction: () => Get.toNamed(AppRoutes.orderDetail, arguments: {'id': order.id}),
       duration: const Duration(seconds: 5),
@@ -99,27 +141,33 @@ class GlobalNotificationService extends GetxService with EventBusMixin {
   // ── 抢单弹窗 ─────────────────────────────────────────────────────────────
   void _showGrabOrderDialog(NewOrderEvent e) {
     final order     = e.order;
-    final remaining = e.grabCountdownSecs.obs;
+    final total     = e.grabCountdownSecs;
+    final remaining = total.obs;
 
     final sub = EventBusUtil.on<GrabCountdownTickEvent>()
         .where((t) => t.orderId == order.id)
         .listen((t) => remaining.value = t.remaining);
 
     Get.dialog(
-      _GrabOrderDialog(order: order, remaining: remaining),
+      _GrabOrderDialog(order: order, remaining: remaining, total: total),
       barrierDismissible: false,
     ).then((_) => sub.cancel());
   }
 
   @override
-  void onClose() { cancelAllSubscriptions(); super.onClose(); }
+  void onClose() {
+    _wsNewOrderSub?.cancel();
+    cancelAllSubscriptions();
+    super.onClose();
+  }
 }
 
 // ── 抢单弹窗（重设计为精品风格）──────────────────────────────────────────────
 class _GrabOrderDialog extends StatelessWidget {
   final OrderModel order;
   final RxInt remaining;
-  const _GrabOrderDialog({required this.order, required this.remaining});
+  final int   total;
+  const _GrabOrderDialog({required this.order, required this.remaining, required this.total});
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +212,7 @@ class _GrabOrderDialog extends StatelessWidget {
                     SizedBox(
                       width: 80, height: 80,
                       child: CircularProgressIndicator(
-                        value: sec / 30.0,
+                        value: total > 0 ? sec / total : 0,
                         strokeWidth: 6,
                         backgroundColor: Colors.white24,
                         valueColor: AlwaysStoppedAnimation(

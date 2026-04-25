@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { fmtTime } from '../../utils/time'
 import {
   Table, Button, Space, Typography, message, Modal, Form,
   Input, InputNumber, Select, Badge, Row, Col, Tag, Tooltip, Popconfirm,
@@ -193,7 +194,7 @@ export default function MerchantDeptPage() {
       render: v => (
         <Space size={4}>
           <ClockCircleOutlined style={{ color: '#d1d5db', fontSize: 11 }} />
-          <Text type="secondary" style={{ fontSize: 12 }}>{v?.slice(0, 16) ?? '—'}</Text>
+          <Text type="secondary" style={{ fontSize: 12 }}>{fmtTime(v, 'YYYY-MM-DD HH:mm') ?? '—'}</Text>
         </Space>
       ),
     },

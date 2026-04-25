@@ -203,6 +203,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get tabAccepted => 'Đã nhận';
 
   @override
+  String get statusReception => 'Đang tiếp đón';
+
+  @override
   String get tabInService => 'Đang phục vụ';
 
   @override
@@ -962,4 +965,55 @@ class AppLocalizationsVi extends AppLocalizations {
   String estimatedIncome(String amount) {
     return 'Dự tính $amount';
   }
+
+  @override
+  String get sessionExpiredTitle => 'Phiên Đăng Nhập Hết Hạn';
+
+  @override
+  String get sessionExpiredMessage => 'Bạn đã bị đăng xuất. Vui lòng đăng nhập lại để tiếp tục.';
+
+  @override
+  String get goToLogin => 'Đến Đăng Nhập';
+
+  @override
+  String get networkTimeout => 'Yêu cầu hết thời gian. Vui lòng kiểm tra kết nối.';
+
+  @override
+  String get networkUnavailable => 'Mạng không khả dụng. Vui lòng kiểm tra kết nối.';
+
+  @override
+  String get networkError => 'Yêu cầu thất bại. Vui lòng thử lại sau.';
+
+  @override
+  String get orderTypeOnline => 'Đặt lịch';
+
+  @override
+  String get orderTypeWalkin => 'Khách vãng lai';
+
+  @override
+  String get walkinGuest => 'Khách vãng lai';
+
+  @override
+  String get sessionNo => 'Phiên';
+
+  @override
+  String get walkinOrderTip => 'Đơn tại cửa hàng được quản lý bởi lễ tân.';
+
+  @override
+  String get notificationSound => 'Âm thanh thông báo';
+
+  @override
+  String get vibration => 'Rung';
+
+  @override
+  String get rating => 'Đánh giá';
+
+  @override
+  String get myOrders => 'Đơn hàng';
+
+  @override
+  String get reviews => 'Đánh giá';
+
+  @override
+  String get langHint => 'Chọn ngôn ngữ hiển thị ưa thích';
 }

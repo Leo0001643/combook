@@ -2,6 +2,7 @@ package com.cambook.app.controller.merchant;
 
 import com.cambook.app.common.annotation.RequireMerchant;
 import com.cambook.app.common.security.MerchantOwnershipGuard;
+import com.cambook.app.domain.dto.OrderCreateRequest;
 import com.cambook.app.domain.dto.OrderQueryDTO;
 import com.cambook.app.domain.vo.OrderVO;
 import com.cambook.app.service.admin.IAdminOrderService;
@@ -9,6 +10,7 @@ import com.cambook.common.result.PageResult;
 import com.cambook.common.result.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -37,6 +39,10 @@ public class MerchantOrderController {
     @GetMapping("/list")
     public Result<PageResult<OrderVO>> list(OrderQueryDTO query) {
         query.setMerchantId(MerchantOwnershipGuard.requireMerchantId());
+        // 在线订单页面默认只查 order_type=1（在线预约）；门店散客订单由 WalkinSession 接口处理
+        if (query.getOrderType() == null) {
+            query.setOrderType(1);
+        }
         return Result.success(orderService.pageList(query));
     }
 
@@ -76,5 +82,12 @@ public class MerchantOrderController {
         MerchantOwnershipGuard.assertOwnership(vo.getMerchantId(), "订单", id);
         orderService.delete(id);
         return Result.success();
+    }
+
+    @Operation(summary = "新增在线订单（到店/上门）")
+    @PostMapping
+    public Result<OrderVO> create(@Valid @RequestBody OrderCreateRequest req) {
+        req.setMerchantId(MerchantOwnershipGuard.requireMerchantId());
+        return Result.success(orderService.create(req));
     }
 }

@@ -3,11 +3,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cambook.dao.mapper.CbOrderItemMapper">
 
+    <!-- 公共列集（含多技师并行新增字段）-->
+    <sql id="baseColumns">
+        id, order_id, technician_id, service_item_id, service_name, service_duration,
+        unit_price, qty, svc_status, tech_income, start_time, end_time, remark,
+        deleted, create_time, update_time
+    </sql>
+
     <!-- 查询指定订单下所有未删除的服务项 -->
     <select id="selectActiveByOrderId" resultType="com.cambook.dao.entity.CbOrderItem">
-        SELECT id, order_id, service_item_id, service_name, service_duration,
-               unit_price, qty, svc_status, start_time, end_time, remark,
-               deleted, create_time, update_time
+        SELECT <include refid="baseColumns"/>
         FROM cb_order_item
         WHERE order_id = #{orderId}
           AND deleted = 0
@@ -16,14 +21,28 @@
 
     <!-- 按多个订单 ID 批量加载服务项（避免 N+1）-->
     <select id="selectByOrderIds" resultType="com.cambook.dao.entity.CbOrderItem">
-        SELECT id, order_id, service_item_id, service_name, service_duration,
-               unit_price, qty, svc_status, start_time, end_time, remark,
-               deleted, create_time, update_time
+        SELECT <include refid="baseColumns"/>
         FROM cb_order_item
         WHERE order_id IN
         <foreach collection="orderIds" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+          AND deleted = 0
+        ORDER BY order_id ASC, id ASC
+    </select>
+
+    <!--
+        按多个订单 ID + 技师 ID 批量加载服务项
+        多技师并行场景：技师首页只展示分配给自己的服务项
+    -->
+    <select id="selectByOrderIdsAndTechId" resultType="com.cambook.dao.entity.CbOrderItem">
+        SELECT <include refid="baseColumns"/>
+        FROM cb_order_item
+        WHERE order_id IN
+        <foreach collection="orderIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+          AND technician_id = #{techId}
           AND deleted = 0
         ORDER BY order_id ASC, id ASC
     </select>

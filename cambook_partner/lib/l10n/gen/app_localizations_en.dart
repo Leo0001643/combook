@@ -203,6 +203,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabAccepted => 'Accepted';
 
   @override
+  String get statusReception => 'Welcoming';
+
+  @override
   String get tabInService => 'In Service';
 
   @override
@@ -962,4 +965,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String estimatedIncome(String amount) {
     return 'Est. $amount';
   }
+
+  @override
+  String get sessionExpiredTitle => 'Session Expired';
+
+  @override
+  String get sessionExpiredMessage => 'You have been logged out. Please sign in again to continue.';
+
+  @override
+  String get goToLogin => 'Go to Login';
+
+  @override
+  String get networkTimeout => 'Request timed out. Please check your connection.';
+
+  @override
+  String get networkUnavailable => 'Network unavailable. Please check your connection.';
+
+  @override
+  String get networkError => 'Request failed. Please try again later.';
+
+  @override
+  String get orderTypeOnline => 'Online Appt.';
+
+  @override
+  String get orderTypeWalkin => 'Walk-in';
+
+  @override
+  String get walkinGuest => 'Walk-in Guest';
+
+  @override
+  String get sessionNo => 'Session';
+
+  @override
+  String get walkinOrderTip => 'Walk-in order is managed at the front desk.';
+
+  @override
+  String get notificationSound => 'Notification Sound';
+
+  @override
+  String get vibration => 'Vibration';
+
+  @override
+  String get rating => 'Rating';
+
+  @override
+  String get myOrders => 'My Orders';
+
+  @override
+  String get reviews => 'Reviews';
+
+  @override
+  String get langHint => 'Select your preferred display language';
 }

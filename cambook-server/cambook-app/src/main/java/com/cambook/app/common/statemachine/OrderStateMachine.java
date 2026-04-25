@@ -21,17 +21,29 @@ import java.util.Set;
  * </ul>
  *
  * <pre>
- * 合法状态流转图：
- * PENDING_PAYMENT → PENDING_ACCEPT (支付成功)
- * PENDING_PAYMENT → CANCELLED      (支付超时取消)
- * PENDING_ACCEPT  → ACCEPTED       (技师接单)
- * PENDING_ACCEPT  → REJECTED       (技师拒绝)
- * PENDING_ACCEPT  → CANCELLED      (用户取消待接单订单)
- * ACCEPTED        → IN_SERVICE     (技师开始服务)
- * ACCEPTED        → CANCELLED      (用户取消已接单订单，需扣除违约金)
- * IN_SERVICE      → COMPLETED      (服务结束)
- * COMPLETED       → REFUNDED       (申请退款成功)
- * REJECTED        → REFUNDED       (拒单自动退款)
+ * 合法状态流转图（状态码见 OrderStatus）：
+ *
+ *   PENDING_PAYMENT(0) ──支付──► PENDING_ACCEPT(1)
+ *   PENDING_PAYMENT(0) ──超时──► CANCELLED(7)
+ *
+ *   PENDING_ACCEPT(1)  ──接单──► ACCEPTED(2)
+ *   PENDING_ACCEPT(1)  ──取消──► CANCELLED(7)
+ *
+ *   ACCEPTED(2)        ──出发──► ARRIVING(3)
+ *   ACCEPTED(2)        ──取消──► CANCELLED(7)
+ *
+ *   ARRIVING(3)        ──到达──► ARRIVED(4)
+ *
+ *   ARRIVED(4)         ──开始──► IN_SERVICE(5)
+ *   ARRIVED(4)         ──取消──► CANCELLED(7)   （技师到达后客户临时取消，需扣违约金）
+ *
+ *   IN_SERVICE(5)      ──完成──► COMPLETED(6)
+ *
+ *   COMPLETED(6)       ──退款──► REFUNDING(8)
+ *
+ *   REFUNDING(8)       ──完成──► REFUNDED(9)
+ *
+ *   CANCELLED(7) / REFUNDED(9) 为终态，无后续转换
  * </pre>
  *
  * @author CamBook
@@ -43,23 +55,36 @@ public class OrderStateMachine {
 
     static {
         TRANSITIONS = new EnumMap<>(OrderStatus.class);
+
         TRANSITIONS.put(OrderStatus.PENDING_PAYMENT,
                 EnumSet.of(OrderStatus.PENDING_ACCEPT, OrderStatus.CANCELLED));
+
         TRANSITIONS.put(OrderStatus.PENDING_ACCEPT,
-                EnumSet.of(OrderStatus.ACCEPTED, OrderStatus.REJECTED, OrderStatus.CANCELLED));
+                EnumSet.of(OrderStatus.ACCEPTED, OrderStatus.CANCELLED));
+
         TRANSITIONS.put(OrderStatus.ACCEPTED,
+                EnumSet.of(OrderStatus.ARRIVING, OrderStatus.CANCELLED));
+
+        TRANSITIONS.put(OrderStatus.ARRIVING,
+                EnumSet.of(OrderStatus.ARRIVED));
+
+        TRANSITIONS.put(OrderStatus.ARRIVED,
                 EnumSet.of(OrderStatus.IN_SERVICE, OrderStatus.CANCELLED));
+
         TRANSITIONS.put(OrderStatus.IN_SERVICE,
                 EnumSet.of(OrderStatus.COMPLETED));
+
         TRANSITIONS.put(OrderStatus.COMPLETED,
+                EnumSet.of(OrderStatus.REFUNDING));
+
+        TRANSITIONS.put(OrderStatus.REFUNDING,
                 EnumSet.of(OrderStatus.REFUNDED));
-        TRANSITIONS.put(OrderStatus.REJECTED,
-                EnumSet.of(OrderStatus.REFUNDED));
-        // CANCELLED / REFUNDED 是终态，无后续转换
+
+        // CANCELLED(7) / REFUNDED(9) 为终态，无后续转换
     }
 
     /**
-     * 检查并执行状态转换
+     * 检查并执行状态转换（合法则通过，非法则抛出业务异常）
      *
      * @param currentCode 当前状态码
      * @param targetCode  目标状态码
@@ -77,7 +102,7 @@ public class OrderStateMachine {
         }
     }
 
-    /** 检查状态转换是否合法（不抛异常版本，供判断分支使用） */
+    /** 检查状态转换是否合法（不抛异常版，供条件分支使用） */
     public boolean canTransit(int currentCode, int targetCode) {
         return OrderStatus.of(currentCode)
                 .map(cur -> {

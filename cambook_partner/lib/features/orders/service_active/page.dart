@@ -29,13 +29,6 @@ class ServiceActivePage extends StatelessWidget {
           Container(width: 36, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
           const SizedBox(height: 16),
           BounceTap(
-            onTap: () { Get.back(); logic.callCustomer(); },
-            child: ListTile(
-              leading: const Icon(Icons.phone_rounded, color: AppColors.info),
-              title: Text(l.btnContact),
-            ),
-          ),
-          BounceTap(
             onTap: () {
               Get.back();
               final id = logic.state.order.value?.id;
@@ -88,9 +81,9 @@ class ServiceActivePage extends StatelessWidget {
               );
             }
 
-            final elapsed = state.elapsed.value;
-            final paused  = state.paused.value;
-            final total   = order.totalDuration * 60;
+            final elapsed   = state.elapsedSec;
+            final paused    = state.paused.value;
+            final total     = order.totalDuration * 60;
             final remaining = max(0, total - elapsed);
             final progress  = total > 0 ? elapsed / total : 0.0;
 
@@ -140,25 +133,71 @@ class ServiceActivePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                     border: Border.all(color: Colors.white24),
                   ),
-                  child: Row(children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.white24,
-                      child: Text(order.customer.nickname.substring(0,1).toUpperCase(),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(order.customer.nickname, style: AppTextStyles.whiteMd),
-                        Text(order.services.map((s) => s.name).join(' · '),
-                            style: AppTextStyles.whiteSm, overflow: TextOverflow.ellipsis),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 顶部：客户信息 + 总金额
+                      Row(children: [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Colors.white24,
+                          child: Text(
+                              order.customer.nickname.isNotEmpty
+                                  ? order.customer.nickname[0].toUpperCase()
+                                  : '?',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            order.customer.nickname.isNotEmpty ? order.customer.nickname : '-',
+                            style: AppTextStyles.whiteMd,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(FormatUtil.money(order.totalAmount),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20)),
+                      ]),
+                      // 服务项明细列表
+                      if (order.services.isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        const Divider(color: Colors.white24, height: 1),
+                        const SizedBox(height: 8),
+                        ...order.services.asMap().entries.map((e) {
+                          final idx = e.key;
+                          final svc = e.value;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Row(children: [
+                              Container(
+                                width: 20, height: 20,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                alignment: Alignment.center,
+                                child: Text('${idx + 1}',
+                                    style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(child: Text(svc.name,
+                                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500))),
+                              if (svc.duration > 0)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text('${svc.duration}min',
+                                      style: const TextStyle(color: Colors.white60, fontSize: 11)),
+                                ),
+                            ]),
+                          );
+                        }),
                       ],
-                    )),
-                    Text(FormatUtil.money(order.totalAmount),
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20)),
-                  ]),
+                    ],
+                  ),
                 ),
 
               const Spacer(),
@@ -172,30 +211,25 @@ class ServiceActivePage extends StatelessWidget {
               const Spacer(),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                child: Row(children: [
-                  _CircleBtn(
-                    icon: paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
-                    label: paused ? l.resume : l.pause,
-                    color: AppColors.warning,
-                    onTap: logic.togglePause,
-                  ),
-                  const Spacer(),
-                  _CircleBtn(
-                    icon: Icons.phone_rounded,
-                    label: l.btnContact,
-                    color: AppColors.info,
-                    onTap: logic.callCustomer,
-                  ),
-                  const Spacer(),
-                  _CircleBtn(
-                    icon: Icons.check_rounded,
-                    label: l.btnComplete,
-                    color: AppColors.success,
-                    onTap: logic.complete,
-                    large: true,
-                  ),
-                ]),
+                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _CircleBtn(
+                      icon: paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                      label: paused ? l.resume : l.pause,
+                      color: AppColors.warning,
+                      onTap: logic.togglePause,
+                    ),
+                    _CircleBtn(
+                      icon: Icons.check_rounded,
+                      label: l.btnComplete,
+                      color: AppColors.success,
+                      onTap: logic.complete,
+                      large: true,
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 20),

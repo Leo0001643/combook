@@ -12,10 +12,23 @@ abstract class ApiEndpoints {
   static const String techHomeSchedule      = '/tech/home/schedule';
   static const String techPendingOrderCount = '/tech/home/pending-count';
 
-  // ── 技师端订单服务项（一单多项）──────────────────────────────────────
+  // ── 技师端订单 ─────────────────────────────────────────────────────
+  static const String techOrders = '/tech/home/orders';
   static String techOrderItems(int orderId)            => '/tech/order/$orderId/item';
   static String techRemoveOrderItem(int orderId, int itemId)
       => '/tech/order/$orderId/item/$itemId';
+
+  // 在线预约订单 接单 / 拒单 / 开始 / 完成
+  static String techAcceptOnline(int id)   => '/tech/order/$id/accept';
+  static String techRejectOnline(int id)   => '/tech/order/$id/reject';
+  static String techStartOnline(int id)    => '/tech/order/$id/start';
+  static String techCompleteOnline(int id) => '/tech/order/$id/complete';
+
+  // 门店散客订单 接单 / 拒单 / 开始 / 完成（传 sessionId）
+  static String techAcceptWalkin(int sessionId)   => '/tech/order/walkin/$sessionId/accept';
+  static String techRejectWalkin(int sessionId)   => '/tech/order/walkin/$sessionId/reject';
+  static String techStartWalkin(int sessionId)    => '/tech/order/walkin/$sessionId/start';
+  static String techCompleteWalkin(int sessionId) => '/tech/order/walkin/$sessionId/complete';
 
   // ── Auth (legacy / 管理端) ─────────────────────────────────────────
   static const String login  = '$_base/partner/auth/login';

@@ -8,6 +8,7 @@
  *  - 查看 / 配置指定商户的接受币种
  */
 import React, { useCallback, useEffect, useState } from 'react'
+import { fmtTime } from '../../utils/time'
 import {
   Badge, Button, Col, Descriptions, Drawer, Form, Input, InputNumber,
   message, Modal, Row, Select, Space, Switch, Table, Tag, Tooltip,
@@ -192,8 +193,9 @@ const CurrencyManagePage: React.FC = () => {
       title: '币种',
       key: 'currency',
       width: 200,
+      align: 'left',
       render: (_, row) => (
-        <Space>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 20 }}>{row.flag}</span>
           <div>
             <div style={{ fontWeight: 600 }}>
@@ -202,7 +204,7 @@ const CurrencyManagePage: React.FC = () => {
             </div>
             <div style={{ fontSize: 12, color: '#666' }}>{row.currencyName} · {row.currencyNameEn}</div>
           </div>
-        </Space>
+        </div>
       ),
     },
     {
@@ -215,11 +217,12 @@ const CurrencyManagePage: React.FC = () => {
       title: '对 USD 汇率',
       key: 'rate',
       width: 180,
+      align: 'left',
       render: (_, row) => (
         <div>
           <div style={{ fontWeight: 600 }}>1 {row.currencyCode} = {row.rateToUsd} USD</div>
           {row.rateUpdateTime && (
-            <div style={{ fontSize: 11, color: '#999' }}>更新：{row.rateUpdateTime.slice(0, 16)}</div>
+            <div style={{ fontSize: 11, color: '#999' }}>更新：{fmtTime(row.rateUpdateTime, 'YYYY-MM-DD HH:mm')}</div>
           )}
         </div>
       ),
@@ -280,14 +283,15 @@ const CurrencyManagePage: React.FC = () => {
     {
       title: '币种',
       key: 'currency',
+      align: 'left',
       render: (_, row) => (
-        <Space>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 18 }}>{row.flag}</span>
           <div>
             <span style={{ fontWeight: 600 }}>{row.currencyCode}</span>
             <span style={{ marginLeft: 6, color: '#666', fontSize: 12 }}>{row.currencyName}</span>
           </div>
-        </Space>
+        </div>
       ),
     },
     {
@@ -526,7 +530,7 @@ const CurrencyManagePage: React.FC = () => {
             <Descriptions size="small" column={1}>
               <Descriptions.Item label="币种">{rateTarget.flag} {rateTarget.currencyCode} — {rateTarget.currencyName}</Descriptions.Item>
               <Descriptions.Item label="当前汇率">1 {rateTarget.currencyCode} = <strong>{rateTarget.rateToUsd}</strong> USD</Descriptions.Item>
-              <Descriptions.Item label="上次更新">{rateTarget.rateUpdateTime?.slice(0, 16) ?? '—'}</Descriptions.Item>
+              <Descriptions.Item label="上次更新">{fmtTime(rateTarget.rateUpdateTime, 'YYYY-MM-DD HH:mm') ?? '—'}</Descriptions.Item>
             </Descriptions>
           </div>
         )}

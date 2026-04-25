@@ -45,9 +45,8 @@ class MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final ctrl = Get.find<ShellController>();
     return Scaffold(
-      // Light-grey body reveals through the notch cut-out, giving the
-      // "button resting in a dip" effect without any extra layers.
-      backgroundColor: const Color(0xFFF4F6FA),
+      // White matches the nav bar — the notch cut-out blends seamlessly.
+      backgroundColor: Colors.white,
       body: Obx(() => IndexedStack(
         index: ctrl.currentIdx.value,
         children: _pages,
@@ -98,7 +97,7 @@ class _BottomNavState extends State<_BottomNav> with TickerProviderStateMixin {
   @override
   void dispose() {
     _worker.dispose();
-    for (final c in _anims.values) c.dispose();
+    for (final c in _anims.values) { c.dispose(); }
     super.dispose();
   }
 
@@ -116,9 +115,9 @@ class _BottomNavState extends State<_BottomNav> with TickerProviderStateMixin {
           children: [
 
             // ① White card background with circular notch (drawn once)
-            Positioned.fill(
+            const Positioned.fill(
               child: RepaintBoundary(
-                child: CustomPaint(painter: const _NavPainter()),
+                child: CustomPaint(painter: _NavPainter()),
               ),
             ),
 
@@ -152,9 +151,9 @@ class _BottomNavState extends State<_BottomNav> with TickerProviderStateMixin {
               ),
             ),
 
-            // ③ Floating order button — overflows above the nav bar
+            // ③ Floating order button — floats above the nav bar (no notch)
             Positioned(
-              top:   -(_kFabR + 6),  // FAB centre lands on the nav-bar top edge
+              top:   -(_kFabR + 10),  // FAB lifts 10 px above the nav-bar top edge
               left:  0,
               right: 0,
               child: Center(
@@ -173,49 +172,43 @@ class _BottomNavState extends State<_BottomNav> with TickerProviderStateMixin {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// _NavPainter — white rounded card with a circular notch at the top-centre.
-//
-// The grey Scaffold background shows through the notch, creating the
-// "button resting in a dip" visual without any extra widgets.
+// _NavPainter — white rounded-top card, NO notch.
+// The FAB floats above the bar via Stack overflow; no hole needed.
 // ═════════════════════════════════════════════════════════════════════════════
 class _NavPainter extends CustomPainter {
   const _NavPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
-    final path = _buildPath(size.width / 2, size);
+    final path = _buildPath(size);
 
-    // Drop-shadow for clear separation from page content
-    canvas.drawShadow(path, const Color(0xFF000000), 18, false);
+    // Subtle top shadow for separation
+    canvas.drawShadow(path, const Color(0xFF000000), 14, false);
 
     // White fill
     canvas.drawPath(path, Paint()..color = Colors.white);
 
-    // Subtle top-edge gradient — adds depth to the card surface
+    // Very light top-edge gradient for depth
     canvas.drawPath(
       path,
       Paint()
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
-          end:   const Alignment(0, 0.35),
+          end:   const Alignment(0, 0.3),
           colors: [
-            Colors.black.withValues(alpha: 0.05),
+            Colors.black.withValues(alpha: 0.04),
             Colors.transparent,
           ],
         ).createShader(Offset.zero & size),
     );
   }
 
-  // Builds: rounded-top rectangle with a downward circular notch in the centre.
-  // clockwise: true → arc sweeps downward into the bar (concave notch).
-  Path _buildPath(double cx, Size size) => Path()
+  // Flat-top rounded rectangle — no notch.
+  Path _buildPath(Size size) => Path()
     ..moveTo(0, size.height)
     ..lineTo(0, _kCorner)
-    ..arcToPoint(Offset(_kCorner, 0),
+    ..arcToPoint(const Offset(_kCorner, 0),
         radius: const Radius.circular(_kCorner))
-    ..lineTo(cx - _kNotchR, 0)
-    ..arcToPoint(Offset(cx + _kNotchR, 0),
-        radius: const Radius.circular(_kNotchR), clockwise: true)
     ..lineTo(size.width - _kCorner, 0)
     ..arcToPoint(Offset(size.width, _kCorner),
         radius: const Radius.circular(_kCorner))
@@ -349,7 +342,7 @@ class _CenterLabel extends StatelessWidget {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// _OrderFab — gradient sphere with dual pulse rings
+// _OrderFab — Siri-style rotating rainbow ring + gradient sphere
 // ═════════════════════════════════════════════════════════════════════════════
 class _OrderFab extends StatefulWidget {
   final bool        isActive;
@@ -361,43 +354,49 @@ class _OrderFab extends StatefulWidget {
 
 class _OrderFabState extends State<_OrderFab>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _pulse;
+  late final AnimationController _rotate;
 
   @override
   void initState() {
     super.initState();
-    _pulse = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 2000))
+    _rotate = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 3000))
       ..repeat();
   }
 
   @override
   void dispose() {
-    _pulse.dispose();
+    _rotate.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final d = _kFabR * 2;
+    const d = _kFabR * 2;            // 56 px inner button
+    const outer = d + 12.0;          // 68 px outer ring area
+    const ringW = 4.0;               // ring stroke width
+
     return SizedBox(
-      width:  d + 28,
-      height: d + 28,
+      width:  outer + 20,
+      height: outer + 20,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Dual pulse rings (phase-offset by 0.5)
+          // ── Siri rainbow rotating ring ──────────────────────────────────
           AnimatedBuilder(
-            animation: _pulse,
-            builder: (_, __) => Stack(
-              alignment: Alignment.center,
-              children: [
-                _ring(_pulse.value),
-                _ring((_pulse.value + 0.5) % 1.0),
-              ],
+            animation: _rotate,
+            builder: (_, __) => Transform.rotate(
+              angle: _rotate.value * 6.2832,   // full 360°
+              child: CustomPaint(
+                size: const Size(outer, outer),
+                painter: _SiriRingPainter(
+                  active: widget.isActive,
+                  strokeWidth: ringW,
+                ),
+              ),
             ),
           ),
-          // Main button (with optional badge for pending orders)
+          // ── Main button ─────────────────────────────────────────────────
           BounceTap(
             pressScale: 0.88,
             onTap: widget.onTap,
@@ -413,41 +412,34 @@ class _OrderFabState extends State<_OrderFab>
                       end:   Alignment.bottomRight,
                       colors: widget.isActive
                           ? const [Color(0xFF818CF8), Color(0xFF4338CA)]
-                          : const [Color(0xFFB0B8F8), Color(0xFF818CF8)],
+                          : const [Color(0xFFB0B8F8), Color(0xFF7C3AED)],
                     ),
                     border: Border.all(color: Colors.white, width: 3.5),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF4F46E5)
-                            .withValues(alpha: widget.isActive ? 0.50 : 0.22),
-                        blurRadius: 18,
+                            .withValues(alpha: widget.isActive ? 0.55 : 0.28),
+                        blurRadius: 20,
                         spreadRadius: 2,
-                        offset: const Offset(0, 5),
-                      ),
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.10),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                  child: const Icon(
-                      Icons.spa_rounded, color: Colors.white, size: 24),
+                  child: const Icon(Icons.spa_rounded, color: Colors.white, size: 26),
                 ),
-                // 预约订单数角标（右上角）
+                // 角标
                 if (widget.badgeCount > 0)
                   Positioned(
-                    top:   -3,
-                    right: -3,
+                    top: -2, right: -2,
                     child: Container(
-                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                      constraints: const BoxConstraints(minWidth: 19, minHeight: 19),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
-                        color:        AppColors.danger,
-                        shape:        BoxShape.circle,
-                        border:       Border.all(color: Colors.white, width: 1.8),
+                        color: AppColors.danger,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
                         boxShadow: [BoxShadow(
-                          color: AppColors.danger.withValues(alpha: 0.45),
+                          color: AppColors.danger.withValues(alpha: 0.5),
                           blurRadius: 6, offset: const Offset(0, 2))],
                       ),
                       alignment: Alignment.center,
@@ -466,16 +458,43 @@ class _OrderFabState extends State<_OrderFab>
       ),
     );
   }
+}
 
-  Widget _ring(double p) => Transform.scale(
-    scale: 1.0 + p * 0.65,
-    child: Container(
-      width: _kFabR * 2, height: _kFabR * 2,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: const Color(0xFF4F46E5).withValues(
-            alpha: (1 - p) * (widget.isActive ? 0.22 : 0.08)),
-      ),
-    ),
-  );
+/// Paints the Siri-style rotating rainbow gradient ring.
+class _SiriRingPainter extends CustomPainter {
+  final bool  active;
+  final double strokeWidth;
+  const _SiriRingPainter({required this.active, required this.strokeWidth});
+
+  static const _colors = [
+    Color(0xFF6366F1),  // indigo
+    Color(0xFF8B5CF6),  // violet
+    Color(0xFFEC4899),  // pink
+    Color(0xFFF97316),  // orange
+    Color(0xFFFACC15),  // yellow
+    Color(0xFF34D399),  // emerald
+    Color(0xFF38BDF8),  // sky
+    Color(0xFF6366F1),  // indigo (loop)
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final r    = size.width / 2;
+    final rect = Rect.fromCircle(center: Offset(r, r), radius: r - strokeWidth / 2);
+    final opacity = active ? 1.0 : 0.55;
+
+    final paint = Paint()
+      ..style      = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap  = StrokeCap.round
+      ..shader     = SweepGradient(
+          colors: _colors.map((c) => c.withValues(alpha: opacity)).toList(),
+        ).createShader(rect);
+
+    canvas.drawArc(rect, -1.5708, 6.2832, false, paint);   // full circle from top
+  }
+
+  @override
+  bool shouldRepaint(_SiriRingPainter old) =>
+      old.active != active || old.strokeWidth != strokeWidth;
 }

@@ -91,6 +91,7 @@
   "ordersTitle": "订单管理",
   "tabPending": "待接单",
   "tabAccepted": "已接单",
+  "statusReception": "接待中",
   "tabInService": "服务中",
   "tabCompleted": "已完成",
   "tabCancelled": "已取消",
@@ -382,5 +383,25 @@
   "estimatedIncome": "预计 {amount}",
   "@estimatedIncome": {
     "placeholders": { "amount": { "type": "String" } }
-  }
+  },
+
+  "sessionExpiredTitle": "登出提醒",
+  "sessionExpiredMessage": "您已经登出，请重新登录后继续操作",
+  "goToLogin": "前往登录",
+
+  "networkTimeout": "网络超时，请检查网络连接",
+  "networkUnavailable": "网络不可用，请检查连接",
+  "networkError": "网络请求失败，请稍后重试",
+
+  "orderTypeOnline": "在线预约",
+  "orderTypeWalkin": "门店散客",
+  "walkinGuest": "散客",
+  "sessionNo": "接待单",
+  "walkinOrderTip": "门店订单由前台管理，技师按服务项操作即可。",
+  "notificationSound": "提示音",
+  "vibration": "震动",
+  "rating": "评分",
+  "myOrders": "我的订单",
+  "reviews": "我的评价",
+  "langHint": "选择您偏好的显示语言"
 }

@@ -37,6 +37,10 @@ public class OrderQueryDTO {
     @Schema(description = "技师 ID")
     private Long technicianId;
 
+    @Min(value = 1) @Max(value = 2)
+    @Schema(description = "订单类型：1=在线预约 2=门店散客")
+    private Integer orderType;
+
     @Min(value = 0) @Max(value = 9)
     @Schema(description = "订单状态：0-9")
     private Integer status;

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'core/network/http_util.dart';
+import 'core/utils/audio_util.dart';
 import 'core/routes/app_pages.dart';
 import 'core/routes/app_routes.dart';
+import 'core/services/auth_guard_service.dart';
 import 'core/services/global_notification_service.dart';
 import 'core/services/message_service.dart';
 import 'core/services/order_service.dart';
 import 'core/services/storage_service.dart';
+import 'core/services/tech_ws_service.dart';
 import 'core/services/user_service.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/gen/app_localizations.dart';
@@ -15,6 +18,7 @@ import 'l10n/gen/app_localizations.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpUtil.init();
+  await AudioUtil.init();   // 初始化本地通知插件（必须在 runApp 前调用）
   await _initServices();
   runApp(const App());
 }
@@ -24,8 +28,11 @@ Future<void> _initServices() async {
   await Get.putAsync<UserService>(() => UserService().init());
   await Get.putAsync<OrderService>(() => OrderService().init());
   await Get.putAsync<MessageService>(() => MessageService().init());
-  // GlobalNotificationService 最后初始化，确保其他服务都就绪
+  await Get.putAsync<TechWsService>(() => TechWsService().init());
+  // GlobalNotificationService 倒数第二初始化，确保其他服务都就绪
   await Get.putAsync<GlobalNotificationService>(() => GlobalNotificationService().init());
+  // AuthGuardService 最后初始化：监听 UserService.isSessionExpired 弹出登出弹窗
+  await Get.putAsync<AuthGuardService>(() => AuthGuardService().init());
 }
 
 class App extends StatelessWidget {

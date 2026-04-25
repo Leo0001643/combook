@@ -20,10 +20,14 @@ class OrderListLogic extends GetxController with EventBusMixin {
   @override
   void onInit() {
     super.onInit();
-    // 订阅订单状态变更 → 自动刷新列表（Obx 已监听 _svc.orders，此处仅做日志）
     subscribe<OrderStatusChangedEvent>((e) {
-      // 当有新的 pending 订单时，自动切换到"待接单" Tab
+      // 新 pending 订单 → 自动跳到"待接单" Tab
       if (e.newStatus == OrderStatus.pending) state.tabIndex.value = 0;
+    });
+    // 订单完成 → 自动跳到"已完成" Tab 并刷新列表
+    subscribe<ServiceCompletedEvent>((_) {
+      state.tabIndex.value = 3; // 已完成 tab index
+      _svc.fetchFromApi();
     });
   }
 
@@ -33,21 +37,22 @@ class OrderListLogic extends GetxController with EventBusMixin {
     super.onClose();
   }
 
-@override
-  Future<void> refresh() => Future.delayed(const Duration(milliseconds: 600));
+  @override
+  Future<void> refresh() => _svc.fetchFromApi();
 
   Future<void> accept(int id) async {
-    _svc.accept(id);
-    ToastUtil.success(gL10n.success);
+    final ok = await _svc.accept(id);
+    if (ok) ToastUtil.success(gL10n.success);
   }
 
   Future<void> reject(int id) async {
-    _svc.reject(id);
-    ToastUtil.info(gL10n.btnReject);
+    final ok = await _svc.reject(id);
+    if (ok) ToastUtil.info(gL10n.btnReject);
   }
 
   Future<void> start(int id) async {
-    _svc.start(id);
+    final ok = await _svc.start(id);
+    if (!ok) return;  // API 失败时不进入服务模式
     Get.find<UserService>().setStatus(TechStatus.busy);
     Get.toNamed(AppRoutes.serviceActive);
   }

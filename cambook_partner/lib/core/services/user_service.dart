@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
 import '../models/models.dart';
-import '../mock/mock_data.dart';
 import '../events/app_events.dart';
 import '../utils/event_bus_util.dart';
+import 'order_service.dart';
 import 'storage_service.dart';
+import 'tech_ws_service.dart';
 import '../routes/app_routes.dart';
 
 /// 用户服务 —— 管理当前登录技师信息及状态（全局单例）
@@ -11,18 +12,23 @@ class UserService extends GetxService {
   final Rx<TechnicianModel?> technician = Rx(null);
   final Rx<TechStatus>       status     = TechStatus.online.obs;
 
+  /// true = 曾处于登录状态但被强制登出（401 / token 过期）
+  /// AuthGuardService 监听此字段弹出"已登出"提示
+  final isSessionExpired = false.obs;
+
   bool get isLoggedIn => technician.value != null;
 
   Future<UserService> init() async {
-    if (Get.find<StorageService>().hasToken) {
-      technician.value = MockData.technician;
-    }
+    // 若 token 已存在（App 重启），WS 连接由 TechWsService.init() 负责
+    // 此处只做状态恢复标记，待 WS 首次 HOME_DATA 到达时 HomeLogic 会刷新数据
     return this;
   }
 
   void login(TechnicianModel user, String token) {
     technician.value = user;
     Get.find<StorageService>().saveToken(token);
+    _connectWs();
+    _fetchOrders();
   }
 
   /// 从后端 API 响应（TechLoginVO）登录
@@ -43,13 +49,39 @@ class UserService extends GetxService {
       merchantName:     '',
     );
     Get.find<StorageService>().saveToken(token);
+    _connectWs();
+    _fetchOrders();
   }
 
   void logout() {
-    technician.value = null;
-    Get.find<StorageService>().clear();
+    _disconnectWs();
+    _clearSession();
     Get.offAllNamed(AppRoutes.login);
   }
+
+  /// 被动登出（服务端 401 / token 过期）—— 触发"已登出"模态弹窗
+  /// 由 HttpUtil._AuthInterceptor 调用，业务层无需关心
+  void onSessionExpired() {
+    if (technician.value == null) return; // 已经是未登录状态，避免重复触发
+    _disconnectWs();
+    _clearSession();
+    isSessionExpired.value = true;
+  }
+
+  /// 用户在弹窗中确认后重置标志位，再跳转登录页
+  void clearSessionExpired() {
+    isSessionExpired.value = false;
+  }
+
+  void _clearSession() {
+    technician.value = null;
+    isSessionExpired.value = false; // 防止 ever() worker 在会话清除后再次触发
+    Get.find<StorageService>().clear();
+  }
+
+  void _connectWs()    => Get.find<TechWsService>().connect();
+  void _disconnectWs() => Get.find<TechWsService>().disconnect();
+  void _fetchOrders()  => Get.find<OrderService>().fetchFromApi();
 
   void setStatus(TechStatus newStatus) {
     if (status.value == newStatus) return;
@@ -62,14 +94,9 @@ class UserService extends GetxService {
   void addBalance(double amount) {
     final t = technician.value;
     if (t == null) return;
-    technician.value = TechnicianModel(
-      id: t.id, nickname: t.nickname, techNo: t.techNo, phone: t.phone,
-      avatar: t.avatar, level: t.level, rating: t.rating,
+    technician.value = t.copyWith(
       completedOrders: t.completedOrders + 1,
-      balance: t.balance + amount,
-      skills: t.skills, memberSince: t.memberSince,
-      merchantId: t.merchantId, merchantName: t.merchantName,
-      telegram: t.telegram, facebook: t.facebook, email: t.email,
+      balance:         t.balance + amount,
     );
   }
 }

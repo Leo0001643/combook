@@ -298,7 +298,7 @@ export const technicianApi = {
 // ──────────────────────────────────────────────────────────────────────────────
 
 export const orderApi = {
-  list: (params: { page?: number; size?: number; status?: number; keyword?: string; startDate?: string; endDate?: string; merchantId?: number; technicianId?: number; memberId?: number }) =>
+  list: (params: { page?: number; size?: number; status?: number; keyword?: string; startDate?: string; endDate?: string; merchantId?: number; technicianId?: number; memberId?: number; orderType?: number; serviceMode?: number }) =>
     request.get<any>('/admin/order/list', { params }),
 
   detail: (id: number) =>
@@ -309,6 +309,12 @@ export const orderApi = {
 
   delete: (id: number) =>
     request.delete<any>(`/admin/order/${id}`),
+
+  create: (data: any, merchantId: number) =>
+    request.post<any>('/admin/order', data, {
+      params: { merchantId },
+      headers: { 'Content-Type': 'application/json' },
+    }),
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -644,6 +650,12 @@ export const merchantPortalApi = {
   orderSettle: (id: number, paidAmount: number, payRecords?: string) =>
     request.post<any>(`/merchant/order/${id}/settle`, null, {
       params: { paidAmount, ...(payRecords ? { payRecords } : {}) },
+    }),
+
+  /** 新增在线订单（到店/上门） */
+  orderCreate: (data: any) =>
+    request.post<any>('/merchant/order', data, {
+      headers: { 'Content-Type': 'application/json' },
     }),
 
   /** 删除订单 */

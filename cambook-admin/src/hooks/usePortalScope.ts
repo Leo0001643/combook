@@ -45,6 +45,9 @@ export function usePortalScope() {
     orderDelete: (id: number) =>
       isMerchant ? merchantPortalApi.orderDelete(id) : orderApi.delete(id),
 
+    orderCreate: (data: any) =>
+      isMerchant ? merchantPortalApi.orderCreate(data) : orderApi.create(data, data._merchantId),
+
     // ── 技师管理 ─────────────────────────────────────────────────────────────
     technicianList: (params: any) =>
       isMerchant ? merchantPortalApi.technicians(params) : technicianApi.list(params),

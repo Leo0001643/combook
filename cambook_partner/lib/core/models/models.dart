@@ -1,6 +1,18 @@
 import '../utils/date_util.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
+// JSON 安全类型转换工具 —— 防止后端字段类型漂移导致运行时异常
+// 全局统一使用，消除各 Model 内重复的 _int/_double/_str 私有方法
+// ─────────────────────────────────────────────────────────────────────────────
+abstract class JsonUtil {
+  static int    intFrom(dynamic v) =>
+      v is int ? v : int.tryParse(v?.toString() ?? '') ?? 0;
+  static double dblFrom(dynamic v) =>
+      v is double ? v : double.tryParse(v?.toString() ?? '') ?? 0.0;
+  static String strFrom(dynamic v) => v?.toString() ?? '';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 技师 / 用户模型
 // ─────────────────────────────────────────────────────────────────────────────
 enum TechStatus { online, busy, rest }
@@ -36,19 +48,52 @@ class TechnicianModel {
   });
 
   factory TechnicianModel.fromJson(Map<String, dynamic> j) => TechnicianModel(
-    id: j['id'], nickname: j['nickname'], techNo: j['techNo'],
-    phone: j['phone'], avatar: j['avatar'],
-    level: TechLevel.values.firstWhere((e) => e.name == j['level'], orElse: () => TechLevel.normal),
-    rating: (j['rating'] as num).toDouble(),
-    completedOrders: j['completedOrders'],
-    balance: (j['balance'] as num).toDouble(),
-    skills: (j['skills'] as List).map((e) => SkillModel.fromJson(e)).toList(),
-    memberSince: j['memberSince'],
-    merchantId:   j['merchantId']   ?? 'cambook',
-    merchantName: j['merchantName'] ?? 'CamBook',
-    telegram:     j['telegram'],
-    facebook:     j['facebook'],
-    email:        j['email'],
+    id:             j['id'] as int?     ?? 0,
+    nickname:       j['nickname'] as String? ?? '',
+    techNo:         j['techNo']   as String? ?? '',
+    phone:          j['phone']    as String? ?? '',
+    avatar:         j['avatar']   as String?,
+    level:          TechLevel.values.firstWhere(
+                      (e) => e.name == j['level'],
+                      orElse: () => TechLevel.normal),
+    rating:         (j['rating']  as num?)?.toDouble() ?? 0.0,
+    completedOrders:(j['completedOrders'] as num?)?.toInt() ?? 0,
+    balance:        (j['balance'] as num?)?.toDouble() ?? 0.0,
+    skills:         (j['skills'] as List?)
+                        ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
+                        .toList() ?? [],
+    memberSince:    j['memberSince'] as String? ?? '',
+    merchantId:     j['merchantId']   as String? ?? 'cambook',
+    merchantName:   j['merchantName'] as String? ?? 'CamBook',
+    telegram:       j['telegram']  as String?,
+    facebook:       j['facebook']  as String?,
+    email:          j['email']     as String?,
+  );
+
+  TechnicianModel copyWith({
+    int? id, String? nickname, String? techNo, String? phone,
+    String? avatar, TechLevel? level, double? rating,
+    int? completedOrders, double? balance,
+    List<SkillModel>? skills, String? memberSince,
+    String? merchantId, String? merchantName,
+    String? telegram, String? facebook, String? email,
+  }) => TechnicianModel(
+    id:              id              ?? this.id,
+    nickname:        nickname        ?? this.nickname,
+    techNo:          techNo          ?? this.techNo,
+    phone:           phone           ?? this.phone,
+    avatar:          avatar          ?? this.avatar,
+    level:           level           ?? this.level,
+    rating:          rating          ?? this.rating,
+    completedOrders: completedOrders ?? this.completedOrders,
+    balance:         balance         ?? this.balance,
+    skills:          skills          ?? this.skills,
+    memberSince:     memberSince     ?? this.memberSince,
+    merchantId:      merchantId      ?? this.merchantId,
+    merchantName:    merchantName    ?? this.merchantName,
+    telegram:        telegram        ?? this.telegram,
+    facebook:        facebook        ?? this.facebook,
+    email:           email           ?? this.email,
   );
 }
 
@@ -74,6 +119,8 @@ class OrderModel {
   final String      orderNo;
   final OrderStatus status;
   final ServiceMode serviceMode;
+  /// 1 = 在线预约订单；2 = 门店散客订单（walkin session）
+  final int         orderType;
   final CustomerModel customer;
   final List<ServiceItemModel> services;
   final double      totalAmount;
@@ -88,18 +135,21 @@ class OrderModel {
     required this.id, required this.orderNo, required this.status,
     required this.serviceMode, required this.customer, required this.services,
     required this.totalAmount, required this.appointTime, required this.createTime,
-    this.distance, this.remark, this.startTime, this.endTime,
+    this.orderType = 1, this.distance, this.remark, this.startTime, this.endTime,
   });
+
+  bool get isWalkin => orderType == 2;
 
   /// 从后端 JSON 构建，时间字段均为 UTC 秒级时间戳。
   factory OrderModel.fromJson(Map<String, dynamic> j) => OrderModel(
     id:           j['id'] as int,
-    orderNo:      j['orderNo'] as String,
+    orderNo:      j['orderNo'] as String? ?? '',
     status:       _parseStatus(j['status'] as int? ?? 0),
     serviceMode:  (j['serviceMode'] as int?) == 2 ? ServiceMode.store : ServiceMode.home,
+    orderType:    j['orderType'] as int? ?? 1,
     customer:     j['member'] != null
                     ? CustomerModel.fromJson(j['member'] as Map<String, dynamic>)
-                    : CustomerModel(id: 0, nickname: j['memberNickname'] ?? '', phone: ''),
+                    : CustomerModel(id: 0, nickname: j['memberNickname'] as String? ?? '', phone: j['memberMobile'] as String? ?? ''),
     services:     j['orderItems'] != null
                     ? (j['orderItems'] as List).map((e) => ServiceItemModel.fromJson(e as Map<String, dynamic>)).toList()
                     : [],
@@ -112,12 +162,14 @@ class OrderModel {
     endTime:      DateUtil.fromEpochSecNullable(j['endTime']),
   );
 
+  /// 后端 10 态状态码 → 应用层枚举
+  /// 0=待支付 1=待确认 2=已接单 3=前往中 4=已到达 5=服务中 6=已完成 7=已取消 8=退款中 9=已退款
   static OrderStatus _parseStatus(int s) => switch (s) {
-    1     => OrderStatus.pending,
-    2 || 3 => OrderStatus.accepted,
-    4 || 5 => OrderStatus.inService,
-    6     => OrderStatus.completed,
-    _     => OrderStatus.cancelled,
+    1              => OrderStatus.pending,
+    2 || 3 || 4    => OrderStatus.accepted,   // 含"前往中"与"已到达"
+    5              => OrderStatus.inService,
+    6              => OrderStatus.completed,
+    _              => OrderStatus.cancelled,  // 0, 7, 8, 9
   };
 
   int get totalDuration => services.fold(0, (s, e) => s + e.duration);
@@ -125,7 +177,8 @@ class OrderModel {
   OrderModel copyWith({OrderStatus? status, DateTime? startTime, DateTime? endTime}) =>
       OrderModel(
         id: id, orderNo: orderNo, status: status ?? this.status,
-        serviceMode: serviceMode, customer: customer, services: services,
+        serviceMode: serviceMode, orderType: orderType,
+        customer: customer, services: services,
         totalAmount: totalAmount, appointTime: appointTime, createTime: createTime,
         distance: distance, remark: remark,
         startTime: startTime ?? this.startTime, endTime: endTime ?? this.endTime,
@@ -195,9 +248,15 @@ class IncomeRecordModel {
     orderNo: j['orderNo'] as String? ?? '',
     amount:  (j['amount'] as num?)?.toDouble() ?? 0,
     date:    DateUtil.fromEpochSec(j['createTime'] ?? j['date']),
-    type:    IncomeType.order,
+    type:    _parseType(j['type']),
     note:    j['note'] as String?,
   );
+
+  static IncomeType _parseType(dynamic v) => switch (v?.toString()) {
+    'bonus'     => IncomeType.bonus,
+    'deduction' => IncomeType.deduction,
+    _           => IncomeType.order,
+  };
 }
 
 class IncomeTrendModel {

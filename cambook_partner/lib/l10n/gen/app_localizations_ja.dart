@@ -203,6 +203,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tabAccepted => '受注済み';
 
   @override
+  String get statusReception => '受付中';
+
+  @override
   String get tabInService => '対応中';
 
   @override
@@ -962,4 +965,55 @@ class AppLocalizationsJa extends AppLocalizations {
   String estimatedIncome(String amount) {
     return '予定 $amount';
   }
+
+  @override
+  String get sessionExpiredTitle => 'セッション期限切れ';
+
+  @override
+  String get sessionExpiredMessage => 'ログアウトされました。続けるには再度ログインしてください。';
+
+  @override
+  String get goToLogin => 'ログインへ';
+
+  @override
+  String get networkTimeout => 'リクエストがタイムアウトしました。接続を確認してください。';
+
+  @override
+  String get networkUnavailable => 'ネットワークが利用できません。接続を確認してください。';
+
+  @override
+  String get networkError => 'リクエストが失敗しました。後でもう一度お試しください。';
+
+  @override
+  String get orderTypeOnline => 'オンライン予約';
+
+  @override
+  String get orderTypeWalkin => '店頭来店';
+
+  @override
+  String get walkinGuest => '一般来客';
+
+  @override
+  String get sessionNo => 'セッション';
+
+  @override
+  String get walkinOrderTip => '店頭注文はフロントデスクが管理します。';
+
+  @override
+  String get notificationSound => '通知音';
+
+  @override
+  String get vibration => 'バイブレーション';
+
+  @override
+  String get rating => '評価';
+
+  @override
+  String get myOrders => '注文一覧';
+
+  @override
+  String get reviews => 'レビュー';
+
+  @override
+  String get langHint => '表示言語を選択してください';
 }

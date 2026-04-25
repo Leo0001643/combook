@@ -4,99 +4,194 @@
 <mapper namespace="com.cambook.dao.mapper.CbOrderMapper">
 
     <!-- ══════════════════════════════════════════════════════════════════════
-         技师首页统计
-         appoint_time / create_time 已迁移为 BIGINT（UTC 秒），使用 FROM_UNIXTIME 转日期
+         技师首页统计（多技师并行设计）
+         ───────────────────────────────────────────────────────────────────
+         核心：一笔订单可有多名技师各自负责不同服务项（cb_order_item.technician_id）
+         所有统计均以「该技师在 cb_order_item 中有服务项的订单」为维度，
+         使用 COUNT(DISTINCT o.id) 避免一单多项被重复计数。
+         appoint_time 为 BIGINT（UTC 秒），使用 FROM_UNIXTIME 按日期筛选。
          ══════════════════════════════════════════════════════════════════════ -->
 
     <!--
-        今日订单数（排除待支付/取消中/已取消/已退款）
-        状态：0=待支付 7=取消中 8=已取消 9=已退款
+        今日有效订单数（排除 0=待支付 7=取消中 8=已取消 9=已退款）
+        = 今日分配了该技师服务项且处于有效状态的 DISTINCT 订单数
     -->
     <select id="countTodayOrders" resultType="int">
-        SELECT COUNT(*)
-        FROM cb_order
-        WHERE technician_id = #{techId}
-          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
-          AND status NOT IN (0, 7, 8, 9)
-          AND deleted = 0
+        SELECT COUNT(DISTINCT o.id)
+        FROM cb_order o
+        JOIN cb_order_item oi
+          ON oi.order_id = o.id
+         AND oi.technician_id = #{techId}
+         AND oi.deleted = 0
+        WHERE FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
+          AND o.status NOT IN (0, 7, 8, 9)
+          AND o.deleted = 0
     </select>
 
     <!--
-        今日完成订单数（status=6 已完成）
+        今日已完成订单数（在线 status=6 + 门店散客 session status=3）
     -->
     <select id="countTodayCompleted" resultType="int">
-        SELECT COUNT(*)
-        FROM cb_order
-        WHERE technician_id = #{techId}
-          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
-          AND status = 6
-          AND deleted = 0
+        SELECT
+            (SELECT COUNT(DISTINCT o.id)
+             FROM cb_order o
+             JOIN cb_order_item oi
+               ON oi.order_id = o.id
+              AND oi.technician_id = #{techId}
+              AND oi.deleted = 0
+             WHERE FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
+               AND o.status = 6
+               AND o.deleted = 0)
+          + (SELECT COUNT(*)
+             FROM cb_walkin_session ws
+             WHERE ws.technician_id = #{techId}
+               AND ws.deleted = 0
+               AND ws.status = 3
+               AND FROM_UNIXTIME(ws.check_in_time, '%Y-%m-%d') = CURDATE())
     </select>
 
     <!--
-        今日全部预约订单数（排除待支付 0，包含进行中/取消/退款）
+        今日全部预约订单数（排除 0=待支付，包含进行中/取消/退款）
         反映技师今日实际被预约的总量
     -->
+    <!--
+        今日预约订单数 = 在线订单（cb_order JOIN cb_order_item）+ 门店散客（cb_walkin_session）
+        门店散客：只排除已取消（status=4），已完成（status=3）也计入预约数
+    -->
     <select id="countTodayAppointments" resultType="int">
-        SELECT COUNT(*)
-        FROM cb_order
-        WHERE technician_id = #{techId}
-          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
-          AND status != 0
-          AND deleted = 0
+        SELECT
+            (SELECT COUNT(DISTINCT o.id)
+             FROM cb_order o
+             JOIN cb_order_item oi ON oi.order_id = o.id
+                AND oi.technician_id = #{techId} AND oi.deleted = 0
+             WHERE FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
+               AND o.status != 0 AND o.deleted = 0)
+          + (SELECT COUNT(*)
+             FROM cb_walkin_session ws
+             WHERE ws.technician_id = #{techId}
+               AND ws.deleted = 0
+               AND ws.status != 4
+               AND FROM_UNIXTIME(ws.check_in_time, '%Y-%m-%d') = CURDATE())
     </select>
 
     <!--
-        今日取消/退款订单数（status IN (7,8,9)）
-        7=取消中 8=退款中 9=已退款
+        今日取消/退款订单数（在线 status IN 7,8,9 + 门店散客 session status=4）
     -->
     <select id="countTodayCancelled" resultType="int">
-        SELECT COUNT(*)
-        FROM cb_order
-        WHERE technician_id = #{techId}
-          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
-          AND status IN (7, 8, 9)
-          AND deleted = 0
+        SELECT
+            (SELECT COUNT(DISTINCT o.id)
+             FROM cb_order o
+             JOIN cb_order_item oi
+               ON oi.order_id = o.id
+              AND oi.technician_id = #{techId}
+              AND oi.deleted = 0
+             WHERE FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
+               AND o.status IN (7, 8, 9)
+               AND o.deleted = 0)
+          + (SELECT COUNT(*)
+             FROM cb_walkin_session ws
+             WHERE ws.technician_id = #{techId}
+               AND ws.deleted = 0
+               AND ws.status = 4
+               AND FROM_UNIXTIME(ws.check_in_time, '%Y-%m-%d') = CURDATE())
     </select>
 
     <!--
         今日已结算订单的技师实际收入总和
-        仅 status=6（已完成并结算），服务中(5) 的订单尚未结算不计入
+        ─ 在线预约（order_type=1）：仅统计 status=6 的 cb_order_item，按 tech_income 或 unit_price×qty
+        ─ 门店散客（order_type=2）：统计 session status=3 的关联 cb_order，按 tech_income 或 pay_amount
+        ─ 多技师订单中每人只计算自己服务项的收入
     -->
     <select id="sumTodayIncome" resultType="java.math.BigDecimal">
-        SELECT COALESCE(SUM(tech_income), 0)
-        FROM cb_order
-        WHERE technician_id = #{techId}
-          AND FROM_UNIXTIME(appoint_time, '%Y-%m-%d') = CURDATE()
-          AND status = 6
-          AND tech_income IS NOT NULL
-          AND deleted = 0
+        SELECT COALESCE(
+            (SELECT SUM(
+                CASE
+                    WHEN oi.tech_income IS NOT NULL THEN oi.tech_income
+                    ELSE oi.unit_price * oi.qty
+                END
+             )
+             FROM cb_order o
+             JOIN cb_order_item oi
+               ON oi.order_id = o.id
+              AND oi.technician_id = #{techId}
+              AND oi.deleted = 0
+             WHERE FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
+               AND o.status = 6
+               AND o.deleted = 0)
+        , 0)
+        +
+        COALESCE(
+            (SELECT SUM(
+                CASE
+                    WHEN o.tech_income IS NOT NULL THEN o.tech_income
+                    ELSE o.pay_amount
+                END
+             )
+             FROM cb_order o
+             JOIN cb_walkin_session ws ON ws.id = o.session_id
+             WHERE o.order_type = 2
+               AND o.technician_id = #{techId}
+               AND o.deleted = 0
+               AND ws.status = 3
+               AND ws.deleted = 0
+               AND FROM_UNIXTIME(ws.check_in_time, '%Y-%m-%d') = CURDATE())
+        , 0)
     </select>
 
     <!--
-        今日安排列表（按预约时间升序，关联会员昵称与头像）
-        appoint_time 已是 BIGINT，直接返回给前端，无需二次转换
-        排除 0=待支付 8=已取消 9=已退款；7=取消中 仍展示
+        今日安排列表（多技师并行版）
+        ─ 以订单为单位返回，一个订单一行（GROUP BY o.id）
+        ─ 仅展示该技师负责的服务项（JOIN 过滤）
+        ─ techIncome = 该技师在本订单中所有服务项的合计收入
+        ─ 排除 0=待支付 8=退款中 9=已退款；7=已取消 仍展示（让技师了解当日取消情况）
     -->
     <select id="selectTodaySchedule" resultType="map">
         SELECT
-            o.id                  AS orderId,
-            o.order_no            AS orderNo,
-            o.appoint_time        AS appointTime,
-            o.service_name        AS serviceName,
-            o.service_duration    AS serviceDuration,
+            o.id                                        AS orderId,
+            o.order_no                                  AS orderNo,
+            o.appoint_time                              AS appointTime,
             o.status,
-            o.pay_amount          AS payAmount,
-            COALESCE(o.tech_income, 0) AS techIncome,
-            m.nickname            AS memberNickname,
-            m.avatar              AS memberAvatar
+            o.pay_amount                                AS payAmount,
+            COALESCE(SUM(
+                CASE
+                    WHEN oi.tech_income IS NOT NULL THEN oi.tech_income
+                    ELSE oi.unit_price * oi.qty
+                END
+            ), 0)                                       AS techIncome,
+            m.nickname                                  AS memberNickname,
+            m.avatar                                    AS memberAvatar
         FROM cb_order o
+        JOIN cb_order_item oi
+          ON oi.order_id = o.id
+         AND oi.technician_id = #{techId}
+         AND oi.deleted = 0
         LEFT JOIN cb_member m ON m.id = o.member_id AND m.deleted = 0
-        WHERE o.technician_id = #{techId}
-          AND FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
+        WHERE FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
           AND o.status NOT IN (0, 8, 9)
           AND o.deleted = 0
+        GROUP BY o.id, o.order_no, o.appoint_time, o.status, o.pay_amount,
+                 m.nickname, m.avatar
         ORDER BY o.appoint_time ASC
+    </select>
+
+    <!--
+        门店散客订单服务项批量加载（order_type=2）
+
+        walkin 场景：每条 cb_order（order_type=2, session_id 非空）= 一个服务项。
+        按 session_id 分组后供技师首页今日安排展示，排除已取消（status=7）。
+    -->
+    <select id="selectWalkinOrdersBySessionIds"
+            resultType="com.cambook.dao.entity.CbOrder">
+        SELECT *
+        FROM cb_order
+        WHERE order_type = 2
+          AND session_id IN
+              <foreach item="id" collection="sessionIds" open="(" separator="," close=")">
+                  #{id}
+              </foreach>
+          AND status != 7
+          AND deleted = 0
+        ORDER BY session_id ASC, create_time ASC
     </select>
 
     <!-- ══════════════════════════════════════════════════════════════════════
@@ -202,13 +297,28 @@
         ORDER BY ymd
     </select>
 
-    <!-- 技师待执行预约订单数（状态 1-4，用于底部导航 FAB 角标） -->
+    <!--
+        技师待执行预约订单数（用于底部导航 FAB 角标）
+        ─ 统计该技师有待服务（svc_status IN (0,1)）服务项的 DISTINCT 订单数
+        ─ 订单整体状态 IN (1,2,3,4,5)：
+            1=待接单  2=已接单  3=前往中  4=已到达  5=服务中（均为「进行中」状态）
+        ─ 不含 6=已完成 7=已取消 8=退款中 9=已退款
+    -->
+    <!--
+        角标数 = 仅统计状态为"待接单"(status=1)的在线预约订单
+        用户要求"底部导航显示预约订单数据即可"
+    -->
     <select id="pendingOrderCount" resultType="int">
+        <!--
+            角标数 = 仅统计状态为"待接单"(status=1) 的在线预约订单
+            直接从 cb_order 查 technician_id，与 listTechOrders 逻辑保持一致
+        -->
         SELECT COUNT(*)
-        FROM cb_order
-        WHERE technician_id = #{techId}
-          AND deleted = 0
-          AND status IN (1, 2, 3, 4)
+        FROM cb_order o
+        WHERE o.technician_id = #{techId}
+          AND o.deleted = 0
+          AND o.status = 1
+          AND o.order_type = 1
     </select>
 
     <!-- 营收趋势：按月聚合（year 维度）[{month, revenue, orders}] -->
@@ -224,6 +334,48 @@
           AND create_time &lt;  #{to}
         GROUP BY month
         ORDER BY month
+    </select>
+
+    <!--
+        技师端订单列表：返回该技师被分配的在线预约订单，含会员昵称与服务项 JSON。
+        statuses 为空时返回所有状态（但排除 status=0 待支付）。
+    -->
+    <select id="listTechOrders" resultType="map">
+        SELECT
+            o.id                                    AS id,
+            o.order_no                              AS orderNo,
+            o.status                                AS status,
+            o.service_mode                          AS serviceMode,
+            o.pay_amount                            AS payAmount,
+            o.appoint_time                          AS appointTime,
+            o.create_time                           AS createTime,
+            o.start_time                            AS startTime,
+            o.end_time                              AS endTime,
+            o.remark                                AS remark,
+            o.member_id                             AS memberId,
+            COALESCE(m.nickname, '')                AS memberNickname,
+            COALESCE(m.mobile,   '')                AS memberMobile,
+            o.service_name                          AS serviceName,
+            o.service_duration                      AS serviceDuration
+        FROM cb_order o
+        LEFT JOIN cb_member m ON m.id = o.member_id AND m.deleted = 0
+        WHERE o.deleted = 0
+          AND o.order_type = 1
+          AND o.status != 0
+          AND EXISTS (
+              SELECT 1 FROM cb_order_item oi
+              WHERE oi.order_id = o.id
+                AND oi.technician_id = #{techId}
+                AND oi.deleted = 0
+          )
+        <if test="statuses != null and statuses.size() > 0">
+          AND o.status IN
+          <foreach item="s" collection="statuses" open="(" separator="," close=")">
+              #{s}
+          </foreach>
+        </if>
+        ORDER BY o.create_time DESC
+        LIMIT 200
     </select>
 
 </mapper>

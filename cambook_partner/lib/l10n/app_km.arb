@@ -90,6 +90,7 @@
   "ordersTitle": "ការគ្រប់គ្រងការបញ្ជា",
   "tabPending": "រង់ចាំ",
   "tabAccepted": "ទទួលហើយ",
+  "statusReception": "កំពុងទទួល",
   "tabInService": "កំពុងបម្រើ",
   "tabCompleted": "បញ្ចប់",
   "tabCancelled": "បោះបង់",
@@ -381,5 +382,25 @@
   "estimatedIncome": "ប្រហាក់ {amount}",
   "@estimatedIncome": {
     "placeholders": { "amount": { "type": "String" } }
-  }
+  },
+
+  "sessionExpiredTitle": "សម័យបានផុតកំណត់",
+  "sessionExpiredMessage": "អ្នកត្រូវបានចេញពីប្រព័ន្ធ។ សូមចូលម្ដងទៀតដើម្បីបន្ត។",
+  "goToLogin": "ទៅកាន់ការចូល",
+
+  "networkTimeout": "ការស្នើសុំអស់ពេល។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក។",
+  "networkUnavailable": "បណ្ដាញមិនអាចប្រើបាន។ សូមពិនិត្យការតភ្ជាប់។",
+  "networkError": "ការស្នើសុំបានបរាជ័យ។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។",
+
+  "orderTypeOnline": "កក់ទុក",
+  "orderTypeWalkin": "អតិថិជនចូល",
+  "walkinGuest": "អតិថិជនទូទៅ",
+  "sessionNo": "វគ្គ",
+  "walkinOrderTip": "លំដាប់ហាងគ្រប់គ្រងដោយreception.",
+  "notificationSound": "សំឡេងជូនដំណឹង",
+  "vibration": "កំប្រ",
+  "rating": "ការវាយតម្លៃ",
+  "myOrders": "តុ​ Order ​របស់ខ្ញុំ",
+  "reviews": "ការពិនិត្យ",
+  "langHint": "ជ្រើសរើសភាសាបង្ហាញដែលអ្នកចូលចិត្ត"
 }

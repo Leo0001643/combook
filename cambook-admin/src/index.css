@@ -38,6 +38,26 @@ body {
   height: 100%;
 }
 
+/* 主内容区滚动条 —— 细线风格，不影响表格内部 */
+.ant-layout-content::-webkit-scrollbar,
+.ant-layout:not(.ant-layout-has-sider) .ant-layout-content::-webkit-scrollbar {
+  width: 5px;
+}
+/* 右侧主区域（内层 Layout，负责整体滚动）*/
+.ant-layout:not(.ant-layout-has-sider)::-webkit-scrollbar {
+  width: 5px;
+}
+.ant-layout:not(.ant-layout-has-sider)::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 5px;
+}
+.ant-layout:not(.ant-layout-has-sider)::-webkit-scrollbar-thumb:hover {
+  background: #a5b4fc;
+}
+.ant-layout:not(.ant-layout-has-sider)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 /* 全局过渡动画 */
 .ant-card,
 .ant-btn,
@@ -247,9 +267,10 @@ body {
 }
 
 /* ── 全局表格对齐：水平居中（垂直居中由 styledTableComponents.body.cell 的 flex 方案保障）── */
+/* 注意：不加 !important，保留 Ant Design 列级 align 属性（inline style）优先覆盖能力 */
 .ant-table-thead > tr > th,
 .ant-table-tbody > tr > td {
-  text-align: center !important;
+  text-align: center;
 }
 
 /*

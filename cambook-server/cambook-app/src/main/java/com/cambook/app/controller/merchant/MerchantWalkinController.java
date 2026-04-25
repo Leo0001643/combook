@@ -3,23 +3,29 @@ package com.cambook.app.controller.merchant;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cambook.app.websocket.TechWsHandler;
+import com.cambook.app.websocket.TechWsRegistry;
+import com.cambook.app.websocket.WsMessage;
 import com.cambook.common.context.MerchantContext;
 import com.cambook.common.exception.BusinessException;
 import com.cambook.common.result.Result;
 import com.cambook.dao.entity.CbOrder;
+import com.cambook.dao.entity.CbServiceCategory;
 import com.cambook.dao.entity.CbWalkinSession;
 import com.cambook.dao.mapper.CbOrderMapper;
+import com.cambook.dao.mapper.CbServiceCategoryMapper;
 import com.cambook.dao.mapper.CbWalkinSessionMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,13 +66,53 @@ public class MerchantWalkinController {
         };
     }
 
-    private final CbWalkinSessionMapper sessionMapper;
-    private final CbOrderMapper         orderMapper;
+    private final CbWalkinSessionMapper  sessionMapper;
+    private final CbOrderMapper          orderMapper;
+    private final CbServiceCategoryMapper categoryMapper;
+    private final TechWsRegistry         wsRegistry;
+    private final TechWsHandler          wsHandler;
 
     public MerchantWalkinController(CbWalkinSessionMapper sessionMapper,
-                                    CbOrderMapper orderMapper) {
-        this.sessionMapper = sessionMapper;
-        this.orderMapper   = orderMapper;
+                                    CbOrderMapper orderMapper,
+                                    CbServiceCategoryMapper categoryMapper,
+                                    TechWsRegistry wsRegistry,
+                                    TechWsHandler wsHandler) {
+        this.sessionMapper  = sessionMapper;
+        this.orderMapper    = orderMapper;
+        this.categoryMapper = categoryMapper;
+        this.wsRegistry     = wsRegistry;
+        this.wsHandler      = wsHandler;
+    }
+
+    // ── WS 推送：新门店散客订单通知指定技师 ─────────────────────────────────────
+    /**
+     * 推送新散客订单给技师。
+     *
+     * <p>若当前处于事务中，则注册一个事务提交后回调，确保 Flutter 端 fetchFromApi()
+     * 能查到已持久化的数据；若无活跃事务（如 create() 直接调用），则立即推送。
+     */
+    protected void pushNewWalkinOrderToTech(Long technicianId, Long sessionId) {
+        if (technicianId == null) return;
+
+        Runnable push = () -> {
+            Map<String, Object> payload = new java.util.LinkedHashMap<>();
+            payload.put("orderId",   sessionId);
+            payload.put("orderType", 2);  // 门店散客
+            wsRegistry.sendTo(technicianId, WsMessage.newOrder(payload));
+            // 顺带刷新技师首页数据（统计+排班）
+            wsHandler.pushHomeData(technicianId);
+        };
+
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            // 事务提交后再推送，防止 Flutter 端 fetchFromApi() 读到未提交的数据
+            TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override public void afterCommit() { push.run(); }
+                }
+            );
+        } else {
+            push.run();
+        }
     }
 
     // ── 1. Session 列表（分页 + 过滤）────────────────────────────────────────────
@@ -140,6 +186,7 @@ public class MerchantWalkinController {
 
     @Operation(summary = "新增散客接待")
     @PostMapping("/create")
+    @Transactional(rollbackFor = Exception.class)
     public Result<Map<String, Object>> create(
             @RequestParam String  wristbandNo,
             @RequestParam(required = false) String  memberName,
@@ -152,14 +199,7 @@ public class MerchantWalkinController {
 
         Long merchantId = MerchantContext.getMerchantId();
 
-        // 同一商户当天手环编号不重复
-        long conflict = sessionMapper.selectCount(Wrappers.<CbWalkinSession>lambdaQuery()
-                .eq(CbWalkinSession::getMerchantId, merchantId)
-                .eq(CbWalkinSession::getWristbandNo, wristbandNo)
-                .ge(CbWalkinSession::getCheckInTime, LocalDate.now().atStartOfDay(ZoneOffset.UTC).toEpochSecond())
-                .notIn(CbWalkinSession::getStatus, 3, 4));  // 排除已结算/已取消
-        if (conflict > 0) throw new BusinessException("手环编号 " + wristbandNo + " 今日已被使用");
-
+        // 手环号仅作接待标识，不做唯一性限制，由前台 staff 自行管理手环分配
         String sessionNo = "WK" + LocalDate.now().format(DATE_FMT)
                 + String.format("%03d", (int)(Math.random() * 900 + 100));
 
@@ -179,6 +219,9 @@ public class MerchantWalkinController {
         session.setRemark(remark != null ? remark : "");
         session.setCheckInTime(System.currentTimeMillis() / 1000L);
         sessionMapper.insert(session);
+
+        // 实时推送新订单通知给指定技师 → App 语音播报
+        pushNewWalkinOrderToTech(technicianId, session.getId());
 
         return detail(session.getId());
     }
@@ -202,14 +245,7 @@ public class MerchantWalkinController {
 
         Long merchantId = MerchantContext.getMerchantId();
 
-        // 同一商户当天手环编号不重复
-        long conflict = sessionMapper.selectCount(Wrappers.<CbWalkinSession>lambdaQuery()
-                .eq(CbWalkinSession::getMerchantId, merchantId)
-                .eq(CbWalkinSession::getWristbandNo, wristbandNo)
-                .ge(CbWalkinSession::getCheckInTime, LocalDate.now().atStartOfDay(ZoneOffset.UTC).toEpochSecond())
-                .notIn(CbWalkinSession::getStatus, 3, 4));
-        if (conflict > 0) throw new BusinessException("手环编号 " + wristbandNo + " 今日已被使用");
-
+        // 手环号仅作接待标识，不做唯一性限制，由前台 staff 自行管理手环分配
         String sessionNo = "WK" + LocalDate.now().format(DATE_FMT)
                 + String.format("%03d", (int)(Math.random() * 900 + 100));
 
@@ -243,6 +279,9 @@ public class MerchantWalkinController {
             session.setTotalAmount(totalAmount);
             sessionMapper.updateById(session);
         }
+
+        // 实时推送新订单通知给指定技师 → App 语音播报
+        pushNewWalkinOrderToTech(technicianId, session.getId());
 
         return detail(session.getId());
     }
@@ -282,11 +321,16 @@ public class MerchantWalkinController {
             @PathVariable Long id,
             @RequestParam Long    serviceItemId,
             @RequestParam String  serviceName,
-            @RequestParam Integer serviceDuration,
+            @RequestParam(required = false) Integer serviceDuration,
             @RequestParam BigDecimal unitPrice) {
 
         CbWalkinSession session = requireSession(id);
         if (session.getStatus() >= 3) throw new BusinessException("当前接待已结算或已取消，无法新增服务项");
+
+        // 若前端未传或传了 0，自动从服务分类表取真实时长，防止 UI 默认值 60 写入错误数据
+        int resolvedDuration = (serviceDuration != null && serviceDuration > 0)
+                ? serviceDuration
+                : resolveCategoryDuration(serviceItemId);
 
         String orderNo = session.getSessionNo() + "-"
                 + String.format("%02d", listSessionOrders(id).size() + 1);
@@ -301,7 +345,7 @@ public class MerchantWalkinController {
         order.setTechnicianId(session.getTechnicianId());
         order.setServiceItemId(serviceItemId);
         order.setServiceName(serviceName);
-        order.setServiceDuration(serviceDuration);
+        order.setServiceDuration(resolvedDuration);
         order.setAddressId(0L);
         order.setAddressDetail("店内服务");
         order.setAppointTime(System.currentTimeMillis() / 1000L);
@@ -318,6 +362,7 @@ public class MerchantWalkinController {
 
     @Operation(summary = "删除服务项")
     @DeleteMapping("/{id}/items/{orderId}")
+    @Transactional(rollbackFor = Exception.class)
     public Result<Void> removeItem(@PathVariable Long id, @PathVariable Long orderId) {
         CbWalkinSession session = requireSession(id);
         CbOrder order = requireOrder(orderId, id);
@@ -331,6 +376,7 @@ public class MerchantWalkinController {
 
     @Operation(summary = "修改服务项单价")
     @PostMapping("/{id}/items/{orderId}/price")
+    @Transactional(rollbackFor = Exception.class)
     public Result<Void> updateItemPrice(
             @PathVariable Long id, @PathVariable Long orderId,
             @RequestParam BigDecimal unitPrice) {
@@ -348,6 +394,7 @@ public class MerchantWalkinController {
 
     @Operation(summary = "开始服务（设置 start_time，更新状态为服务中）")
     @PostMapping("/{id}/items/{orderId}/start")
+    @Transactional(rollbackFor = Exception.class)
     public Result<Void> startService(@PathVariable Long id, @PathVariable Long orderId) {
         CbWalkinSession session = requireSession(id);
         CbOrder order = requireOrder(orderId, id);
@@ -368,6 +415,7 @@ public class MerchantWalkinController {
 
     @Operation(summary = "结束服务项")
     @PostMapping("/{id}/items/{orderId}/finish")
+    @Transactional(rollbackFor = Exception.class)
     public Result<Void> finishService(@PathVariable Long id, @PathVariable Long orderId) {
         CbWalkinSession session = requireSession(id);
         CbOrder order = requireOrder(orderId, id);
@@ -390,6 +438,7 @@ public class MerchantWalkinController {
 
     @Operation(summary = "前台结算（收款）")
     @PostMapping("/{id}/settle")
+    @Transactional(rollbackFor = Exception.class)
     public Result<Void> settle(
             @PathVariable Long id,
             @RequestParam BigDecimal paidAmount,
@@ -424,6 +473,7 @@ public class MerchantWalkinController {
 
     @Operation(summary = "取消接待")
     @PostMapping("/{id}/cancel")
+    @Transactional(rollbackFor = Exception.class)
     public Result<Void> cancel(
             @PathVariable Long id,
             @RequestParam(required = false) String reason) {
@@ -504,6 +554,7 @@ public class MerchantWalkinController {
         vo.put("totalAmount",      s.getTotalAmount());
         vo.put("paidAmount",       s.getPaidAmount());
         vo.put("checkInTime",      s.getCheckInTime());
+        vo.put("serviceStartTime", s.getServiceStartTime());
         vo.put("checkOutTime",     s.getCheckOutTime());
         vo.put("remark",           s.getRemark());
         vo.put("orderItems",       items);
@@ -562,7 +613,15 @@ public class MerchantWalkinController {
         order.setServiceItemId(svcIdObj == null ? 0L : Long.parseLong(svcIdObj.toString()));
         order.setServiceName(String.valueOf(item.getOrDefault("serviceName", "")));
         Object durObj = item.get("serviceDuration");
-        order.setServiceDuration(durObj == null ? 0 : Integer.parseInt(durObj.toString()));
+        int dur = durObj == null ? 0 : Integer.parseInt(durObj.toString());
+        // 若前端未传或传了 0，从分类表补全真实时长
+        if (dur <= 0) {
+            Object svcIdRaw = item.get("serviceItemId");
+            if (svcIdRaw != null) {
+                dur = resolveCategoryDuration(Long.parseLong(svcIdRaw.toString()));
+            }
+        }
+        order.setServiceDuration(dur);
         order.setAddressId(0L);
         order.setAddressDetail("店内服务");
         order.setAppointTime(System.currentTimeMillis() / 1000L);
@@ -576,6 +635,19 @@ public class MerchantWalkinController {
      * 简单解析服务项 JSON 字符串（避免引入额外 JSON 依赖，用 Spring 内置的方式）
      * 格式：[{"serviceItemId":1,"serviceName":"推拿","serviceDuration":60,"unitPrice":288}]
      */
+    /**
+     * 从 {@code cb_service_category} 查询服务项的标准时长（分钟）。
+     * <p>前端若未传或传了 0，用此方法补全，防止 UI 默认值覆盖真实时长。
+     *
+     * @param serviceItemId 服务分类 ID（即 serviceItemId）
+     * @return 分类设定时长，若分类不存在或时长未设置则返回 0
+     */
+    private int resolveCategoryDuration(Long serviceItemId) {
+        if (serviceItemId == null || serviceItemId <= 0) return 0;
+        CbServiceCategory cat = categoryMapper.selectById(serviceItemId);
+        return (cat != null && cat.getDuration() != null) ? cat.getDuration() : 0;
+    }
+
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> parseItemsJson(String json) {
         try {

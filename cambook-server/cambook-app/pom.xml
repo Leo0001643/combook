@@ -95,6 +95,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 强制 JVM 使用纯 IPv4 栈，确保服务器监听在 0.0.0.0 (IPv4) 而非仅 IPv6 -->
+                    <jvmArguments>-Djava.net.preferIPv4Stack=true</jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -45,5 +45,14 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- 本地通知 -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>新订单时发送提醒通知</string>
+	<!-- 后台音频（保证息屏时提示音可以播放） -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>fetch</string>
+	</array>
 </dict>
 </plist>

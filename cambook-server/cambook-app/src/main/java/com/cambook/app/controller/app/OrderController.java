@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,9 +34,15 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @Operation(summary = "创建订单")
+    /**
+     * 创建预约订单
+     *
+     * <p>接受 JSON 请求体，支持在一次调用中预约多个服务项，每个项目可指定不同的技师。
+     * 后端对服务项价格进行独立查询，保障价格安全。
+     */
+    @Operation(summary = "创建预约订单（支持多项目、多技师）")
     @PostMapping
-    public Result<OrderVO> create(@Valid @ModelAttribute CreateOrderDTO dto) {
+    public Result<OrderVO> create(@Valid @RequestBody CreateOrderDTO dto) {
         return Result.success(orderService.createOrder(dto));
     }
 

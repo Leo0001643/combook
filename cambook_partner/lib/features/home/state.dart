@@ -1,16 +1,20 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import '../../../core/models/models.dart';
+import '../../../core/models/models.dart'; // also exports JsonUtil
 
 // ── 服务项模型（与后端 OrderItemVO 一一对应）─────────────────────────────────
 class ScheduleServiceItem {
   final int id;
   final int? serviceItemId;
+  /// 订单快照名称（单语言，兜底显示）
   final String serviceName;
   final int serviceDuration;
   final double unitPrice;
   final int qty;
   /// 0=待服务 1=服务中 2=已完成
   final int svcStatus;
+  /// 多语言名称映射，key=语言码(zh/en/vi/km/ja/ko)，后端有数据时才非空
+  final Map<String, String>? nameI18n;
 
   const ScheduleServiceItem({
     required this.id,
@@ -20,22 +24,38 @@ class ScheduleServiceItem {
     required this.unitPrice,
     required this.qty,
     required this.svcStatus,
+    this.nameI18n,
   });
 
-  factory ScheduleServiceItem.fromJson(Map<String, dynamic> j) =>
-      ScheduleServiceItem(
-        id:              _int(j['id']),
-        serviceItemId:   j['serviceItemId'] != null ? _int(j['serviceItemId']) : null,
-        serviceName:     _str(j['serviceName']),
-        serviceDuration: _int(j['serviceDuration']),
-        unitPrice:       _double(j['unitPrice']),
-        qty:             _int(j['qty'] ?? 1),
-        svcStatus:       _int(j['svcStatus']),
-      );
+  factory ScheduleServiceItem.fromJson(Map<String, dynamic> j) {
+    Map<String, String>? i18n;
+    final raw = j['nameI18n'];
+    if (raw is Map) {
+      i18n = raw.map((k, v) => MapEntry(k.toString(), v?.toString() ?? ''))
+               .cast<String, String>();
+    }
+    return ScheduleServiceItem(
+      id:              JsonUtil.intFrom(j['id']),
+      serviceItemId:   j['serviceItemId'] != null ? JsonUtil.intFrom(j['serviceItemId']) : null,
+      serviceName:     JsonUtil.strFrom(j['serviceName']),
+      serviceDuration: JsonUtil.intFrom(j['serviceDuration']),
+      unitPrice:       JsonUtil.dblFrom(j['unitPrice']),
+      qty:             JsonUtil.intFrom(j['qty'] ?? 1),
+      svcStatus:       JsonUtil.intFrom(j['svcStatus']),
+      nameI18n:        i18n,
+    );
+  }
 
-  static int    _int(dynamic v)    => v is int ? v : int.tryParse(v.toString()) ?? 0;
-  static double _double(dynamic v) => v is double ? v : double.tryParse(v.toString()) ?? 0.0;
-  static String _str(dynamic v)    => v?.toString() ?? '';
+  /// 根据当前 locale 返回服务项名称。
+  /// 回退顺序：当前语言 → 英文 → 中文 → serviceName 快照。
+  String localizedName(BuildContext context) {
+    if (nameI18n == null || nameI18n!.isEmpty) return serviceName;
+    final lang = Localizations.localeOf(context).languageCode;
+    return nameI18n![lang]
+        ?? nameI18n!['en']
+        ?? nameI18n!['zh']
+        ?? serviceName;
+  }
 }
 
 // ── 今日安排数据模型（与后端 ScheduleItemVO 一一对应）────────────────────────
@@ -55,6 +75,8 @@ class HomeScheduleItem {
   // 兼容旧字段（后端无 items 时 fallback）
   final String serviceName;
   final int serviceDuration;
+  /// 1=在线预约订单  2=门店散客订单（walkin session）
+  final int orderType;
 
   const HomeScheduleItem({
     required this.orderId,
@@ -70,7 +92,10 @@ class HomeScheduleItem {
     this.totalDuration = 0,
     this.serviceName = '',
     this.serviceDuration = 0,
+    this.orderType = 1,
   });
+
+  bool get isWalkin => orderType == 2;
 
   factory HomeScheduleItem.fromJson(Map<String, dynamic> json) {
     final rawItems = json['items'];
@@ -82,19 +107,20 @@ class HomeScheduleItem {
         : [];
 
     return HomeScheduleItem(
-      orderId:         _int(json['orderId']),
-      orderNo:         _str(json['orderNo']),
+      orderId:         JsonUtil.intFrom(json['orderId']),
+      orderNo:         JsonUtil.strFrom(json['orderNo']),
       appointTime:     _fromUnixSecs(json['appointTime']),
-      rawStatus:       _int(json['status']),
-      payAmount:       _double(json['payAmount']),
-      techIncome:      _double(json['techIncome']),
-      memberNickname:  _str(json['memberNickname']),
+      rawStatus:       JsonUtil.intFrom(json['status']),
+      payAmount:       JsonUtil.dblFrom(json['payAmount']),
+      techIncome:      JsonUtil.dblFrom(json['techIncome']),
+      memberNickname:  JsonUtil.strFrom(json['memberNickname']),
       memberAvatar:    json['memberAvatar'] as String?,
       items:           items,
-      itemCount:       _int(json['itemCount'] ?? items.length),
-      totalDuration:   _int(json['totalDuration']),
-      serviceName:     _str(json['serviceName']),
-      serviceDuration: _int(json['serviceDuration']),
+      itemCount:       JsonUtil.intFrom(json['itemCount'] ?? items.length),
+      totalDuration:   JsonUtil.intFrom(json['totalDuration']),
+      serviceName:     JsonUtil.strFrom(json['serviceName']),
+      serviceDuration: JsonUtil.intFrom(json['serviceDuration']),
+      orderType:       JsonUtil.intFrom(json['orderType'] ?? 1),
     );
   }
 
@@ -122,10 +148,6 @@ class HomeScheduleItem {
         6            => OrderStatus.completed,
         _            => OrderStatus.cancelled,
       };
-
-  static int    _int(dynamic v)    { if (v == null) return 0; return v is int ? v : int.tryParse(v.toString()) ?? 0; }
-  static double _double(dynamic v) { if (v == null) return 0.0; return v is double ? v : double.tryParse(v.toString()) ?? 0.0; }
-  static String _str(dynamic v)    => v?.toString() ?? '';
 
   static DateTime _fromUnixSecs(dynamic v) {
     if (v == null) return DateTime.now();

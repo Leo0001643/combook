@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart' hide Response;
 import '../config/app_config.dart';
 import '../services/storage_service.dart';
+import '../services/user_service.dart';
 import '../utils/log_util.dart';
-import '../routes/app_routes.dart';
+import '../utils/toast_util.dart';
+import '../i18n/l10n_ext.dart';
 
 /// 当前应用语言码（每次请求动态取，支持运行时切换）
 String get _currentLang => Get.locale?.languageCode ?? 'zh';
@@ -38,8 +41,8 @@ class HttpUtil {
     _dio.interceptors.addAll([
       _I18nInterceptor(),
       _AuthInterceptor(),
+      _ToastInterceptor(),
       _LogInterceptor(),
-      _ErrorInterceptor(),
     ]);
 
     _initialized = true;
@@ -75,6 +78,32 @@ class HttpUtil {
     T Function(dynamic)? fromJson,
   }) => _call(
     () => _dio.patch(path, data: _encodeBody(data)),
+    fromJson,
+  );
+
+  // ── POST JSON ──────────────────────────────────────────────────
+  /// 发送 JSON 请求体（对应后端 @RequestBody）
+  static Future<T> postJson<T>(String path, {
+    dynamic data,
+    T Function(dynamic)? fromJson,
+  }) => _call(
+    () => _dio.post(path,
+      data: data,
+      options: Options(contentType: 'application/json'),
+    ),
+    fromJson,
+  );
+
+  // ── PUT JSON ───────────────────────────────────────────────────
+  /// 发送 JSON 请求体（对应后端 @RequestBody）
+  static Future<T> putJson<T>(String path, {
+    dynamic data,
+    T Function(dynamic)? fromJson,
+  }) => _call(
+    () => _dio.put(path,
+      data: data,
+      options: Options(contentType: 'application/json'),
+    ),
     fromJson,
   );
 
@@ -156,10 +185,53 @@ class _AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 401) {
-      Get.find<StorageService>().clear();
-      Get.offAllNamed(AppRoutes.login);
+      // 触发"已登出"模态弹窗，由 AuthGuardService 统一处理 UI 与跳转
+      Get.find<UserService>().onSessionExpired();
     }
     handler.next(err);
+  }
+}
+
+// ── 网络错误 Toast 拦截器 ──────────────────────────────────────────────────────
+/// 在 Dio 层拦截网络级错误（超时、断网），自动弹出本地化 Toast，
+/// 业务层无需每处都处理网络异常，只需关注业务逻辑错误。
+class _ToastInterceptor extends Interceptor {
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    // 仅处理网络层错误；业务错误（有 response body）交由业务层处理
+    if (err.response == null) {
+      final msg = _networkMessage(err.type);
+      if (msg != null) {
+        // 通过 WidgetsBinding.instance.addPostFrameCallback 确保在帧渲染后弹出，
+        // 避免在 dispose 过程中调用 Overlay
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ToastUtil.error(msg);
+        });
+      }
+    }
+    handler.next(err);
+  }
+
+  String? _networkMessage(DioExceptionType type) {
+    // 安全获取 l10n，若 context 尚未就绪则降级为英文文案
+    try {
+      final l = gL10n;
+      return switch (type) {
+        DioExceptionType.connectionTimeout ||
+        DioExceptionType.sendTimeout      ||
+        DioExceptionType.receiveTimeout   => l.networkTimeout,
+        DioExceptionType.connectionError  => l.networkUnavailable,
+        _                                 => null,
+      };
+    } catch (_) {
+      return switch (type) {
+        DioExceptionType.connectionTimeout ||
+        DioExceptionType.sendTimeout      ||
+        DioExceptionType.receiveTimeout   => 'Request timed out. Please check your connection.',
+        DioExceptionType.connectionError  => 'Network unavailable. Please check your connection.',
+        _                                 => null,
+      };
+    }
   }
 }
 
@@ -185,13 +257,6 @@ class _LogInterceptor extends Interceptor {
         'body=${err.response?.data}');
     handler.next(err);
   }
-}
-
-// ── 错误拦截器（透传，由 _toApiException 统一转换）────────────────────────────
-class _ErrorInterceptor extends Interceptor {
-  @override
-  void onError(DioException err, ErrorInterceptorHandler handler) =>
-      handler.next(err);
 }
 
 /// 统一业务/网络异常（业务层只需 catch ApiException）

@@ -81,7 +81,7 @@ class _ConvTile extends StatelessWidget {
               ),
               child: conv.type == ConversationType.customer
                   ? Center(child: Text(
-                      conv.name.substring(0, 1).toUpperCase(),
+                      conv.name.isNotEmpty ? conv.name[0].toUpperCase() : '?',
                       style: const TextStyle(
                           color: Colors.white, fontSize: 20,
                           fontWeight: FontWeight.w800),

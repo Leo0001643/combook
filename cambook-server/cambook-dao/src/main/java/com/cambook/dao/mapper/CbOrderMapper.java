@@ -39,6 +39,18 @@ public interface CbOrderMapper extends BaseMapper<CbOrder> {
     /** 今日安排列表（按预约时间升序，关联会员昵称与头像） */
     List<Map<String, Object>> selectTodaySchedule(@Param("techId") Long techId);
 
+    /**
+     * 批量查询门店散客订单的服务项（order_type=2，按 session_id + create_time 升序）
+     *
+     * <p>walkin 场景中，每条 cb_order（order_type=2）就是一个服务项，
+     * 此接口供技师首页"今日安排"批量加载 walkin 服务项，避免 N+1 查询。
+     *
+     * @param sessionIds 需要加载服务项的 session ID 列表
+     * @return CbOrder 列表（仅含 order_type=2 的服务项订单）
+     */
+    List<com.cambook.dao.entity.CbOrder> selectWalkinOrdersBySessionIds(
+            @Param("sessionIds") List<Long> sessionIds);
+
     // ── 管理员看板聚合（SQL 见 CbOrderMapper.xml） ───────────────────────────
 
     /**
@@ -73,6 +85,15 @@ public interface CbOrderMapper extends BaseMapper<CbOrder> {
      * 技师绩效排行 Top N：返回 [{technicianId, orderCount, revenue}]
      */
     List<Map<String, Object>> techOrderRank(@Param("limit") int limit);
+
+    /**
+     * 技师端订单列表（按 status 过滤，可选）。
+     * <p>返回该技师被分配的在线预约订单，按 create_time 倒序。
+     * @param techId   技师 ID
+     * @param statuses 状态白名单（null 则不过滤）
+     */
+    List<Map<String, Object>> listTechOrders(@Param("techId") Long techId,
+                                              @Param("statuses") List<Integer> statuses);
 
     /**
      * 技师待执行预约订单数（已支付且尚未完成/取消的订单）。

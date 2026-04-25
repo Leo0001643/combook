@@ -6,7 +6,7 @@
     <property name="PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%F:%L] - %msg%n"/>
 
-    <!-- 控制台 -->
+    <!-- ─── 控制台 ────────────────────────────────────────────────────── -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>UTF-8</charset>
@@ -14,7 +14,7 @@
         </encoder>
     </appender>
 
-    <!-- 全量滚动文件（按天切割，保留 30 天） -->
+    <!-- ─── 全量滚动文件（按天切割，保留 30 天） ──────────────────────── -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/${APP_NAME}.log</file>
         <encoder>
@@ -35,11 +35,33 @@
         <appender-ref ref="FILE"/>
     </appender>
 
+    <!-- ─── 定时任务专用滚动文件（按天切割，保留 30 天） ─────────────── -->
+    <appender name="SCHEDULE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/${APP_NAME}-schedule.log</file>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/archive/${APP_NAME}-schedule-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 异步包装，避免定时任务日志阻塞调度线程 -->
+    <appender name="ASYNC_SCHEDULE_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="SCHEDULE_FILE"/>
+    </appender>
+
     <!-- ─── 屏蔽框架噪音（所有 profile 通用） ────────────────────────── -->
     <logger name="com.baomidou"                                    level="WARN"/>
     <logger name="org.springdoc"                                   level="WARN"/>
     <logger name="com.zaxxer.hikari"                               level="WARN"/>
     <logger name="org.mybatis"                                     level="WARN"/>
+    <logger name="org.apache.ibatis"                               level="WARN"/>
     <logger name="org.redisson"                                    level="WARN"/>
     <logger name="io.netty"                                        level="WARN"/>
     <logger name="io.lettuce"                                      level="WARN"/>
@@ -61,6 +83,13 @@
 
     <!-- ─── 业务代码保留 INFO（dev 下可按需调 DEBUG） ────────────────── -->
     <logger name="com.cambook" level="DEBUG"/>
+
+    <!-- ─── 定时任务专用 logger ─────────────────────────────────────────
+         additivity="false"：定时任务日志只写入 schedule 文件，不进主日志也不打控制台。
+    ── -->
+    <logger name="SCHEDULE" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC_SCHEDULE_FILE"/>
+    </logger>
 
     <springProfile name="dev">
         <root level="INFO">

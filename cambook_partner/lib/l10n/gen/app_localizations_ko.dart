@@ -203,6 +203,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tabAccepted => '수락됨';
 
   @override
+  String get statusReception => '접수 중';
+
+  @override
   String get tabInService => '서비스 중';
 
   @override
@@ -962,4 +965,55 @@ class AppLocalizationsKo extends AppLocalizations {
   String estimatedIncome(String amount) {
     return '예상 $amount';
   }
+
+  @override
+  String get sessionExpiredTitle => '세션 만료';
+
+  @override
+  String get sessionExpiredMessage => '로그아웃되었습니다. 계속하려면 다시 로그인해주세요.';
+
+  @override
+  String get goToLogin => '로그인으로 이동';
+
+  @override
+  String get networkTimeout => '요청 시간이 초과되었습니다. 연결을 확인해주세요.';
+
+  @override
+  String get networkUnavailable => '네트워크를 사용할 수 없습니다. 연결을 확인해주세요.';
+
+  @override
+  String get networkError => '요청이 실패했습니다. 나중에 다시 시도해주세요.';
+
+  @override
+  String get orderTypeOnline => '온라인 예약';
+
+  @override
+  String get orderTypeWalkin => '방문 고객';
+
+  @override
+  String get walkinGuest => '일반 고객';
+
+  @override
+  String get sessionNo => '세션';
+
+  @override
+  String get walkinOrderTip => '매장 주문은 프런트 데스크에서 관리합니다.';
+
+  @override
+  String get notificationSound => '알림음';
+
+  @override
+  String get vibration => '진동';
+
+  @override
+  String get rating => '평점';
+
+  @override
+  String get myOrders => '내 주문';
+
+  @override
+  String get reviews => '리뷰';
+
+  @override
+  String get langHint => '선호하는 표시 언어를 선택하세요';
 }

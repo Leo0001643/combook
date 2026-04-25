@@ -15,9 +15,11 @@ import {
   BarChartOutlined, MinusCircleOutlined, GlobalOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '../../store/authStore'
+import { useLangStore, LANG_OPTIONS } from '../../store/langStore'
 import type { PermissionVO } from '../../api/api'
 import { merchantPortalApi, authApi } from '../../api/api'
 import AnnouncementBell from '../common/AnnouncementBell'
+import ErrorBoundary from '../common/ErrorBoundary'
 
 const { Sider, Header, Content } = Layout
 const { Text } = Typography
@@ -125,6 +127,7 @@ export default function MainLayout() {
   const navigate    = useNavigate()
   const location    = useLocation()
   const { user, merchant, menus, isMerchant, setLogout, setMenus } = useAuthStore()
+  const { lang, setLang } = useLangStore()
   const [collapsed, setCollapsed] = useState(false)
 
   // ── 实时时钟（每秒刷新）────────────────────────────────────────────────────
@@ -313,7 +316,9 @@ export default function MainLayout() {
       <Layout style={{
         marginLeft: collapsed ? 80 : 220,
         transition: 'margin-left 0.2s',
-        minHeight: '100vh',
+        height: '100vh',
+        overflowY: 'auto',
+        overflowX: 'hidden',
         display: 'flex',
         flexDirection: 'column',
       }}>
@@ -324,6 +329,7 @@ export default function MainLayout() {
           padding: '0 20px 0 12px',
           display: 'flex', alignItems: 'center',
           overflow: 'hidden',
+          flexShrink: 0,
           background: isMerchant
             ? 'linear-gradient(135deg, #0f1117 0%, #131929 50%, #1a1f35 100%)'
             : 'linear-gradient(135deg, #0f1117 0%, #131929 100%)',
@@ -439,6 +445,35 @@ export default function MainLayout() {
               </div>
             )}
 
+            {/* 语言切换 */}
+            <Dropdown
+              menu={{
+                items: LANG_OPTIONS.map(opt => ({
+                  key: opt.value,
+                  label: (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                      <span style={{ fontSize: 15 }}>{opt.flag}</span>
+                      <span style={{ fontSize: 12 }}>{opt.label}</span>
+                    </span>
+                  ),
+                })),
+                selectedKeys: [lang],
+                onClick: ({ key }) => setLang(key as typeof lang),
+              }}
+              placement="bottomRight"
+              arrow
+            >
+              <Button
+                type="text"
+                icon={<GlobalOutlined style={{ fontSize: 16, color: 'rgba(255,255,255,0.65)' }} />}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRadius: 8 }}
+              >
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>
+                  {LANG_OPTIONS.find(o => o.value === lang)?.flag ?? '🌐'}
+                </span>
+              </Button>
+            </Dropdown>
+
             {/* 铃铛 */}
             {isMerchant ? (
               <AnnouncementBell />
@@ -498,7 +533,9 @@ export default function MainLayout() {
           padding: '24px',
           background: '#f8fafc',
         }}>
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </Content>
       </Layout>
     </Layout>

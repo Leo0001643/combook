@@ -90,6 +90,7 @@
   "ordersTitle": "Quản lý đơn",
   "tabPending": "Chờ nhận",
   "tabAccepted": "Đã nhận",
+  "statusReception": "Đang tiếp đón",
   "tabInService": "Đang phục vụ",
   "tabCompleted": "Hoàn thành",
   "tabCancelled": "Đã hủy",
@@ -381,5 +382,25 @@
   "estimatedIncome": "Dự tính {amount}",
   "@estimatedIncome": {
     "placeholders": { "amount": { "type": "String" } }
-  }
+  },
+
+  "sessionExpiredTitle": "Phiên Đăng Nhập Hết Hạn",
+  "sessionExpiredMessage": "Bạn đã bị đăng xuất. Vui lòng đăng nhập lại để tiếp tục.",
+  "goToLogin": "Đến Đăng Nhập",
+
+  "networkTimeout": "Yêu cầu hết thời gian. Vui lòng kiểm tra kết nối.",
+  "networkUnavailable": "Mạng không khả dụng. Vui lòng kiểm tra kết nối.",
+  "networkError": "Yêu cầu thất bại. Vui lòng thử lại sau.",
+
+  "orderTypeOnline": "Đặt lịch",
+  "orderTypeWalkin": "Khách vãng lai",
+  "walkinGuest": "Khách vãng lai",
+  "sessionNo": "Phiên",
+  "walkinOrderTip": "Đơn tại cửa hàng được quản lý bởi lễ tân.",
+  "notificationSound": "Âm thanh thông báo",
+  "vibration": "Rung",
+  "rating": "Đánh giá",
+  "myOrders": "Đơn hàng",
+  "reviews": "Đánh giá",
+  "langHint": "Chọn ngôn ngữ hiển thị ưa thích"
 }

@@ -39,13 +39,16 @@ public class CategoryController {
     }
 
     @RequirePermission("category:add")
-    @Operation(summary = "新增分类")
+    @Operation(summary = "新增分类（支持 6 语言名称）")
     @PostMapping
     public Result<Void> add(@RequestParam(defaultValue = "0") Long parentId,
-                            @RequestParam String nameZh,
-                            @RequestParam(required = false) String nameEn,
-                            @RequestParam(required = false) String nameKm,
-                            @RequestParam(required = false) String icon,
+                            @RequestParam               String  nameZh,
+                            @RequestParam(required = false) String  nameEn,
+                            @RequestParam(required = false) String  nameVi,
+                            @RequestParam(required = false) String  nameKm,
+                            @RequestParam(required = false) String  nameJa,
+                            @RequestParam(required = false) String  nameKo,
+                            @RequestParam(required = false) String  icon,
                             @RequestParam(required = false) java.math.BigDecimal price,
                             @RequestParam(required = false) Integer duration,
                             @RequestParam(defaultValue = "0") Integer isSpecial,
@@ -54,7 +57,10 @@ public class CategoryController {
         cat.setParentId(parentId);
         cat.setNameZh(nameZh);
         cat.setNameEn(nameEn);
+        cat.setNameVi(nameVi);
         cat.setNameKm(nameKm);
+        cat.setNameJa(nameJa);
+        cat.setNameKo(nameKo);
         cat.setIcon(icon);
         cat.setPrice(price);
         cat.setDuration(duration);
@@ -66,13 +72,16 @@ public class CategoryController {
     }
 
     @RequirePermission("category:edit")
-    @Operation(summary = "修改分类")
+    @Operation(summary = "修改分类（支持 6 语言名称）")
     @PutMapping
     public Result<Void> edit(@RequestParam Long id,
-                             @RequestParam String nameZh,
-                             @RequestParam(required = false) String nameEn,
-                             @RequestParam(required = false) String nameKm,
-                             @RequestParam(required = false) String icon,
+                             @RequestParam               String  nameZh,
+                             @RequestParam(required = false) String  nameEn,
+                             @RequestParam(required = false) String  nameVi,
+                             @RequestParam(required = false) String  nameKm,
+                             @RequestParam(required = false) String  nameJa,
+                             @RequestParam(required = false) String  nameKo,
+                             @RequestParam(required = false) String  icon,
                              @RequestParam(required = false) java.math.BigDecimal price,
                              @RequestParam(required = false) Integer duration,
                              @RequestParam(required = false) Integer isSpecial,
@@ -82,7 +91,10 @@ public class CategoryController {
         if (cat == null) return Result.fail(400, "分类不存在");
         cat.setNameZh(nameZh);
         cat.setNameEn(nameEn);
+        cat.setNameVi(nameVi);
         cat.setNameKm(nameKm);
+        cat.setNameJa(nameJa);
+        cat.setNameKo(nameKo);
         cat.setIcon(icon);
         if (price     != null) cat.setPrice(price);
         if (duration  != null) cat.setDuration(duration);

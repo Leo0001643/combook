@@ -53,16 +53,16 @@ const PAY_METHODS_FB: Record<number, { label: string; color: string; icon: strin
 }
 
 const ORDER_STATUS_FB: Record<number, { text: string; color: string; badge: 'default'|'processing'|'success'|'error'|'warning' }> = {
-  0: { text: '待支付', color: '#f59e0b', badge: 'warning' },
-  1: { text: '待接单', color: '#3b82f6', badge: 'processing' },
-  2: { text: '已接单', color: '#8b5cf6', badge: 'processing' },
-  3: { text: '前往中', color: '#f97316', badge: 'processing' },
-  4: { text: '已到达', color: '#06b6d4', badge: 'processing' },
-  5: { text: '服务中', color: '#f97316', badge: 'processing' },
-  6: { text: '已完成', color: '#10b981', badge: 'success' },
-  7: { text: '已取消', color: '#94a3b8', badge: 'default' },
-  8: { text: '退款中', color: '#ec4899', badge: 'warning' },
-  9: { text: '已退款', color: '#6b7280', badge: 'default' },
+  0: { text: '待支付',   color: '#f59e0b', badge: 'warning' },
+  1: { text: '预约订单', color: '#3b82f6', badge: 'processing' },
+  2: { text: '已接单',   color: '#8b5cf6', badge: 'processing' },
+  3: { text: '前往中',   color: '#f97316', badge: 'processing' },
+  4: { text: '已到达',   color: '#06b6d4', badge: 'processing' },
+  5: { text: '服务中',   color: '#f97316', badge: 'processing' },
+  6: { text: '已完成',   color: '#10b981', badge: 'success' },
+  7: { text: '已取消',   color: '#94a3b8', badge: 'default' },
+  8: { text: '退款中',   color: '#ec4899', badge: 'warning' },
+  9: { text: '已退款',   color: '#6b7280', badge: 'default' },
 }
 
 const SVC_STATUS_CFG_FB: Record<number, { label: string; badge: string; badgeBg: string; icon: string }> = {
@@ -187,14 +187,90 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
   )
 }
 
+// ── 整体服务计时单元格（实时倒计时，1秒刷新）────────────────────────────────
+function ServiceTimerCell({ totalMinutes, startEpochSec: rawStart, inService }: {
+  totalMinutes: number
+  startEpochSec: number | null
+  inService: boolean
+}) {
+  // 兼容秒和毫秒时间戳：>1e12 视为毫秒，自动转换为秒
+  const startEpochSec = rawStart != null
+    ? (rawStart > 1e12 ? Math.floor(rawStart / 1000) : rawStart)
+    : null
+
+  const [nowSec, setNowSec] = React.useState(() => Math.floor(Date.now() / 1000))
+  React.useEffect(() => {
+    if (!inService) return
+    const id = setInterval(() => setNowSec(Math.floor(Date.now() / 1000)), 1000)
+    return () => clearInterval(id)
+  }, [inService])
+
+  const fmt = (s: number) => {
+    const h = Math.floor(s / 3600)
+    const m = Math.floor((s % 3600) / 60)
+    const sc = s % 60
+    return h > 0
+      ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`
+      : `${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`
+  }
+
+  if (!inService || totalMinutes <= 0) {
+    return (
+      <div style={{ textAlign:'center', color:'#d1d5db', fontSize:12 }}>
+        {totalMinutes > 0 ? <span style={{ color:'#9ca3af' }}>{totalMinutes}min</span> : '—'}
+      </div>
+    )
+  }
+
+  const totalSecs = totalMinutes * 60
+  const elapsed   = startEpochSec ? Math.max(0, nowSec - startEpochSec) : 0
+  const remaining = Math.max(0, totalSecs - elapsed)
+  const pct       = Math.min(100, (elapsed / totalSecs) * 100)
+  const barColor  = pct >= 100 ? '#ef4444' : pct >= 85 ? '#f97316' : '#6366f1'
+  const remColor  = remaining === 0 ? '#ef4444' : remaining < 600 ? '#f97316' : '#10b981'
+
+  return (
+    <div style={{ minWidth:138, padding:'2px 0' }}>
+      <style>{`
+        @keyframes ol-svc-dot {
+          0%,100% { opacity:1; box-shadow:0 0 0 3px ${barColor}30 }
+          50%      { opacity:.6; box-shadow:0 0 0 5px ${barColor}18 }
+        }
+      `}</style>
+      <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:5 }}>
+        <div style={{ width:7, height:7, borderRadius:'50%', background:barColor, animation:'ol-svc-dot 1.4s ease-in-out infinite' }} />
+        <span style={{ fontSize:10, color:barColor, fontWeight:700, letterSpacing:.4 }}>服务中</span>
+        <span style={{ fontSize:9, color:'#9ca3af', marginLeft:'auto' }}>{totalMinutes}min</span>
+      </div>
+      <div style={{ height:5, borderRadius:5, background:'#f1f5f9', overflow:'hidden', marginBottom:5 }}>
+        <div style={{
+          height:'100%', borderRadius:5, width:`${Math.min(100,pct)}%`,
+          background:`linear-gradient(90deg,${barColor},${barColor}bb)`,
+          boxShadow:`0 0 6px ${barColor}55`, transition:'width 1s linear',
+        }} />
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:4 }}>
+        <div style={{ background:'#f8fafc', borderRadius:6, padding:'4px 6px', textAlign:'center' }}>
+          <div style={{ fontSize:9, color:'#9ca3af', marginBottom:1 }}>已服务</div>
+          <div style={{ fontSize:12, fontWeight:900, color:'#374151', fontFamily:'monospace', fontVariantNumeric:'tabular-nums' }}>{fmt(elapsed)}</div>
+        </div>
+        <div style={{ background: remaining<600 ? `${remColor}12` : '#f8fafc', borderRadius:6, padding:'4px 6px', textAlign:'center', border: remaining<600 ? `1px solid ${remColor}40` : '1px solid transparent' }}>
+          <div style={{ fontSize:9, color:'#9ca3af', marginBottom:1 }}>剩余</div>
+          <div style={{ fontSize:12, fontWeight:900, color:remColor, fontFamily:'monospace', fontVariantNumeric:'tabular-nums' }}>{fmt(remaining)}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ════════════════════════════════════════════════════════════════════════════════
 export default function OrderListPage() {
   const { ref, height: tableBodyH } = useTableBodyHeight(46)
-  const { orderList, orderCancel, orderDelete, isMerchant, enabledCurrencies } = usePortalScope()
+  const { orderList, orderCancel, orderDelete, isMerchant, enabledCurrencies, orderCreate, categoryList, technicianList } = usePortalScope()
 
   // ── 字典数据 ─────────────────────────────────────────────────────────────
   const { items: dictPayItems }    = useDict('walkin_pay_type')
-  const { items: statusItems }     = useDict('order_status')
+  const { items: statusItems, langLabel: statusLangLabel } = useDict('order_status')
   const { items: svcItems }        = useDict('walkin_svc_status')
 
   const PAY_METHODS: Record<number, { label: string; color: string; icon: string; needCurrency?: boolean }> =
@@ -214,7 +290,7 @@ export default function OrderListPage() {
     statusItems.length > 0
       ? Object.fromEntries(statusItems.map(i => {
           const { color, badge } = parseRemark(i.remark)
-          return [Number(i.dictValue), { text: i.labelZh, color: color ?? '#94a3b8', badge: (badge ?? 'default') as any }]
+          return [Number(i.dictValue), { text: statusLangLabel(i.dictValue), color: color ?? '#94a3b8', badge: (badge ?? 'default') as any }]
         }))
       : ORDER_STATUS_FB
 
@@ -258,6 +334,17 @@ export default function OrderListPage() {
   const [settleLoading, setSettleLoading] = useState(false)
   const [payItems, setPayItems] = useState<{ method: number; currency: string; amount: number }[]>([])
 
+  // 新增订单弹窗
+  const [createOpen,    setCreateOpen]    = useState(false)
+  const [createForm]                      = Form.useForm()
+  const [createLoading, setCreateLoading] = useState(false)
+  const [createServiceMode, setCreateServiceMode] = useState<1 | 2>(2)
+  const [createItems, setCreateItems] = useState<{ serviceItemId?: number; serviceName: string; serviceDuration: number; unitPrice: number; qty: number }[]>([
+    { serviceName: '', serviceDuration: 0, unitPrice: 0, qty: 1 }
+  ])
+  const [categoryOpts, setCategoryOpts] = useState<{ value: number; label: string; duration: number; price: number }[]>([])
+  const [techOpts,     setTechOpts]     = useState<{ value: number; label: string }[]>([])
+
   // ── 初始化 ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!isMerchant) {
@@ -286,6 +373,7 @@ export default function OrderListPage() {
       keyword: kw || undefined,
       status: st,
       serviceMode: sm,
+      orderType: 1,   // 只查在线预约订单（门店散客在 WalkinSessionPage）
       startDate: dr?.[0], endDate: dr?.[1],
       ...(mid != null ? { merchantId: mid } : {}),
     })
@@ -361,6 +449,61 @@ export default function OrderListPage() {
     setKeyword(''); setStatusFilter(undefined); setServiceModeFilter(undefined)
     setDateRange(null); setMerchantId(undefined); setPage(1)
     fetchList(1, '', undefined, undefined, null, undefined)
+  }
+
+  // ── 新增订单 ──────────────────────────────────────────────────────────
+  const openCreate = async () => {
+    setCreateItems([{ serviceName: '', serviceDuration: 0, unitPrice: 0, qty: 1 }])
+    setCreateServiceMode(2)
+    createForm.resetFields()
+    setCreateOpen(true)
+    // 加载服务分类和技师选项
+    try {
+      const [catRes, techRes] = await Promise.all([
+        categoryList({ status: 1, size: 200 }),
+        technicianList({ status: 1, size: 200 }),
+      ])
+      const cats = catRes.data?.data?.list ?? catRes.data?.data ?? []
+      setCategoryOpts(cats.filter((c: any) => c.parentId > 0).map((c: any) => ({
+        value: c.id,
+        label: c.nameZh || c.nameEn || `ID:${c.id}`,
+        duration: c.duration ?? 0,
+        price: Number(c.price ?? 0),
+      })))
+      const techs = techRes.data?.data?.list ?? techRes.data?.data ?? []
+      setTechOpts(techs.map((t: any) => ({ value: t.id, label: t.nickname || t.realName || t.techNo })))
+    } catch { /* 静默失败，不影响打开弹窗 */ }
+  }
+
+  const handleCreateSubmit = async () => {
+    try {
+      const vals = await createForm.validateFields()
+      setCreateLoading(true)
+      const payload = {
+        serviceMode:     createServiceMode,
+        memberNickname:  vals.memberNickname || undefined,
+        memberMobile:    vals.memberMobile   || undefined,
+        technicianId:    vals.technicianId   || undefined,
+        addressDetail:   vals.addressDetail  || undefined,
+        appointTime:     vals.appointTime ? Math.floor(vals.appointTime.valueOf() / 1000) : Math.floor(Date.now() / 1000),
+        remark:          vals.remark         || undefined,
+        items:           createItems.filter(it => it.serviceName).map(it => ({
+          serviceItemId:   it.serviceItemId ?? undefined,
+          serviceName:     it.serviceName,
+          serviceDuration: it.serviceDuration || 0,
+          unitPrice:       it.unitPrice || 0,
+          qty:             it.qty || 1,
+        })),
+        _merchantId: merchantId,
+      }
+      await orderCreate(payload)
+      message.success('订单创建成功！')
+      setCreateOpen(false)
+      fetchList()
+    } catch (e: any) {
+      if (e?.errorFields) return // form validation
+      message.error('创建失败，请重试')
+    } finally { setCreateLoading(false) }
   }
 
   // ── 统计 ─────────────────────────────────────────────────────────────
@@ -490,6 +633,24 @@ export default function OrderListPage() {
               <ServiceProgressBar key={it.id ?? idx} item={it} colorIdx={idx} compact svcStatusMap={SVC_STATUS_CFG} />
             ))}
           </div>
+        )
+      },
+    },
+    // ⑥ᵇ 服务计时（实时）
+    {
+      title: col(<ClockCircleOutlined style={{ color:'#f97316' }} />, '服务计时', 'center'),
+      key: 'timer', width: 160, align: 'center',
+      render: (_, r) => {
+        const items: any[] = r.orderItems ?? []
+        const totalMinutes = items.length > 0
+          ? items.reduce((s: number, it: any) => s + (it.serviceDuration ?? it.duration ?? 0), 0)
+          : (r.serviceDuration ?? 0)
+        return (
+          <ServiceTimerCell
+            totalMinutes={totalMinutes}
+            startEpochSec={r.startTime ?? null}
+            inService={r.status === 5}
+          />
         )
       },
     },
@@ -664,6 +825,11 @@ export default function OrderListPage() {
             style={{ borderRadius:8, border:'none', background:'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow:'0 2px 8px rgba(99,102,241,.35)' }}
             onClick={() => { setPage(1); fetchList(1) }}
           >搜索</Button>
+          <Button
+            type="primary" icon={<PlusOutlined />}
+            style={{ borderRadius:8, border:'none', background:'linear-gradient(135deg,#10b981,#34d399)', boxShadow:'0 2px 8px rgba(16,185,129,.35)' }}
+            onClick={openCreate}
+          >新增订单</Button>
         </div>
       </div>
 
@@ -1221,6 +1387,144 @@ export default function OrderListPage() {
             </>
           )
         })()}
+      </Modal>
+
+      {/* ── 新增在线订单弹窗 ────────────────────────────────────────────── */}
+      <Modal
+        open={createOpen}
+        onCancel={() => setCreateOpen(false)}
+        title={
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{ width:36, height:36, borderRadius:10, background:'linear-gradient(135deg,#10b981,#34d399)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 3px 10px rgba(16,185,129,.35)' }}>
+              <PlusOutlined style={{ color:'#fff', fontSize:16 }} />
+            </div>
+            <div>
+              <div style={{ fontWeight:800, fontSize:15, color:'#111827' }}>新增在线订单</div>
+              <div style={{ fontSize:11, color:'#9ca3af', fontWeight:400 }}>创建预约订单并分配给客户</div>
+            </div>
+          </div>
+        }
+        footer={
+          <div style={{ display:'flex', justifyContent:'flex-end', gap:10 }}>
+            <Button onClick={() => setCreateOpen(false)}>取消</Button>
+            <Button
+              type="primary" loading={createLoading}
+              style={{ background:'linear-gradient(135deg,#10b981,#34d399)', border:'none', borderRadius:8 }}
+              onClick={handleCreateSubmit}
+            >确认创建</Button>
+          </div>
+        }
+        width={600}
+        bodyStyle={{ maxHeight: '70vh', overflowY: 'auto', padding: '20px 24px' }}
+      >
+        {/* 服务方式 */}
+        <div style={{ marginBottom:18 }}>
+          <div style={{ fontSize:13, fontWeight:700, color:'#374151', marginBottom:8 }}>服务方式</div>
+          <div style={{ display:'flex', gap:10 }}>
+            {[{ val: 2, icon: '🏪', label: '到店服务', color: '#3b82f6' }, { val: 1, icon: '🚗', label: '上门服务', color: '#f97316' }].map(opt => (
+              <div
+                key={opt.val}
+                onClick={() => setCreateServiceMode(opt.val as 1|2)}
+                style={{
+                  flex:1, padding:'12px 16px', borderRadius:12, cursor:'pointer', transition:'all .18s',
+                  border: createServiceMode===opt.val ? `2px solid ${opt.color}` : '2px solid #e5e7eb',
+                  background: createServiceMode===opt.val ? `${opt.color}10` : '#fafafa',
+                  textAlign:'center',
+                }}
+              >
+                <div style={{ fontSize:22, marginBottom:4 }}>{opt.icon}</div>
+                <div style={{ fontWeight:700, fontSize:14, color: createServiceMode===opt.val ? opt.color : '#6b7280' }}>{opt.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Form form={createForm} layout="vertical" size="middle">
+          {/* 客户信息 */}
+          <div style={{ background:'#f8fafc', borderRadius:12, padding:'14px 16px', marginBottom:14 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:'#6b7280', marginBottom:10 }}>客户信息</div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+              <Form.Item name="memberNickname" label="客户姓名" style={{ marginBottom:0 }}>
+                <Input placeholder="客户姓名（选填）" style={{ borderRadius:8 }} />
+              </Form.Item>
+              <Form.Item name="memberMobile" label="手机号" style={{ marginBottom:0 }}>
+                <Input placeholder="手机号（选填）" style={{ borderRadius:8 }} />
+              </Form.Item>
+            </div>
+          </div>
+
+          {/* 上门地址（仅上门服务） */}
+          {createServiceMode === 1 && (
+            <Form.Item name="addressDetail" label="上门地址" style={{ marginBottom:14 }}>
+              <Input placeholder="详细地址" style={{ borderRadius:8 }} />
+            </Form.Item>
+          )}
+
+          {/* 技师 + 预约时间 */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
+            <Form.Item name="technicianId" label="指定技师" style={{ marginBottom:0 }}>
+              <Select placeholder="选择技师（选填）" allowClear showSearch
+                filterOption={(input, opt) => String(opt?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                options={techOpts} style={{ borderRadius:8 }} />
+            </Form.Item>
+            <Form.Item name="appointTime" label="预约时间"
+              rules={[{ required: true, message: '请选择预约时间' }]} style={{ marginBottom:0 }}>
+              {/* Use dayjs-based date picker */}
+              <Input type="datetime-local" style={{ borderRadius:8 }}
+                onChange={e => createForm.setFieldValue('appointTime', e.target.value ? dayjs(e.target.value) : null)} />
+            </Form.Item>
+          </div>
+
+          {/* 服务项目 */}
+          <div style={{ background:'#f8fafc', borderRadius:12, padding:'14px 16px', marginBottom:14 }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'#6b7280' }}>服务项目</div>
+              <Button size="small" type="dashed" icon={<PlusOutlined />} style={{ borderRadius:6 }}
+                onClick={() => setCreateItems(prev => [...prev, { serviceName:'', serviceDuration:0, unitPrice:0, qty:1 }])}>
+                添加项目
+              </Button>
+            </div>
+            {createItems.map((item, idx) => (
+              <div key={idx} style={{ display:'grid', gridTemplateColumns:'2fr 80px 90px 36px', gap:6, alignItems:'center', marginBottom:6 }}>
+                <Select
+                  showSearch placeholder="选择服务" allowClear size="small"
+                  filterOption={(input, opt) => String(opt?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                  options={categoryOpts}
+                  value={item.serviceItemId}
+                  onChange={(v, opt: any) => {
+                    const arr = [...createItems]
+                    arr[idx] = { ...arr[idx], serviceItemId: v, serviceName: opt?.label ?? '', serviceDuration: opt?.duration ?? 0, unitPrice: opt?.price ?? 0 }
+                    setCreateItems(arr)
+                  }}
+                  style={{ borderRadius:6 }}
+                  dropdownRender={menu => <div>{menu}</div>}
+                />
+                <InputNumber
+                  size="small" min={0} placeholder="时长(min)" style={{ width:'100%', borderRadius:6 }}
+                  value={item.serviceDuration || undefined}
+                  onChange={v => { const arr = [...createItems]; arr[idx].serviceDuration = v ?? 0; setCreateItems(arr) }}
+                />
+                <InputNumber
+                  size="small" min={0} step={0.01} precision={2} placeholder="价格" style={{ width:'100%', borderRadius:6 }}
+                  addonBefore="$" value={item.unitPrice || undefined}
+                  onChange={v => { const arr = [...createItems]; arr[idx].unitPrice = v ?? 0; setCreateItems(arr) }}
+                />
+                <Button size="small" type="text" danger disabled={createItems.length <= 1}
+                  icon={<DeleteOutlined />}
+                  onClick={() => setCreateItems(prev => prev.filter((_, i) => i !== idx))}
+                />
+              </div>
+            ))}
+            <div style={{ textAlign:'right', fontSize:13, fontWeight:700, color:'#10b981', marginTop:6 }}>
+              合计：${createItems.reduce((s, it) => s + (it.unitPrice * (it.qty || 1)), 0).toFixed(2)}
+            </div>
+          </div>
+
+          {/* 备注 */}
+          <Form.Item name="remark" label="备注" style={{ marginBottom:0 }}>
+            <TextArea rows={2} placeholder="可选备注" style={{ borderRadius:8 }} />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   )

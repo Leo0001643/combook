@@ -1,6 +1,7 @@
 package com.cambook.app.service.admin;
 
 import com.cambook.app.domain.dto.OrderQueryDTO;
+import com.cambook.app.domain.dto.OrderCreateRequest;
 import com.cambook.app.domain.vo.OrderVO;
 import com.cambook.common.result.PageResult;
 
@@ -23,4 +24,7 @@ public interface IAdminOrderService {
 
     /** 删除订单（仅允许已取消/已完成） */
     void delete(Long id);
+
+    /** 后台/商户端新增在线订单（到店/上门） */
+    OrderVO create(OrderCreateRequest req);
 }

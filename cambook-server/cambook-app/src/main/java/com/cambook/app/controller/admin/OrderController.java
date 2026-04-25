@@ -1,6 +1,7 @@
 package com.cambook.app.controller.admin;
 
 import com.cambook.common.annotation.RequirePermission;
+import com.cambook.app.domain.dto.OrderCreateRequest;
 import com.cambook.app.domain.dto.OrderQueryDTO;
 import com.cambook.app.domain.vo.OrderVO;
 import com.cambook.app.service.admin.IAdminOrderService;
@@ -9,10 +10,7 @@ import com.cambook.common.result.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Admin 端 - 订单管理
@@ -42,5 +40,14 @@ public class OrderController {
     @GetMapping("/{id}")
     public Result<OrderVO> detail(@PathVariable Long id) {
         return Result.success(orderService.getDetail(id));
+    }
+
+    @RequirePermission("order:add")
+    @Operation(summary = "新增在线订单（到店/上门）")
+    @PostMapping
+    public Result<OrderVO> create(@Valid @RequestBody OrderCreateRequest req,
+                                  @RequestParam Long merchantId) {
+        req.setMerchantId(merchantId);
+        return Result.success(orderService.create(req));
     }
 }

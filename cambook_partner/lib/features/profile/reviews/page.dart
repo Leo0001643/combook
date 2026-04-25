@@ -101,7 +101,8 @@ class _ReviewCard extends StatelessWidget {
         CircleAvatar(
           radius: 18,
           backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-          child: Text(review.customerName.substring(0,1).toUpperCase(),
+          child: Text(
+              review.customerName.isNotEmpty ? review.customerName[0].toUpperCase() : '?',
               style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 14)),
         ),
         const SizedBox(width: 10),

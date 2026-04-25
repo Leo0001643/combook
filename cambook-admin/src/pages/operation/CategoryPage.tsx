@@ -1,14 +1,15 @@
 import { useState, useEffect, useMemo } from 'react'
+import { fmtTime } from '../../utils/time'
 import {
   Table, Button, Space, Tag, Typography, message,
-  Modal, Form, Input, InputNumber, Select, Badge, Row, Col, TreeSelect, Popconfirm, Tooltip,
+  Modal, Form, Input, InputNumber, Select, Badge, Row, Col, TreeSelect, Popconfirm, Tooltip, Tabs,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
   AppstoreOutlined, PlusOutlined, EditOutlined, DeleteOutlined,
   CheckCircleOutlined, StopOutlined, ReloadOutlined, SearchOutlined,
   SortAscendingOutlined, ApartmentOutlined, SafetyCertificateOutlined, CalendarOutlined, SettingOutlined,
-  DollarOutlined,
+  DollarOutlined, GlobalOutlined,
 } from '@ant-design/icons'
 import { usePortalScope } from '../../hooks/usePortalScope'
 import PermGuard from '../../components/common/PermGuard'
@@ -26,7 +27,10 @@ interface CategoryVO {
   parentId: number
   nameZh: string
   nameEn?: string
+  nameVi?: string
   nameKm?: string
+  nameJa?: string
+  nameKo?: string
   icon?: string
   price?: number
   duration?: number
@@ -104,7 +108,10 @@ export default function CategoryPage() {
       parentId:  r.parentId,
       nameZh:    r.nameZh,
       nameEn:    r.nameEn,
+      nameVi:    r.nameVi,
       nameKm:    r.nameKm,
+      nameJa:    r.nameJa,
+      nameKo:    r.nameKo,
       icon:      r.icon,
       price:     r.price,
       duration:  r.duration,
@@ -208,7 +215,15 @@ export default function CategoryPage() {
                   <Tag color="cyan" style={{ marginLeft: 6, fontSize: 10, padding: '0 5px', lineHeight: '18px', borderRadius: 10 }}>常规项目</Tag>
                 )}
               </div>
-              {r.nameEn && <Text type="secondary" style={{ fontSize: 12 }}>{r.nameEn}</Text>}
+              {(r.nameEn || r.nameVi || r.nameKm || r.nameJa || r.nameKo) && (
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
+                  {r.nameEn && <Text type="secondary" style={{ fontSize: 11 }}>🇬🇧 {r.nameEn}</Text>}
+                  {r.nameVi && <Text type="secondary" style={{ fontSize: 11 }}>🇻🇳 {r.nameVi}</Text>}
+                  {r.nameKm && <Text type="secondary" style={{ fontSize: 11 }}>🇰🇭 {r.nameKm}</Text>}
+                  {r.nameJa && <Text type="secondary" style={{ fontSize: 11 }}>🇯🇵 {r.nameJa}</Text>}
+                  {r.nameKo && <Text type="secondary" style={{ fontSize: 11 }}>🇰🇷 {r.nameKo}</Text>}
+                </div>
+              )}
             </div>
           </div>
         )
@@ -264,7 +279,7 @@ export default function CategoryPage() {
     {
       title: col(<CalendarOutlined style={{ color: '#0891b2' }} />, '创建时间'), dataIndex: 'createTime',
       align: 'center',
-      render: v => v?.slice(0, 10) ?? '—',
+      render: v => fmtTime(v, 'YYYY-MM-DD') ?? '—',
     },
     {
       title: col(<SettingOutlined style={{ color: '#0891b2' }} />, '操作'), width: 235,
@@ -406,22 +421,71 @@ export default function CategoryPage() {
         width={880}
       >
         <Form form={form} layout="vertical">
+          {/* ── 多语言名称 Tab ─────────────────────────────────────────── */}
+          <div style={{
+            marginBottom: 16, padding: '12px 16px 4px',
+            background: 'linear-gradient(135deg,#f0fdf4,#dcfce7)',
+            borderRadius: 10, border: '1px solid #bbf7d0',
+          }}>
+            <div style={{ fontSize: 12, color: '#16a34a', fontWeight: 700, marginBottom: 10 }}>
+              <GlobalOutlined style={{ marginRight: 6 }} />多语言名称（请至少填写中文，其余语言选填）
+            </div>
+            <Tabs
+              size="small"
+              defaultActiveKey="zh"
+              items={[
+                {
+                  key: 'zh', label: '🇨🇳 中文',
+                  children: (
+                    <Form.Item name="nameZh" rules={[{ required: true, message: '请输入中文名称' }]} style={{ marginBottom: 8 }}>
+                      <Input prefix={<AppstoreOutlined style={{ color: '#43e97b' }} />} placeholder="如：全身按摩" />
+                    </Form.Item>
+                  ),
+                },
+                {
+                  key: 'en', label: '🇬🇧 English',
+                  children: (
+                    <Form.Item name="nameEn" style={{ marginBottom: 8 }}>
+                      <Input placeholder="Full Body Massage" />
+                    </Form.Item>
+                  ),
+                },
+                {
+                  key: 'vi', label: '🇻🇳 Tiếng Việt',
+                  children: (
+                    <Form.Item name="nameVi" style={{ marginBottom: 8 }}>
+                      <Input placeholder="Massage toàn thân" />
+                    </Form.Item>
+                  ),
+                },
+                {
+                  key: 'km', label: '🇰🇭 ខ្មែរ',
+                  children: (
+                    <Form.Item name="nameKm" style={{ marginBottom: 8 }}>
+                      <Input placeholder="ម៉ាស្សាទូទៅ" />
+                    </Form.Item>
+                  ),
+                },
+                {
+                  key: 'ja', label: '🇯🇵 日本語',
+                  children: (
+                    <Form.Item name="nameJa" style={{ marginBottom: 8 }}>
+                      <Input placeholder="全身マッサージ" />
+                    </Form.Item>
+                  ),
+                },
+                {
+                  key: 'ko', label: '🇰🇷 한국어',
+                  children: (
+                    <Form.Item name="nameKo" style={{ marginBottom: 8 }}>
+                      <Input placeholder="전신 마사지" />
+                    </Form.Item>
+                  ),
+                },
+              ]}
+            />
+          </div>
           <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item name="nameZh" label="中文名称" rules={[{ required: true, message: '请输入中文名称' }]}>
-                <Input prefix={<AppstoreOutlined style={{ color: '#43e97b' }} />} placeholder="如：全身按摩" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="nameEn" label="英文名称">
-                <Input prefix={<AppstoreOutlined style={{ color: '#38f9d7' }} />} placeholder="Full Body Massage" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="nameKm" label="高棉文名称">
-                <Input placeholder="ម៉ាស្សា" />
-              </Form.Item>
-            </Col>
             <Col span={8}>
               <Form.Item name="icon" label="图标（emoji 或 URL）">
                 <Input placeholder="如 💆 或图标URL" />

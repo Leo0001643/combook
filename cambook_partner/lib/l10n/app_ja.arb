@@ -90,6 +90,7 @@
   "ordersTitle": "注文管理",
   "tabPending": "受注待ち",
   "tabAccepted": "受注済み",
+  "statusReception": "受付中",
   "tabInService": "対応中",
   "tabCompleted": "完了",
   "tabCancelled": "キャンセル",
@@ -381,5 +382,25 @@
   "estimatedIncome": "予定 {amount}",
   "@estimatedIncome": {
     "placeholders": { "amount": { "type": "String" } }
-  }
+  },
+
+  "sessionExpiredTitle": "セッション期限切れ",
+  "sessionExpiredMessage": "ログアウトされました。続けるには再度ログインしてください。",
+  "goToLogin": "ログインへ",
+
+  "networkTimeout": "リクエストがタイムアウトしました。接続を確認してください。",
+  "networkUnavailable": "ネットワークが利用できません。接続を確認してください。",
+  "networkError": "リクエストが失敗しました。後でもう一度お試しください。",
+
+  "orderTypeOnline": "オンライン予約",
+  "orderTypeWalkin": "店頭来店",
+  "walkinGuest": "一般来客",
+  "sessionNo": "セッション",
+  "walkinOrderTip": "店頭注文はフロントデスクが管理します。",
+  "notificationSound": "通知音",
+  "vibration": "バイブレーション",
+  "rating": "評価",
+  "myOrders": "注文一覧",
+  "reviews": "レビュー",
+  "langHint": "表示言語を選択してください"
 }

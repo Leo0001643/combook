@@ -1,6 +1,7 @@
 package com.cambook.app.service.technician;
 
 import com.cambook.app.domain.vo.HomeStatsVO;
+import com.cambook.app.domain.vo.OrderVO;
 import com.cambook.app.domain.vo.ScheduleItemVO;
 
 import java.util.List;
@@ -42,4 +43,12 @@ public interface ITechHomeService {
      * @return 待执行订单数，用于角标展示
      */
     int getPendingOrderCount();
+
+    /**
+     * 技师端订单列表（含服务项明细）。
+     *
+     * @param statuses 状态过滤（null 则返回全部在进行/已完成/已取消订单）
+     * @return 订单列表，按创建时间倒序
+     */
+    List<OrderVO> listOrders(List<Integer> statuses);
 }

@@ -19,7 +19,8 @@ class OrderListPage extends StatefulWidget {
   State<OrderListPage> createState() => _OrderListPageState();
 }
 
-class _OrderListPageState extends State<OrderListPage> with SingleTickerProviderStateMixin {
+class _OrderListPageState extends State<OrderListPage>
+    with TickerProviderStateMixin {
   static const _statuses = [
     OrderStatus.pending, OrderStatus.accepted,
     OrderStatus.inService, OrderStatus.completed, OrderStatus.cancelled,
@@ -27,6 +28,9 @@ class _OrderListPageState extends State<OrderListPage> with SingleTickerProvider
 
   late final TabController _tabCtrl;
   late final OrderListLogic _logic;
+  // 每个 tab 独立的弹跳动画控制器
+  late final List<AnimationController> _bounceCtrl;
+  late final List<Animation<double>> _bounceAnim;
 
   @override
   void initState() {
@@ -36,11 +40,28 @@ class _OrderListPageState extends State<OrderListPage> with SingleTickerProvider
     ever(_logic.state.tabIndex, (idx) {
       if (_tabCtrl.index != idx) _tabCtrl.animateTo(idx);
     });
+
+    _bounceCtrl = List.generate(_statuses.length, (_) =>
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 260)));
+    _bounceAnim = _bounceCtrl.map((c) =>
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.72), weight: 35),
+          TweenSequenceItem(tween: Tween(begin: 0.72, end: 1.10), weight: 35),
+          TweenSequenceItem(tween: Tween(begin: 1.10, end: 1.0),  weight: 30),
+        ]).animate(CurvedAnimation(parent: c, curve: Curves.easeInOut))
+    ).toList();
+
+    _tabCtrl.addListener(() {
+      if (!_tabCtrl.indexIsChanging) return;
+      final i = _tabCtrl.index;
+      _bounceCtrl[i].forward(from: 0);
+    });
   }
 
   @override
   void dispose() {
     _tabCtrl.dispose();
+    for (final c in _bounceCtrl) { c.dispose(); }
     super.dispose();
   }
 
@@ -62,32 +83,39 @@ class _OrderListPageState extends State<OrderListPage> with SingleTickerProvider
               tabAlignment: TabAlignment.start,
               indicatorColor: Colors.white,
               indicatorWeight: 3,
-              labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+              labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
               unselectedLabelStyle:
-                  const TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
+                  const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
               labelColor: Colors.white,
               unselectedLabelColor: Colors.white60,
               tabs: List.generate(_statuses.length, (i) {
                 return Obx(() {
                   final cnt = _logic.countOf(_statuses[i]);
                   return Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(tabLabels[i]),
-                        if (cnt > 0) ...[
-                          const SizedBox(width: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 1),
-                            decoration: BoxDecoration(
-                                color: Colors.white30,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Text('$cnt',
-                                style: const TextStyle(fontSize: 10)),
-                          ),
+                    child: AnimatedBuilder(
+                      animation: _bounceAnim[i],
+                      builder: (_, child) => Transform.scale(
+                        scale: _bounceAnim[i].value,
+                        child: child,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(tabLabels[i]),
+                          if (cnt > 0) ...[
+                            const SizedBox(width: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 1),
+                              decoration: BoxDecoration(
+                                  color: Colors.white30,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Text('$cnt',
+                                  style: const TextStyle(fontSize: 10)),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   );
                 });
@@ -168,7 +196,7 @@ class _OrderCard extends StatelessWidget {
                       color: sc.withValues(alpha: 0.30), blurRadius: 8, offset: const Offset(0, 3))],
                   ),
                   child: Center(child: Text(
-                    order.customer.nickname.substring(0, 1).toUpperCase(),
+                    (order.customer.nickname.isNotEmpty ? order.customer.nickname[0] : '?').toUpperCase(),
                     style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
                   )),
@@ -177,17 +205,17 @@ class _OrderCard extends StatelessWidget {
                 Expanded(child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(order.customer.nickname,
+                    Text(order.customer.nickname.isNotEmpty ? order.customer.nickname : '--',
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w700,
+                            fontSize: 17, fontWeight: FontWeight.w700,
                             color: AppColors.textPrimary)),
                     if (order.distance != null) ...[
                       const SizedBox(height: 2),
                       Row(children: [
-                        const Icon(Icons.near_me_rounded, size: 12, color: AppColors.textSecond),
+                        const Icon(Icons.near_me_rounded, size: 13, color: AppColors.textSecond),
                         const SizedBox(width: 3),
                         Text(FormatUtil.km(order.distance!),
-                            style: const TextStyle(fontSize: 12, color: AppColors.textSecond)),
+                            style: const TextStyle(fontSize: 13, color: AppColors.textSecond)),
                       ]),
                     ],
                   ],
@@ -211,7 +239,7 @@ class _OrderCard extends StatelessWidget {
                   ),
                   child: Text('${s.name} · ${s.duration}${l.unitMin}',
                       style: TextStyle(
-                          fontSize: 12, color: sc, fontWeight: FontWeight.w600)),
+                          fontSize: 13, color: sc, fontWeight: FontWeight.w600)),
                 )).toList(),
               ),
               const SizedBox(height: 10),
@@ -221,7 +249,7 @@ class _OrderCard extends StatelessWidget {
                 const Icon(Icons.access_time_rounded, size: 14, color: AppColors.textSecond),
                 const SizedBox(width: 4),
                 Text(DateUtil.format(order.appointTime),
-                    style: const TextStyle(fontSize: 12.5, color: AppColors.textSecond,
+                    style: const TextStyle(fontSize: 13, color: AppColors.textSecond,
                         fontWeight: FontWeight.w500)),
                 const SizedBox(width: 8),
                 ServiceModeTag(
@@ -263,8 +291,8 @@ class _OrderCard extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.danger,
               side: const BorderSide(color: AppColors.danger),
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
             ),
             child: Text(l.btnReject),
@@ -278,8 +306,8 @@ class _OrderCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: sc,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               elevation: 2,
               shadowColor: sc.withValues(alpha: 0.35),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
@@ -291,22 +319,22 @@ class _OrderCard extends StatelessWidget {
         return Row(children: [
           Expanded(child: OutlinedButton.icon(
             onPressed: () => Get.toNamed(AppRoutes.orderDetail, arguments: {'id': order.id}),
-            icon: const Icon(Icons.info_outline_rounded, size: 16),
+            icon: const Icon(Icons.info_outline_rounded, size: 17),
             label: Text(l.btnDetail),
             style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
             ),
           )),
           const SizedBox(width: 10),
           Expanded(flex: 2, child: ElevatedButton(
-            onPressed: () => logic.start(order.id),
+            onPressed: () async => logic.start(order.id),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondary,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               elevation: 2,
               shadowColor: AppColors.secondary.withValues(alpha: 0.35),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusSm)),
@@ -319,13 +347,13 @@ class _OrderCard extends StatelessWidget {
           width: double.infinity,
           child: ElevatedButton.icon(
             onPressed: () => Get.toNamed(AppRoutes.serviceActive),
-            icon: const Icon(Icons.timelapse_rounded, size: 18),
+            icon: const Icon(Icons.timelapse_rounded, size: 20),
             label: Text('${l.tabInService} — ${l.btnDetail}'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondary,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 13),
-              textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               elevation: 3,
               shadowColor: AppColors.secondary.withValues(alpha: 0.35),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),

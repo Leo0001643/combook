@@ -88,14 +88,22 @@ class OrderDetailPage extends StatelessWidget {
   }
 }
 
-// ── 流程进度条（5步） ──────────────────────────────────────────────────────────
+// ── 流程进度条（在线5步 / 门店散客3步） ─────────────────────────────────────────
 class _ProgressCard extends StatelessWidget {
   final OrderModel order;
   final bool arrived;
   const _ProgressCard({required this.order, required this.arrived});
 
+  bool get _isWalkin => order.isWalkin;
+
   int get _current {
     if (order.status == OrderStatus.cancelled) return -1;
+    if (_isWalkin) {
+      // 门店散客简化进度：待接单(0) → 服务中(1) → 已完成(2)
+      if (order.status == OrderStatus.pending)   return 0;
+      if (order.status == OrderStatus.inService) return 1;
+      return 2;
+    }
     if (order.status == OrderStatus.pending)   return 0;
     if (order.status == OrderStatus.accepted)  return arrived ? 2 : 1;
     if (order.status == OrderStatus.inService) return 3;
@@ -105,7 +113,9 @@ class _ProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final steps = [l.stepPending, l.stepAccepted, l.stepArrived, l.stepInService, l.stepCompleted];
+    final steps = _isWalkin
+        ? [l.stepPending, l.tabInService, l.stepCompleted]
+        : [l.stepPending, l.stepAccepted, l.stepArrived, l.stepInService, l.stepCompleted];
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +192,7 @@ class _CustomerCard extends StatelessWidget {
             CircleAvatar(
               radius: 22,
               backgroundColor: AppColors.primary.withValues(alpha:0.1),
-              child: Text(order.customer.nickname.substring(0, 1).toUpperCase(),
+              child: Text((order.customer.nickname.isNotEmpty ? order.customer.nickname[0] : '?').toUpperCase(),
                   style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 18)),
             ),
             const SizedBox(width: 12),

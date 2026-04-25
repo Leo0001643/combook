@@ -13,12 +13,14 @@
  */
 import { useEffect, useState, useCallback } from 'react'
 import { dictApi } from '../api/api'
+import { useLangStore, pickLabel } from '../store/langStore'
 
 export interface DictItem {
   dictValue: string
   labelZh:   string
   labelEn?:  string
   labelVi?:  string
+  labelKm?:  string
   sort:      number
   status:    number
   /** 可在 sys_dict 的 remark 字段存储 Ant Design Tag color，如 'green' / 'red' */
@@ -43,6 +45,7 @@ async function fetchDict(dictType: string): Promise<DictItem[]> {
         labelZh:   d.labelZh ?? d.label_zh ?? d.dictLabel ?? d.dict_label ?? d.label ?? '',
         labelEn:   d.labelEn ?? d.label_en,
         labelVi:   d.labelVi ?? d.label_vi,
+        labelKm:   d.labelKm ?? d.label_km,
         sort:      d.sort ?? 0,
         status:    d.status ?? 1,
         remark:    d.remark,
@@ -102,10 +105,12 @@ interface UseDictResult {
   /** 字典数据项列表 */
   items:   DictItem[]
   loading: boolean
-  /** 转换为 Ant Design Select options */
+  /** 转换为 Ant Design Select options（按当前语言显示） */
   opts:    () => { value: string; label: string }[]
   /** 根据 dictValue 获取中文 label（找不到返回 value 本身） */
   label:   (value: string | number | null | undefined) => string
+  /** 根据 dictValue 获取当前语言 label（多语言感知，找不到返回 value 本身） */
+  langLabel: (value: string | number | null | undefined) => string
   /** 根据 dictValue 获取 remark（常用于存 Tag color） */
   color:   (value: string | number | null | undefined) => string | undefined
 }
@@ -113,6 +118,7 @@ interface UseDictResult {
 export function useDict(dictType: string): UseDictResult {
   const [items, setItems]     = useState<DictItem[]>(() => CACHE.get(dictType) ?? [])
   const [loading, setLoading] = useState(!CACHE.has(dictType))
+  const lang = useLangStore(state => state.lang)
 
   useEffect(() => {
     if (CACHE.has(dictType)) {
@@ -128,8 +134,8 @@ export function useDict(dictType: string): UseDictResult {
   }, [dictType])
 
   const opts = useCallback(
-    () => items.filter(i => i.status === 1).map(i => ({ value: i.dictValue, label: i.labelZh })),
-    [items],
+    () => items.filter(i => i.status === 1).map(i => ({ value: i.dictValue, label: pickLabel(i, lang) })),
+    [items, lang],
   )
 
   const label = useCallback(
@@ -141,6 +147,16 @@ export function useDict(dictType: string): UseDictResult {
     [items],
   )
 
+  const langLabel = useCallback(
+    (value: string | number | null | undefined): string => {
+      if (value == null || value === '') return '—'
+      const v = String(value)
+      const item = items.find(i => i.dictValue === v)
+      return item ? pickLabel(item, lang) : v
+    },
+    [items, lang],
+  )
+
   const color = useCallback(
     (value: string | number | null | undefined): string | undefined => {
       if (value == null || value === '') return undefined
@@ -150,7 +166,7 @@ export function useDict(dictType: string): UseDictResult {
     [items],
   )
 
-  return { items, loading, opts, label, color }
+  return { items, loading, opts, label, langLabel, color }
 }
 
 /**

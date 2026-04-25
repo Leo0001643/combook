@@ -6,6 +6,7 @@ import LoginPage from './pages/auth/LoginPage'
 import MerchantLoginPage from './pages/auth/MerchantLoginPage'
 import { useAuthStore } from './store/authStore'
 import { authApi, merchantPortalApi } from './api/api'
+import ErrorBoundary from './components/common/ErrorBoundary'
 
 // ── 管理端页面懒加载 ─────────────────────────────────────────────────────────
 const DashboardPage       = lazy(() => import('./pages/dashboard/DashboardPage'))
@@ -135,8 +136,9 @@ export default function App() {
   useMenuRefresh()
   return (
     <BrowserRouter>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
           {/* ── 公共路由 ── */}
           <Route path="/login"          element={<LoginPage />} />
           <Route path="/merchant/login" element={<MerchantLoginPage />} />
@@ -195,6 +197,43 @@ export default function App() {
 
             <Route path="system/banner"          element={<Navigate to="/operation/banner"   replace />} />
             <Route path="system/category"        element={<Navigate to="/operation/category" replace />} />
+
+            {/* 旧式路径兼容重定向（admin/ 前缀风格 → 新式路由）*/}
+            <Route path="admin/category"         element={<Navigate to="/operation/category" replace />} />
+            <Route path="admin/banner"           element={<Navigate to="/operation/banner"   replace />} />
+            <Route path="admin/review"           element={<Navigate to="/operation/reviews"  replace />} />
+            <Route path="admin/reviews"          element={<Navigate to="/operation/reviews"  replace />} />
+            <Route path="admin/order"            element={<Navigate to="/orders"             replace />} />
+            <Route path="admin/orders"           element={<Navigate to="/orders"             replace />} />
+            <Route path="admin/member"           element={<Navigate to="/users"              replace />} />
+            <Route path="admin/members"          element={<Navigate to="/users"              replace />} />
+            <Route path="admin/technician"       element={<Navigate to="/technicians"        replace />} />
+            <Route path="admin/technicians"      element={<Navigate to="/technicians"        replace />} />
+            <Route path="admin/merchant"         element={<Navigate to="/merchants"          replace />} />
+            <Route path="admin/merchants"        element={<Navigate to="/merchants"          replace />} />
+            <Route path="admin/vehicle"          element={<Navigate to="/vehicles"           replace />} />
+            <Route path="admin/vehicles"         element={<Navigate to="/vehicles"           replace />} />
+            <Route path="admin/coupon"           element={<Navigate to="/coupons"            replace />} />
+            <Route path="admin/coupons"          element={<Navigate to="/coupons"            replace />} />
+            <Route path="admin/role"             element={<Navigate to="/system/roles"       replace />} />
+            <Route path="admin/roles"            element={<Navigate to="/system/roles"       replace />} />
+            <Route path="admin/dept"             element={<Navigate to="/system/dept"        replace />} />
+            <Route path="admin/permission"       element={<Navigate to="/system/permissions" replace />} />
+            <Route path="admin/permissions"      element={<Navigate to="/system/permissions" replace />} />
+            <Route path="admin/menu"             element={<Navigate to="/admin/menus"        replace />} />
+            <Route path="admin/notice"           element={<Navigate to="/system/notice"      replace />} />
+            <Route path="admin/log"              element={<Navigate to="/system/log"         replace />} />
+            <Route path="admin/dict"             element={<Navigate to="/system/dict"        replace />} />
+            <Route path="admin/sysconfig"        element={<Navigate to="/system/config"      replace />} />
+            <Route path="admin/announce"         element={<Navigate to="/system/notice"      replace />} />
+            <Route path="admin/monitor/online"   element={<Navigate to="/monitor/online"     replace />} />
+            <Route path="admin/monitor/job"      element={<Navigate to="/monitor/job"        replace />} />
+            <Route path="admin/monitor/server"   element={<Navigate to="/monitor/server"     replace />} />
+            <Route path="admin/monitor/cache"    element={<Navigate to="/monitor/cache"      replace />} />
+            <Route path="admin/dashboard"        element={<Navigate to="/dashboard"          replace />} />
+
+            {/* 任何未匹配路径 → 重定向到仪表板，防止内容区空白 */}
+            <Route path="*"                      element={<Navigate to="/dashboard"          replace />} />
           </Route>
 
           {/* ── 商户端路由（与管理员共用同一套页面组件，通过 usePortalScope 区分上下文）── */}
@@ -235,11 +274,15 @@ export default function App() {
             <Route path="announce/customer"        element={<AnnouncePage type={2} />} />
             {/* 结算币种配置 */}
             <Route path="settings/currency"        element={<MerchantCurrencyPage />} />
+
+            {/* 任何未匹配路径 → 重定向到商户仪表板，防止内容区空白 */}
+            <Route path="*"                        element={<Navigate to="/merchant/dashboard" replace />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Suspense>
+    </ErrorBoundary>
     </BrowserRouter>
   )
 }

@@ -203,6 +203,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tabAccepted => '已接单';
 
   @override
+  String get statusReception => '接待中';
+
+  @override
   String get tabInService => '服务中';
 
   @override
@@ -962,4 +965,55 @@ class AppLocalizationsZh extends AppLocalizations {
   String estimatedIncome(String amount) {
     return '预计 $amount';
   }
+
+  @override
+  String get sessionExpiredTitle => '登出提醒';
+
+  @override
+  String get sessionExpiredMessage => '您已经登出，请重新登录后继续操作';
+
+  @override
+  String get goToLogin => '前往登录';
+
+  @override
+  String get networkTimeout => '网络超时，请检查网络连接';
+
+  @override
+  String get networkUnavailable => '网络不可用，请检查连接';
+
+  @override
+  String get networkError => '网络请求失败，请稍后重试';
+
+  @override
+  String get orderTypeOnline => '在线预约';
+
+  @override
+  String get orderTypeWalkin => '门店散客';
+
+  @override
+  String get walkinGuest => '散客';
+
+  @override
+  String get sessionNo => '接待单';
+
+  @override
+  String get walkinOrderTip => '门店订单由前台管理，技师按服务项操作即可。';
+
+  @override
+  String get notificationSound => '提示音';
+
+  @override
+  String get vibration => '震动';
+
+  @override
+  String get rating => '评分';
+
+  @override
+  String get myOrders => '我的订单';
+
+  @override
+  String get reviews => '我的评价';
+
+  @override
+  String get langHint => '选择您偏好的显示语言';
 }

@@ -22,11 +22,7 @@ class HomePage extends StatelessWidget {
     final topPad  = MediaQuery.of(context).padding.top;
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: RefreshIndicator(
-        color: Colors.white,
-        backgroundColor: AppColors.primary,
-        onRefresh: logic.refresh,
-        child: CustomScrollView(
+      body: CustomScrollView(
           slivers: [
             SliverPersistentHeader(
               pinned: true,
@@ -47,7 +43,6 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }
@@ -207,7 +202,7 @@ class _StatusCard extends StatelessWidget {
                 color: active ? color : Colors.white.withValues(alpha: 0.65)),
             const SizedBox(height: 3),
             Text(label, style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w700,
+              fontSize: 13, fontWeight: FontWeight.w700,
               color: active ? color : Colors.white.withValues(alpha: 0.65),
             )),
           ]),
@@ -339,7 +334,7 @@ class _StatCard extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.85),
-              fontSize: 10.5, fontWeight: FontWeight.w600,
+              fontSize: 12, fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -408,7 +403,7 @@ class _Action extends StatelessWidget {
           const SizedBox(height: 8),
           Text(label, textAlign: TextAlign.center,
               style: TextStyle(
-                  color: color, fontSize: 11, fontWeight: FontWeight.w700)),
+                  color: color, fontSize: 13, fontWeight: FontWeight.w700)),
         ]),
       ),
     ),
@@ -448,7 +443,7 @@ class _TodayScheduleSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(context.l10n.schedOrderCount(n), style: const TextStyle(
-                color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+                color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
             );
           }),
         ]),
@@ -456,8 +451,8 @@ class _TodayScheduleSection extends StatelessWidget {
           onTap: () => Get.find<ShellController>().switchTab(ShellController.tabOrders),
           child: Row(children: [
             Text(l.allOrders, style: const TextStyle(
-              color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600)),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.primary, size: 18),
+              color: AppColors.primary, fontSize: 14, fontWeight: FontWeight.w600)),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.primary, size: 20),
           ]),
         ),
       ]),
@@ -472,6 +467,15 @@ class _TodayScheduleSection extends StatelessWidget {
   }
 }
 
+// ── 订单类型主题色 ─────────────────────────────────────────────────────────────
+extension _OrderTypeTheme on HomeScheduleItem {
+  /// 在线=紫蓝，门店=琥珀金
+  Color get typeAccent => isWalkin ? const Color(0xFFF59E0B) : const Color(0xFF6366F1);
+  List<Color> get typeGradient => isWalkin
+      ? const [Color(0xFFF59E0B), Color(0xFFD97706)]
+      : const [Color(0xFF6366F1), Color(0xFF4F46E5)];
+}
+
 // ── 时间轴容器 ─────────────────────────────────────────────────────────────────
 class _ScheduleTimeline extends StatelessWidget {
   final List<HomeScheduleItem> items;
@@ -484,10 +488,15 @@ class _ScheduleTimeline extends StatelessWidget {
     final pending   = items.where((i) => i.rawStatus >= 1 && i.rawStatus <= 4).length;
     final totalMins = items.fold<int>(0, (s, i) => s + i.effectiveTotalDuration);
 
+    // 统计在线 vs 门店数量，供摘要条展示
+    final onlineCount = items.where((i) => !i.isWalkin).length;
+    final walkinCount = items.where((i) => i.isWalkin).length;
+
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       _SummaryBar(
         completed: completed, inService: inService,
         pending: pending, total: items.length, totalMins: totalMins,
+        onlineCount: onlineCount, walkinCount: walkinCount,
       ),
       const SizedBox(height: 16),
       ...items.asMap().entries.map((e) =>
@@ -499,14 +508,17 @@ class _ScheduleTimeline extends StatelessWidget {
 // ── 今日进度摘要条 ─────────────────────────────────────────────────────────────
 class _SummaryBar extends StatelessWidget {
   final int completed, inService, pending, total, totalMins;
+  final int onlineCount, walkinCount;
   const _SummaryBar({
     required this.completed, required this.inService,
     required this.pending,   required this.total, required this.totalMins,
+    required this.onlineCount, required this.walkinCount,
   });
 
   @override
   Widget build(BuildContext context) {
     final progress = total > 0 ? completed / total : 0.0;
+    final l = context.l10n;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
       decoration: BoxDecoration(
@@ -515,37 +527,72 @@ class _SummaryBar extends StatelessWidget {
         border: Border.all(color: AppColors.border),
         boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 12, offset: Offset(0, 4))],
       ),
-      child: Builder(builder: (context) {
-        final l = context.l10n;
-        return Column(children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-            _SummaryChip(icon: Icons.check_circle_rounded, label: l.orderStatusCompleted, count: completed, color: AppColors.orderCompleted),
-            _SummaryChip(icon: Icons.timelapse_rounded,    label: l.schedInService,        count: inService, color: AppColors.orderInService),
-            _SummaryChip(icon: Icons.schedule_rounded,     label: l.schedPending,          count: pending,   color: AppColors.orderPending),
-            _SummaryChip(
-              icon: Icons.access_time_rounded, label: l.totalDuration, count: null,
-              label2: totalMins > 0 ? '${totalMins}m' : '--', color: AppColors.primary,
-            ),
-          ]),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: progress, minHeight: 5,
-              backgroundColor: AppColors.border,
-              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.orderCompleted),
-            ),
+      child: Column(children: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          _SummaryChip(icon: Icons.check_circle_rounded, label: l.orderStatusCompleted, count: completed, color: AppColors.orderCompleted),
+          _SummaryChip(icon: Icons.timelapse_rounded,    label: l.schedInService,        count: inService, color: AppColors.orderInService),
+          _SummaryChip(icon: Icons.schedule_rounded,     label: l.schedPending,          count: pending,   color: AppColors.orderPending),
+          _SummaryChip(
+            icon: Icons.access_time_rounded, label: l.totalDuration, count: null,
+            label2: totalMins > 0 ? '${totalMins}m' : '--', color: AppColors.primary,
           ),
-          const SizedBox(height: 5),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(l.scheduleProgress(completed, total),
-              style: const TextStyle(fontSize: 10.5, color: AppColors.textHint, fontWeight: FontWeight.w500)),
+        ]),
+        const SizedBox(height: 10),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: progress, minHeight: 5,
+            backgroundColor: AppColors.border,
+            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.orderCompleted),
           ),
-        ]);
-      }),
+        ),
+        const SizedBox(height: 8),
+        // ── 订单来源分布条 ────────────────────────────────────────────────
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text(l.scheduleProgress(completed, total),
+            style: const TextStyle(fontSize: 12, color: AppColors.textHint, fontWeight: FontWeight.w500)),
+          // 在线 vs 门店小标签
+          if (onlineCount > 0 || walkinCount > 0)
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              if (onlineCount > 0) _MiniTypeBadge(
+                icon: Icons.phone_android_rounded,
+                label: '$onlineCount',
+                colors: const [Color(0xFF6366F1), Color(0xFF4F46E5)],
+              ),
+              if (onlineCount > 0 && walkinCount > 0) const SizedBox(width: 5),
+              if (walkinCount > 0) _MiniTypeBadge(
+                icon: Icons.storefront_rounded,
+                label: '$walkinCount',
+                colors: const [Color(0xFFF59E0B), Color(0xFFD97706)],
+              ),
+            ]),
+        ]),
+      ]),
     );
   }
+}
+
+/// 摘要条内的迷你类型标记（图标 + 数量）
+class _MiniTypeBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final List<Color> colors;
+  const _MiniTypeBadge({required this.icon, required this.label, required this.colors});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+    decoration: BoxDecoration(
+      gradient: LinearGradient(colors: colors),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(mainAxisSize: MainAxisSize.min, children: [
+      Icon(icon, color: Colors.white, size: 11),
+      const SizedBox(width: 3),
+      Text(label, style: const TextStyle(
+        color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+    ]),
+  );
 }
 
 class _SummaryChip extends StatelessWidget {
@@ -570,7 +617,7 @@ class _SummaryChip extends StatelessWidget {
         count != null ? '$count' : (label2 ?? '--'),
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
       ),
-      Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textHint)),
+      Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textHint, fontWeight: FontWeight.w500)),
     ],
   );
 }
@@ -583,36 +630,9 @@ class _TimelineEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sc = orderStatusColor(item.orderStatus);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: IntrinsicHeight(
-        child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          // 左侧：时间 + 圆点 + 连接线
-          SizedBox(
-            width: 54,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(DateUtil.timeOnly(item.appointTime),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: sc, height: 1.2)),
-                const SizedBox(height: 5),
-                Container(
-                  width: 11, height: 11,
-                  decoration: BoxDecoration(
-                    color: sc, shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(color: sc.withValues(alpha: 0.4), blurRadius: 6, offset: const Offset(0, 2))],
-                  ),
-                ),
-                if (!isLast)
-                  Expanded(child: Center(child: Container(width: 2, color: sc.withValues(alpha: 0.18)))),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(child: _TimelineCard(item: item)),
-        ]),
-      ),
+      padding: const EdgeInsets.only(bottom: 10),
+      child: _TimelineCard(item: item),
     );
   }
 }
@@ -628,84 +648,180 @@ class _TimelineCard extends StatelessWidget {
     final isDone      = item.rawStatus == 6;
     final isActive    = item.rawStatus == 5;
     final isCancelled = item.rawStatus >= 7;
-    final sc          = orderStatusColor(item.orderStatus);
-    final initial     = item.memberNickname.isNotEmpty ? item.memberNickname[0].toUpperCase() : '?';
+
+    // 在线订单用状态色；门店订单用琥珀金为主色
+    final sc      = item.isWalkin ? item.typeAccent : orderStatusColor(item.orderStatus);
+    final initial = item.memberNickname.isNotEmpty ? item.memberNickname[0].toUpperCase() : '?';
     final endTime = item.effectiveTotalDuration > 0
         ? item.appointTime.add(Duration(minutes: item.effectiveTotalDuration))
         : null;
-    final statusLabel = switch (item.rawStatus) {
-      1 => l.tabPending,      2 => l.tabAccepted,
-      3 => l.statusOnWay,     4 => l.stepArrived,
-      5 => l.tabInService,    6 => l.tabCompleted,
-      7 => l.statusCancelling, 8 => l.statusRefunding,
-      9 => l.statusRefunded,  _ => '--',
-    };
+
+    // 门店订单的状态标签更贴近前台术语
+    final statusLabel = item.isWalkin
+        ? switch (item.rawStatus) {
+            2 => l.statusReception, 5 => l.tabInService, 6 => l.tabCompleted, _ => '--',
+          }
+        : switch (item.rawStatus) {
+            1 => l.tabPending,      2 => l.tabAccepted,
+            3 => l.statusOnWay,     4 => l.stepArrived,
+            5 => l.tabInService,    6 => l.tabCompleted,
+            7 => l.statusCancelling, 8 => l.statusRefunding,
+            9 => l.statusRefunded,  _ => '--',
+          };
+
+    // 所有订单（在线 + 门店散客）均跳转到订单详情页
+    void handleTap() {
+      Get.toNamed(AppRoutes.orderDetail, arguments: {'id': item.orderId});
+    }
 
     return Opacity(
       opacity: isCancelled ? 0.55 : 1.0,
       child: BounceTap(
-        onTap: () => Get.toNamed(AppRoutes.orderDetail, arguments: {'id': item.orderId}),
-        child: Container(
-          padding: const EdgeInsets.all(13),
+        onTap: handleTap,
+        // Flutter 不允许 borderRadius + 非统一颜色边框同时使用，
+        // 故用 ClipRRect 处理圆角，左侧色条作为 Row 独立子元素。
+        child: DecoratedBox(
           decoration: BoxDecoration(
-            color: isActive ? sc.withValues(alpha: 0.04) : AppColors.surface,
             borderRadius: BorderRadius.circular(14),
-            border: Border(
-              left:   BorderSide(color: sc, width: isActive ? 4.0 : 3.0),
-              top:    const BorderSide(color: AppColors.border, width: 0.8),
-              right:  const BorderSide(color: AppColors.border, width: 0.8),
-              bottom: const BorderSide(color: AppColors.border, width: 0.8),
-            ),
             boxShadow: [BoxShadow(
-              color:      isActive ? sc.withValues(alpha: 0.12) : const Color(0x08000000),
-              blurRadius: isActive ? 16 : 8,
+              color:      isActive || item.isWalkin
+                  ? sc.withValues(alpha: item.isWalkin ? 0.18 : 0.12)
+                  : const Color(0x08000000),
+              blurRadius: isActive || item.isWalkin ? 16 : 8,
               offset:     const Offset(0, 3),
             )],
           ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-            // 顶行：头像 + 客户名/时段 + 状态 badge
-            Row(children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: sc.withValues(alpha: 0.12),
-                child: Text(initial, style: TextStyle(color: sc, fontWeight: FontWeight.w800, fontSize: 13)),
-              ),
-              const SizedBox(width: 8),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                Text(
-                  item.memberNickname.isNotEmpty ? item.memberNickname : '--',
-                  style: TextStyle(
-                    fontSize: 13.5, fontWeight: FontWeight.w700,
-                    color:      isCancelled ? AppColors.textSecond : AppColors.textPrimary,
-                    decoration: isCancelled ? TextDecoration.lineThrough : null,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 左侧色条（替代原 left Border）
+                  Container(
+                    width: isActive || item.isWalkin ? 4.0 : 3.0,
+                    color: sc,
                   ),
+                  // 主内容区（三面细边 + 背景色，无 borderRadius，由 ClipRRect 负责圆角）
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(13),
+                      decoration: BoxDecoration(
+                        color: item.isWalkin
+                            ? const Color(0xFFFFFBEB)
+                            : (isActive ? sc.withValues(alpha: 0.04) : AppColors.surface),
+                        border: Border(
+                          top:    BorderSide(color: item.isWalkin ? const Color(0xFFFDE68A) : AppColors.border, width: 0.8),
+                          right:  BorderSide(color: item.isWalkin ? const Color(0xFFFDE68A) : AppColors.border, width: 0.8),
+                          bottom: BorderSide(color: item.isWalkin ? const Color(0xFFFDE68A) : AppColors.border, width: 0.8),
+                        ),
+                      ),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+            // ── 顶行：时间 + 状态 badge ─────────────────────────────────────
+            Row(children: [
+              // 预约时间（从左侧移入卡片）
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: sc.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                if (endTime != null)
-                  Text(l.schedEndTime(DateUtil.timeOnly(endTime), '${item.effectiveTotalDuration}'),
-                    style: const TextStyle(fontSize: 10.5, color: AppColors.textHint)),
-              ])),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.schedule_rounded, size: 12, color: sc),
+                  const SizedBox(width: 4),
+                  Text(DateUtil.timeOnly(item.appointTime),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: sc)),
+                ]),
+              ),
+              const Spacer(),
               // 状态 badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: sc.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                  color: sc.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   if (isActive) ...[
                     Container(width: 6, height: 6, decoration: BoxDecoration(color: sc, shape: BoxShape.circle)),
                     const SizedBox(width: 4),
                   ],
                   if (isDone) ...[
-                    Icon(Icons.check_circle_rounded, color: sc, size: 11),
+                    Icon(Icons.check_circle_rounded, color: sc, size: 12),
                     const SizedBox(width: 3),
                   ],
                   Text(statusLabel,
-                    style: TextStyle(color: sc, fontSize: 10.5, fontWeight: FontWeight.w700)),
+                    style: TextStyle(color: sc, fontSize: 12, fontWeight: FontWeight.w700)),
                 ]),
               ),
             ]),
+            const SizedBox(height: 10),
+            // ── 第二行：头像 + 客户名 ──────────────────────────────────────────
+            Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              // 头像（门店：门店图标；在线：客户首字母）
+              Stack(clipBehavior: Clip.none, children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: sc.withValues(alpha: 0.15),
+                  child: item.isWalkin
+                      ? Icon(Icons.storefront_rounded, color: sc, size: 18)
+                      : Text(initial, style: TextStyle(
+                          color: sc, fontWeight: FontWeight.w800, fontSize: 16)),
+                ),
+                // 右下角类型小点
+                Positioned(right: -1, bottom: -1,
+                  child: Container(
+                    width: 13, height: 13,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(colors: item.typeGradient),
+                      border: const Border.fromBorderSide(BorderSide(color: Colors.white, width: 1.5)),
+                    ),
+                    child: Icon(
+                      item.isWalkin ? Icons.storefront_rounded : Icons.phone_android_rounded,
+                      color: Colors.white, size: 7,
+                    ),
+                  ),
+                ),
+              ]),
+              const SizedBox(width: 10),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+                Row(children: [
+                  _OrderTypeBadge(item: item),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      item.memberNickname.isNotEmpty
+                          ? item.memberNickname
+                          : (item.isWalkin ? l.walkinGuest : '--'),
+                      style: TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w700,
+                        color:      isCancelled ? AppColors.textSecond : AppColors.textPrimary,
+                        decoration: isCancelled ? TextDecoration.lineThrough : null,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ]),
+                const SizedBox(height: 2),
+                if (item.isWalkin)
+                  Row(children: [
+                    Icon(Icons.qr_code_2_rounded, size: 12, color: sc.withValues(alpha: 0.7)),
+                    const SizedBox(width: 3),
+                    Text(item.orderNo, style: TextStyle(
+                      fontSize: 12, color: sc.withValues(alpha: 0.8), fontWeight: FontWeight.w600,
+                      fontFamily: 'monospace',
+                    )),
+                  ])
+                else if (endTime != null)
+                  Text(l.schedEndTime(DateUtil.timeOnly(endTime), '${item.effectiveTotalDuration}'),
+                    style: const TextStyle(fontSize: 12, color: AppColors.textHint)),
+              ])),
+            ]),
             const SizedBox(height: 9),
-            // 服务项标签
+            // ── 服务项标签 ─────────────────────────────────────────────────
             _buildServiceChips(sc),
-            // 收入行
+            // ── 底行：收入 / 金额 + 结束时间 ───────────────────────────────────
             if (!isCancelled) ...[
               const SizedBox(height: 8),
               Row(children: [
@@ -716,37 +832,88 @@ class _TimelineCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  isDone
-                      ? FormatUtil.money(item.techIncome)
-                      : isActive
-                          ? l.serviceInProgress
-                          : l.estimatedIncome(FormatUtil.money(item.techIncome)),
+                  item.isWalkin
+                      ? FormatUtil.money(item.payAmount)
+                      : (isDone
+                          ? FormatUtil.money(item.techIncome)
+                          : isActive
+                              ? l.serviceInProgress
+                              : l.estimatedIncome(FormatUtil.money(item.techIncome))),
                   style: TextStyle(
-                    fontSize: 11.5, fontWeight: FontWeight.w700,
+                    fontSize: 13, fontWeight: FontWeight.w700,
                     color: isDone ? AppColors.success : AppColors.textHint,
                   ),
                 ),
+                if (endTime != null) ...[
+                  const Spacer(),
+                  const Icon(Icons.timer_outlined, size: 12, color: AppColors.textHint),
+                  const SizedBox(width: 3),
+                  Text(
+                    l.schedEndTime(DateUtil.timeOnly(endTime), '${item.effectiveTotalDuration}'),
+                    style: const TextStyle(fontSize: 12, color: AppColors.textHint, fontWeight: FontWeight.w500),
+                  ),
+                ],
               ]),
             ],
           ]),
-        ),
-      ),
-    );
+                    ),  // inner Container
+                  ),    // Expanded
+                ],      // Row.children
+              ),        // Row
+            ),          // IntrinsicHeight
+          ),            // ClipRRect
+        ),              // DecoratedBox
+      ),                // BounceTap
+    );                  // Opacity
   }
 
   Widget _buildServiceChips(Color sc) {
-    final chips = <Widget>[];
-    if (item.items.isNotEmpty) {
-      for (var i = 0; i < item.items.length && i < 2; i++) {
-        chips.add(_ServiceChip(name: item.items[i].serviceName, color: sc));
+    return Builder(builder: (ctx) {
+      final chips = <Widget>[];
+      if (item.items.isNotEmpty) {
+        for (var i = 0; i < item.items.length && i < 2; i++) {
+          chips.add(_ServiceChip(name: item.items[i].localizedName(ctx), color: sc));
+        }
+        if (item.items.length > 2) {
+          chips.add(_ServiceChip(name: '+${item.items.length - 2}', color: AppColors.textSecond));
+        }
+      } else if (item.serviceName.isNotEmpty) {
+        chips.add(_ServiceChip(name: item.serviceName, color: sc));
       }
-      if (item.items.length > 2) {
-        chips.add(_ServiceChip(name: '+${item.items.length - 2}', color: AppColors.textSecond));
-      }
-    } else if (item.serviceName.isNotEmpty) {
-      chips.add(_ServiceChip(name: item.serviceName, color: sc));
-    }
-    return Wrap(spacing: 5, runSpacing: 4, children: chips);
+      return Wrap(spacing: 5, runSpacing: 4, children: chips);
+    });
+  }
+}
+
+/// 订单类型徽章 —— 在线预约（紫蓝渐变）/ 门店散客（琥珀金渐变）
+class _OrderTypeBadge extends StatelessWidget {
+  final HomeScheduleItem item;
+  const _OrderTypeBadge({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: item.typeGradient),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(
+          item.isWalkin ? Icons.storefront_rounded : Icons.phone_android_rounded,
+          color: Colors.white, size: 10,
+        ),
+        const SizedBox(width: 3),
+        Text(
+          item.isWalkin ? l.orderTypeWalkin : l.orderTypeOnline,
+          style: const TextStyle(
+            color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ]),
+    );
   }
 }
 
@@ -763,7 +930,7 @@ class _ServiceChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       border: Border.all(color: color.withValues(alpha: 0.2)),
     ),
-    child: Text(name, style: TextStyle(fontSize: 10.5, color: color, fontWeight: FontWeight.w600)),
+    child: Text(name, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600)),
   );
 }
 
@@ -996,7 +1163,7 @@ class _HighlightItem extends StatelessWidget {
       )),
       const SizedBox(height: 3),
       Text(label, style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.65), fontSize: 11, fontWeight: FontWeight.w500,
+        color: Colors.white.withValues(alpha: 0.65), fontSize: 13, fontWeight: FontWeight.w500,
       )),
     ]),
   );

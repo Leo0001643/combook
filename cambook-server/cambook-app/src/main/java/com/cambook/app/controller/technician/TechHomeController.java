@@ -1,6 +1,7 @@
 package com.cambook.app.controller.technician;
 
 import com.cambook.app.domain.vo.HomeStatsVO;
+import com.cambook.app.domain.vo.OrderVO;
 import com.cambook.app.domain.vo.ScheduleItemVO;
 import com.cambook.app.service.technician.ITechHomeService;
 import com.cambook.common.result.Result;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -61,5 +63,21 @@ public class TechHomeController {
     @GetMapping("/pending-count")
     public Result<Integer> pendingCount() {
         return Result.success(homeService.getPendingOrderCount());
+    }
+
+    /**
+     * 技师端订单列表，支持按状态过滤。
+     *
+     * <p>状态码（可多选，逗号分隔）：
+     * <ul>
+     *   <li>1=待接单 2=已接单 3=前往中 4=已到达 5=服务中 6=已完成 7=已取消</li>
+     * </ul>
+     * 不传 status 则返回全部（排除待支付/退款）。
+     */
+    @Operation(summary = "技师订单列表", description = "返回技师被分配的在线预约订单，支持按状态过滤，按创建时间倒序")
+    @GetMapping("/orders")
+    public Result<List<OrderVO>> orders(
+            @RequestParam(value = "status", required = false) List<Integer> statuses) {
+        return Result.success(homeService.listOrders(statuses));
     }
 }

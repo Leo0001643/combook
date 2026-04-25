@@ -20,10 +20,7 @@ import org.springframework.stereotype.Component;
  *   <li>异常信息（ERROR 级别，含完整堆栈）</li>
  * </ul>
  *
- * <p>日志格式（logback-spring.xml 统一配置）：
- * <pre>
- * 时间 [线程号] INFO [ScheduleLogAspect.java:行号] - 日志信息
- * </pre>
+ * <p>日志统一写入 {@code cambook-schedule.log}（logback-spring.xml 中 SCHEDULE logger 配置）。
  *
  * @author CamBook
  */
@@ -31,7 +28,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScheduleLogAspect {
 
-    private static final Logger log = LoggerFactory.getLogger(ScheduleLogAspect.class);
+    /** 定时任务专用命名 logger，对应 logback-spring.xml 中的 SCHEDULE appender */
+    private static final Logger log = LoggerFactory.getLogger("SCHEDULE");
 
     // ── 切点：所有 @Scheduled 注解的方法 ──────────────────────────────────────
 

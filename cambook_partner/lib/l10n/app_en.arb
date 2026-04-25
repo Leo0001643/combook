@@ -90,6 +90,7 @@
   "ordersTitle": "Orders",
   "tabPending": "Pending",
   "tabAccepted": "Accepted",
+  "statusReception": "Welcoming",
   "tabInService": "In Service",
   "tabCompleted": "Completed",
   "tabCancelled": "Cancelled",
@@ -381,5 +382,25 @@
   "estimatedIncome": "Est. {amount}",
   "@estimatedIncome": {
     "placeholders": { "amount": { "type": "String" } }
-  }
+  },
+
+  "sessionExpiredTitle": "Session Expired",
+  "sessionExpiredMessage": "You have been logged out. Please sign in again to continue.",
+  "goToLogin": "Go to Login",
+
+  "networkTimeout": "Request timed out. Please check your connection.",
+  "networkUnavailable": "Network unavailable. Please check your connection.",
+  "networkError": "Request failed. Please try again later.",
+
+  "orderTypeOnline": "Online Appt.",
+  "orderTypeWalkin": "Walk-in",
+  "walkinGuest": "Walk-in Guest",
+  "sessionNo": "Session",
+  "walkinOrderTip": "Walk-in order is managed at the front desk.",
+  "notificationSound": "Notification Sound",
+  "vibration": "Vibration",
+  "rating": "Rating",
+  "myOrders": "My Orders",
+  "reviews": "Reviews",
+  "langHint": "Select your preferred display language"
 }

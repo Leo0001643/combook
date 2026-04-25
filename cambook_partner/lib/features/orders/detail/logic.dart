@@ -6,6 +6,7 @@ import '../../../core/utils/toast_util.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/utils/event_bus_util.dart';
 import '../../../core/events/app_events.dart';
+import '../../../core/widgets/app_dialog.dart';
 import 'state.dart';
 import '../../../core/i18n/l10n_ext.dart';
 
@@ -42,18 +43,24 @@ class OrderDetailLogic extends GetxController with EventBusMixin {
 
   Future<void> accept() async {
     final id = state.order.value?.id; if (id == null) return;
-    _svc.accept(id);
+    state.loading.value = true;
+    final ok = await _svc.accept(id);
     state.order.value = _svc.getById(id);
-    ToastUtil.success(gL10n.success);
+    state.loading.value = false;
+    if (ok) ToastUtil.success(gL10n.success);
   }
 
   Future<void> reject() async {
     final id = state.order.value?.id; if (id == null) return;
-    final ok = await ToastUtil.confirm(gL10n.rejectOrder, gL10n.rejectConfirm, okText: gL10n.confirm);
-    if (!ok) return;
-    _svc.reject(id);
-    ToastUtil.info(gL10n.btnReject);
-    Get.back();
+    final confirmed = await ToastUtil.confirm(gL10n.rejectOrder, gL10n.rejectConfirm, okText: gL10n.confirm);
+    if (!confirmed) return;
+    state.loading.value = true;
+    final ok = await _svc.reject(id);
+    state.loading.value = false;
+    if (ok) {
+      ToastUtil.info(gL10n.btnReject);
+      Get.back();
+    }
   }
 
   /// 已到达客户位置 —— 更新进度但不改 OrderStatus（仍为 accepted）
@@ -65,7 +72,8 @@ class OrderDetailLogic extends GetxController with EventBusMixin {
 
   Future<void> startService() async {
     final id = state.order.value?.id; if (id == null) return;
-    _svc.start(id);
+    final ok = await _svc.start(id);
+    if (!ok) return;
     state.order.value = _svc.getById(id);
     Get.find<UserService>().setStatus(TechStatus.busy);
     Get.toNamed(AppRoutes.serviceActive);
@@ -75,7 +83,12 @@ class OrderDetailLogic extends GetxController with EventBusMixin {
     final id = state.order.value?.id; if (id == null) return;
     final ok = await ToastUtil.confirm(gL10n.btnComplete, gL10n.completeConfirm);
     if (!ok) return;
-    _svc.complete(id);
+    try {
+      await _svc.complete(id);
+    } catch (e) {
+      AppToast.error(gL10n.failed);
+      return;
+    }
     state.order.value = _svc.getById(id);
     final still = _svc.activeOrder;
     if (still == null) Get.find<UserService>().setStatus(TechStatus.online);

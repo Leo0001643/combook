@@ -61,8 +61,12 @@ request.interceptors.request.use(
     }
 
     // POST / PUT / PATCH 自动转为 application/x-www-form-urlencoded
-    // 注意：Array 类型的 body（对应后端 @RequestBody）跳过此转换，由 axios 以 JSON 发送
+    // 例外：调用方已明确设置 Content-Type: application/json 时保持 JSON 格式
+    const existingContentType = (config.headers['Content-Type'] as string | undefined) ?? ''
+    const isJsonRequest = existingContentType.toLowerCase().includes('application/json')
+
     if (
+      !isJsonRequest &&
       config.method &&
       FORM_METHODS.includes(config.method.toLowerCase()) &&
       config.data &&

@@ -45,9 +45,10 @@ public class TechOrderItemServiceImpl implements ITechOrderItemService {
             throw new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL);
         }
 
-        // 构建新服务项
+        // 构建新服务项（追加项由当前登录技师负责）
         CbOrderItem item = new CbOrderItem();
         item.setOrderId(orderId);
+        item.setTechnicianId(MemberContext.getMemberId()); // 追加的服务项归属当前技师
         item.setServiceItemId(dto.getServiceItemId());
         item.setServiceName(dto.getServiceName());
         item.setServiceDuration(dto.getServiceDuration());
@@ -121,15 +122,37 @@ public class TechOrderItemServiceImpl implements ITechOrderItemService {
         orderMapper.updateById(order);
     }
 
-    /** 校验订单属于当前技师并返回订单实体；不存在或无权限则抛出业务异常 */
+    /**
+     * 校验当前技师对订单有操作权限并返回订单实体。
+     *
+     * <p>多技师并行场景下，技师对订单的权限来源有两处：
+     * <ol>
+     *   <li>主技师：{@code cb_order.technician_id = techId}（下单时指定的第一位技师）</li>
+     *   <li>项目技师：{@code cb_order_item.technician_id = techId}（被分配了该订单服务项）</li>
+     * </ol>
+     * 满足任意一个条件即视为有权限。
+     */
     private CbOrder requireOwnOrder(Long orderId) {
         Long techId = MemberContext.getMemberId();
+
+        // 先尝试通过订单主技师字段查询（最常见场景）
         CbOrder order = orderMapper.selectOne(
                 new LambdaQueryWrapper<CbOrder>()
                         .eq(CbOrder::getId, orderId)
-                        .eq(CbOrder::getTechnicianId, techId)
                         .eq(CbOrder::getDeleted, 0));
         if (order == null) {
+            throw new BusinessException(CbCodeEnum.ORDER_NOT_FOUND);
+        }
+
+        // 权限检查：主技师 OR 项目技师
+        boolean isPrimaryTech = techId.equals(order.getTechnicianId());
+        boolean isItemTech    = !isPrimaryTech && orderItemMapper.selectCount(
+                new LambdaQueryWrapper<CbOrderItem>()
+                        .eq(CbOrderItem::getOrderId,     orderId)
+                        .eq(CbOrderItem::getTechnicianId, techId)
+                        .eq(CbOrderItem::getDeleted,      0)) > 0;
+
+        if (!isPrimaryTech && !isItemTech) {
             throw new BusinessException(CbCodeEnum.ORDER_NOT_FOUND);
         }
         return order;

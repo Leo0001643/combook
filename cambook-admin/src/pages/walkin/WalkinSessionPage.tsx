@@ -240,6 +240,96 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
 }
 
 // ════════════════════════════════════════════════════════════════════════════════
+// 整体服务计时单元格（实时倒计时，1秒刷新）
+// ────────────────────────────────────────────────────────────────────────────────
+function ServiceTimerCell({ totalMinutes, startEpochSec: rawStart, inService }: {
+  totalMinutes: number
+  startEpochSec: number | null
+  inService: boolean
+}) {
+  // 兼容秒和毫秒时间戳：>1e12 视为毫秒，自动转换为秒
+  const startEpochSec = rawStart != null
+    ? (rawStart > 1e12 ? Math.floor(rawStart / 1000) : rawStart)
+    : null
+
+  const [nowSec, setNowSec] = React.useState(() => Math.floor(Date.now() / 1000))
+  React.useEffect(() => {
+    if (!inService) return
+    const id = setInterval(() => setNowSec(Math.floor(Date.now() / 1000)), 1000)
+    return () => clearInterval(id)
+  }, [inService])
+
+  const fmt = (s: number) => {
+    const h = Math.floor(s / 3600)
+    const m = Math.floor((s % 3600) / 60)
+    const sc = s % 60
+    return h > 0
+      ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`
+      : `${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`
+  }
+
+  if (!inService || totalMinutes <= 0) {
+    return (
+      <div style={{ textAlign: 'center', color: '#d1d5db', fontSize: 12 }}>
+        {totalMinutes > 0 ? <span style={{ color: '#9ca3af' }}>{totalMinutes}min</span> : '—'}
+      </div>
+    )
+  }
+
+  const totalSecs = totalMinutes * 60
+  const elapsed   = startEpochSec ? Math.max(0, nowSec - startEpochSec) : 0
+  const remaining = Math.max(0, totalSecs - elapsed)
+  const pct       = Math.min(100, (elapsed / totalSecs) * 100)
+
+  const barColor  = pct >= 100 ? '#ef4444' : pct >= 85 ? '#f97316' : '#6366f1'
+  const remColor  = remaining === 0 ? '#ef4444' : remaining < 600 ? '#f97316' : '#10b981'
+
+  return (
+    <div style={{ minWidth: 138, padding: '2px 0' }}>
+      <style>{`
+        @keyframes svc-dot {
+          0%,100% { opacity:1; box-shadow:0 0 0 3px ${barColor}30 }
+          50%      { opacity:.6; box-shadow:0 0 0 5px ${barColor}18 }
+        }
+      `}</style>
+
+      {/* 状态标签 */}
+      <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:5 }}>
+        <div style={{
+          width:7, height:7, borderRadius:'50%',
+          background: barColor, animation:'svc-dot 1.4s ease-in-out infinite',
+        }} />
+        <span style={{ fontSize:10, color:barColor, fontWeight:700, letterSpacing:.4 }}>服务中</span>
+        <span style={{ fontSize:9, color:'#9ca3af', marginLeft:'auto' }}>{totalMinutes}min</span>
+      </div>
+
+      {/* 进度条 */}
+      <div style={{ height:5, borderRadius:5, background:'#f1f5f9', overflow:'hidden', marginBottom:5 }}>
+        <div style={{
+          height:'100%', borderRadius:5,
+          width:`${Math.min(100, pct)}%`,
+          background:`linear-gradient(90deg,${barColor},${barColor}bb)`,
+          boxShadow:`0 0 6px ${barColor}55`,
+          transition:'width 1s linear',
+        }} />
+      </div>
+
+      {/* 数字行 */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:4 }}>
+        <div style={{ background:'#f8fafc', borderRadius:6, padding:'4px 6px', textAlign:'center' }}>
+          <div style={{ fontSize:9, color:'#9ca3af', marginBottom:1 }}>已服务</div>
+          <div style={{ fontSize:12, fontWeight:900, color:'#374151', fontFamily:'monospace', fontVariantNumeric:'tabular-nums' }}>{fmt(elapsed)}</div>
+        </div>
+        <div style={{ background: remaining < 600 ? `${remColor}12` : '#f8fafc', borderRadius:6, padding:'4px 6px', textAlign:'center', border: remaining < 600 ? `1px solid ${remColor}40` : '1px solid transparent' }}>
+          <div style={{ fontSize:9, color:'#9ca3af', marginBottom:1 }}>剩余</div>
+          <div style={{ fontSize:12, fontWeight:900, color:remColor, fontFamily:'monospace', fontVariantNumeric:'tabular-nums' }}>{fmt(remaining)}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
 export default function WalkinSessionPage() {
   const { ref, height: tableBodyH } = useTableBodyHeight(46)
   const scope = usePortalScope()
@@ -338,7 +428,7 @@ export default function WalkinSessionPage() {
     }
     const price = getEffectivePrice(serviceId, createTechId)
     setOrderItems(prev => [...prev, {
-      serviceId: svc.id, name: svc.nameZh, duration: svc.duration ?? 60, unitPrice: price, qty: 1,
+      serviceId: svc.id, name: svc.nameZh, duration: svc.duration ?? 0, unitPrice: price, qty: 1,
     }])
   }
 
@@ -374,7 +464,7 @@ export default function WalkinSessionPage() {
       return
     }
     const price = svc.price ?? 0
-    setEditItems(prev => [...prev, { serviceId: svc.id, name: svc.nameZh, duration: svc.duration ?? 60, unitPrice: price, qty: 1 }])
+    setEditItems(prev => [...prev, { serviceId: svc.id, name: svc.nameZh, duration: svc.duration ?? 0, unitPrice: price, qty: 1 }])
   }
 
   const handleSaveEdit = () => {
@@ -607,7 +697,22 @@ export default function WalkinSessionPage() {
         )
       },
     },
-    // ⑧ 到店时间（移至最后）
+    // ⑧ 服务计时（实时）
+    {
+      title: col(<ClockCircleOutlined style={{ color: '#f97316' }} />, '服务计时', 'center'),
+      key: 'timer', width: 160, align: 'center',
+      render: (_, r) => {
+        const totalMinutes = (r.orderItems ?? []).reduce((s: number, it: any) => s + (it.duration ?? 0), 0)
+        return (
+          <ServiceTimerCell
+            totalMinutes={totalMinutes}
+            startEpochSec={r.serviceStartTime ?? null}
+            inService={r.status === 1}
+          />
+        )
+      },
+    },
+    // ⑨ 到店时间（移至最后）
     {
       title: col(<ClockCircleOutlined style={{ color: '#64748b' }} />, '到店时间', 'left'), dataIndex: 'checkInTime', width: 115, align: 'left',
       render: v => <Text style={{ fontSize: 12 }}>{v != null && v !== '' ? fmtTime(v, 'MM-DD HH:mm') : '—'}</Text>,
@@ -750,7 +855,7 @@ export default function WalkinSessionPage() {
           rowKey="id"
           size="middle"
           loading={loading}
-          scroll={{ x: 1380, y: tableBodyH }}
+          scroll={{ x: 1540, y: tableBodyH }}
           pagination={false}
         />
         <PagePagination

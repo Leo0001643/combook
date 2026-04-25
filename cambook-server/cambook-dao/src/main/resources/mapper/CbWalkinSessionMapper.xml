@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cambook.dao.mapper.CbWalkinSessionMapper">
+
+    <!--
+        技师首页今日安排 — 门店散客接待（Walkin Session）
+
+        walkin session status 映射到在线订单等效状态（Flutter 端统一展示）：
+          session.status 0 (已录入/待技师接单) → 在线等效 1 (待接单, PENDING_ACCEPT)
+          session.status 1 (服务中)           → 在线等效 5 (服务中, IN_SERVICE)
+          session.status 2 (待结算)           → 在线等效 5 (服务中, IN_SERVICE)
+          session.status 3 (已结算)           → 在线等效 6 (已完成, COMPLETED)
+          session.status 4 (已取消)           → 排除
+    -->
+    <select id="selectTodayByTechId" resultType="map">
+        SELECT
+            ws.id                                           AS sessionId,
+            ws.session_no                                   AS orderNo,
+            ws.check_in_time                                AS appointTime,
+            CASE ws.status
+                WHEN 0 THEN 1
+                WHEN 1 THEN 5
+                WHEN 2 THEN 5
+                ELSE 6
+            END                                             AS status,
+            ws.total_amount                                 AS payAmount,
+            0                                               AS techIncome,
+            COALESCE(ws.member_name, '')                    AS memberNickname,
+            NULL                                            AS memberAvatar
+        FROM cb_walkin_session ws
+        WHERE ws.technician_id = #{techId}
+          AND ws.deleted = 0
+          AND ws.status NOT IN (3, 4)
+          AND FROM_UNIXTIME(ws.check_in_time, '%Y-%m-%d') = CURDATE()
+        ORDER BY ws.check_in_time ASC
+    </select>
+
+    <!--
+        技师订单列表 — 门店散客接待（最近 90 天，供订单管理页面使用）
+
+        status 字段返回与在线订单等效的整数值，供 Flutter 端统一解析：
+          session.status 0 (已录入/待技师接单) → 1 (pendingAccept)
+          session.status 1 (服务中)           → 5 (inService)
+          session.status 2 (待结算)           → 5 (inService)
+          session.status 3 (已结算)           → 6 (completed)
+          session.status 4 (已取消)           → 7 (cancelled)
+    -->
+    <select id="selectRecentByTechId" resultType="map">
+        SELECT
+            ws.id                                           AS sessionId,
+            ws.session_no                                   AS orderNo,
+            ws.check_in_time                                AS appointTime,
+            ws.check_in_time                                AS createTime,
+            CASE ws.status
+                WHEN 0 THEN 1
+                WHEN 1 THEN 5
+                WHEN 2 THEN 5
+                WHEN 3 THEN 6
+                ELSE 7
+            END                                             AS mappedStatus,
+            ws.status                                       AS rawStatus,
+            ws.total_amount                                 AS payAmount,
+            COALESCE(ws.member_name, '')                    AS memberNickname,
+            COALESCE(ws.member_mobile, '')                  AS memberMobile,
+            ws.wristband_no                                 AS wristbandNo,
+            ws.remark                                       AS remark,
+            ws.service_start_time                           AS startTime
+        FROM cb_walkin_session ws
+        WHERE ws.technician_id = #{techId}
+          AND ws.deleted = 0
+          AND ws.check_in_time >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 90 DAY))
+        <if test="statuses != null and statuses.size() > 0">
+          AND CASE ws.status
+                  WHEN 0 THEN 1
+                  WHEN 1 THEN 5
+                  WHEN 2 THEN 5
+                  WHEN 3 THEN 6
+                  ELSE 7
+              END IN
+          <foreach item="s" collection="statuses" open="(" separator="," close=")">
+              #{s}
+          </foreach>
+        </if>
+        ORDER BY ws.check_in_time DESC
+        LIMIT 200
+    </select>
+
+</mapper>

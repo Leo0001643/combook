@@ -3,6 +3,7 @@ package com.cambook.dao.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.cambook.dao.entity.base.BaseEntity;
 
@@ -47,6 +48,9 @@ public class CbWalkinSession extends BaseEntity {
     private String      remark;
     private Long        checkInTime;
     private Long        checkOutTime;
+    /** 技师实际开始服务时间（Unix 秒）。需先执行 migrate_v5_6 添加 DB 列后才生效。 */
+    @TableField(exist = false)
+    private Long        serviceStartTime;
 
     public String getSessionNo()           { return sessionNo; }
     public String getWristbandNo()         { return wristbandNo; }
@@ -65,6 +69,7 @@ public class CbWalkinSession extends BaseEntity {
     public String getRemark()              { return remark; }
     public Long getCheckInTime()           { return checkInTime; }
     public Long getCheckOutTime()          { return checkOutTime; }
+    public Long getServiceStartTime()      { return serviceStartTime; }
 
     public void setSessionNo(String sessionNo)               { this.sessionNo = sessionNo; }
     public void setWristbandNo(String wristbandNo)           { this.wristbandNo = wristbandNo; }
@@ -82,4 +87,5 @@ public class CbWalkinSession extends BaseEntity {
     public void setRemark(String remark)                     { this.remark = remark; }
     public void setCheckInTime(Long checkInTime)             { this.checkInTime = checkInTime; }
     public void setCheckOutTime(Long checkOutTime)           { this.checkOutTime = checkOutTime; }
+    public void setServiceStartTime(Long serviceStartTime)   { this.serviceStartTime = serviceStartTime; }
 }

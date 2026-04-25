@@ -88,11 +88,15 @@ public class MerchantCategoryController {
         return Result.success(platformList);
     }
 
-    @Operation(summary = "新增私有服务类目")
+    @Operation(summary = "新增私有服务类目（支持 6 语言名称）")
     @PostMapping("/add")
     public Result<Void> add(
-            @RequestParam           String  nameZh,
+            @RequestParam               String  nameZh,
             @RequestParam(required = false) String  nameEn,
+            @RequestParam(required = false) String  nameVi,
+            @RequestParam(required = false) String  nameKm,
+            @RequestParam(required = false) String  nameJa,
+            @RequestParam(required = false) String  nameKo,
             @RequestParam(required = false) String  icon,
             @RequestParam(required = false) Long    parentId,
             @RequestParam(required = false) BigDecimal price,
@@ -106,6 +110,10 @@ public class MerchantCategoryController {
         cat.setParentId(parentId != null ? parentId : 0L);
         cat.setNameZh(nameZh);
         cat.setNameEn(nameEn);
+        cat.setNameVi(nameVi);
+        cat.setNameKm(nameKm);
+        cat.setNameJa(nameJa);
+        cat.setNameKo(nameKo);
         cat.setIcon(icon);
         cat.setPrice(price);
         cat.setDuration(duration);
@@ -116,7 +124,7 @@ public class MerchantCategoryController {
         return Result.success();
     }
 
-    @Operation(summary = "编辑服务类目（平台类目自动写时复制为商户私有副本）")
+    @Operation(summary = "编辑服务类目（平台类目自动写时复制为商户私有副本，支持 6 语言名称）")
     @PostMapping("/edit")
     public Result<Void> edit(
             @RequestParam           Long    id,
@@ -124,6 +132,8 @@ public class MerchantCategoryController {
             @RequestParam(required = false) String  nameEn,
             @RequestParam(required = false) String  nameVi,
             @RequestParam(required = false) String  nameKm,
+            @RequestParam(required = false) String  nameJa,
+            @RequestParam(required = false) String  nameKo,
             @RequestParam(required = false) String  icon,
             @RequestParam(required = false) BigDecimal price,
             @RequestParam(required = false) Integer duration,
@@ -154,6 +164,8 @@ public class MerchantCategoryController {
                 copy.setNameEn(cat.getNameEn());
                 copy.setNameVi(cat.getNameVi());
                 copy.setNameKm(cat.getNameKm());
+                copy.setNameJa(cat.getNameJa());
+                copy.setNameKo(cat.getNameKo());
                 copy.setIcon(cat.getIcon());
                 copy.setPrice(cat.getPrice());
                 copy.setDuration(cat.getDuration());
@@ -165,6 +177,8 @@ public class MerchantCategoryController {
                 if (nameEn    != null) copy.setNameEn(nameEn);
                 if (nameVi    != null) copy.setNameVi(nameVi);
                 if (nameKm    != null) copy.setNameKm(nameKm);
+                if (nameJa    != null) copy.setNameJa(nameJa);
+                if (nameKo    != null) copy.setNameKo(nameKo);
                 if (icon      != null) copy.setIcon(icon);
                 if (price     != null) copy.setPrice(price);
                 if (duration  != null) copy.setDuration(duration);
@@ -183,6 +197,8 @@ public class MerchantCategoryController {
         if (nameEn    != null) cat.setNameEn(nameEn);
         if (nameVi    != null) cat.setNameVi(nameVi);
         if (nameKm    != null) cat.setNameKm(nameKm);
+        if (nameJa    != null) cat.setNameJa(nameJa);
+        if (nameKo    != null) cat.setNameKo(nameKo);
         if (icon      != null) cat.setIcon(icon);
         if (price     != null) cat.setPrice(price);
         if (duration  != null) cat.setDuration(duration);

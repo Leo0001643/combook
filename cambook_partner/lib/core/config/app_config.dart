@@ -32,7 +32,7 @@ abstract class AppConfig {
 
   /// 商户数字 ID —— 对应数据库 `cb_merchant.id`，登录时随请求上传做租户隔离
   static const merchantId = int.fromEnvironment(
-    'MERCHANT_ID', defaultValue: 1,
+    'MERCHANT_ID', defaultValue: 16,
   );
 
   /// 商户唯一标识（英文，用于埋点/日志区分商户）
@@ -48,15 +48,18 @@ abstract class AppConfig {
   // ── 网络 ────────────────────────────────────────────────────────────────────
 
   /// 后端 API 根路径
+  /// 开发默认值：本机局域网 IP（每次换网络需同步更新）
+  /// Android 模拟器用 http://10.0.2.2:8080 代替真实 IP
+  /// 正式环境通过 --dart-define=API_BASE_URL=https://api.xxx.com 注入
   static const apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL', defaultValue: 'http://127.0.0.1:8080',
+    'API_BASE_URL', defaultValue: 'http://192.168.41.132:8080',
   );
 
   // ── 应用信息 ────────────────────────────────────────────────────────────────
 
   /// 应用名称（标题栏 / 关于页面）
   static const appName = String.fromEnvironment(
-    'APP_NAME', defaultValue: 'CamBook Partner',
+    'APP_NAME', defaultValue: '名玺水汇',
   );
 
   // ── 品牌视觉 ────────────────────────────────────────────────────────────────

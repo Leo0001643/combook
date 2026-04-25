@@ -203,6 +203,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get tabAccepted => 'ទទួលហើយ';
 
   @override
+  String get statusReception => 'កំពុងទទួល';
+
+  @override
   String get tabInService => 'កំពុងបម្រើ';
 
   @override
@@ -962,4 +965,55 @@ class AppLocalizationsKm extends AppLocalizations {
   String estimatedIncome(String amount) {
     return 'ប្រហាក់ $amount';
   }
+
+  @override
+  String get sessionExpiredTitle => 'សម័យបានផុតកំណត់';
+
+  @override
+  String get sessionExpiredMessage => 'អ្នកត្រូវបានចេញពីប្រព័ន្ធ។ សូមចូលម្ដងទៀតដើម្បីបន្ត។';
+
+  @override
+  String get goToLogin => 'ទៅកាន់ការចូល';
+
+  @override
+  String get networkTimeout => 'ការស្នើសុំអស់ពេល។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក។';
+
+  @override
+  String get networkUnavailable => 'បណ្ដាញមិនអាចប្រើបាន។ សូមពិនិត្យការតភ្ជាប់។';
+
+  @override
+  String get networkError => 'ការស្នើសុំបានបរាជ័យ។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។';
+
+  @override
+  String get orderTypeOnline => 'កក់ទុក';
+
+  @override
+  String get orderTypeWalkin => 'អតិថិជនចូល';
+
+  @override
+  String get walkinGuest => 'អតិថិជនទូទៅ';
+
+  @override
+  String get sessionNo => 'វគ្គ';
+
+  @override
+  String get walkinOrderTip => 'លំដាប់ហាងគ្រប់គ្រងដោយreception.';
+
+  @override
+  String get notificationSound => 'សំឡេងជូនដំណឹង';
+
+  @override
+  String get vibration => 'កំប្រ';
+
+  @override
+  String get rating => 'ការវាយតម្លៃ';
+
+  @override
+  String get myOrders => 'តុ​ Order ​របស់ខ្ញុំ';
+
+  @override
+  String get reviews => 'ការពិនិត្យ';
+
+  @override
+  String get langHint => 'ជ្រើសរើសភាសាបង្ហាញដែលអ្នកចូលចិត្ត';
 }

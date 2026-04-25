@@ -99,11 +99,12 @@ const MerchantCurrencyPage: React.FC = () => {
       title: '币种',
       key: 'currency',
       width: 220,
+      align: 'left',
       render: (_, row) => (
-        <Space>
-          <span style={{ fontSize: 22 }}>{row.flag}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 22, flexShrink: 0 }}>{row.flag}</span>
           <div>
-            <Space size={4}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
               <span style={{ fontWeight: 700, fontSize: 15 }}>{row.currencyCode}</span>
               <span style={{ fontWeight: 600 }}>{row.symbol}</span>
               {row.isCrypto === 1 && <Tag color="purple" style={{ fontSize: 10, padding: '0 4px' }}>加密</Tag>}
@@ -112,10 +113,10 @@ const MerchantCurrencyPage: React.FC = () => {
                   <StarFilled style={{ color: '#faad14', fontSize: 12 }} />
                 </Tooltip>
               )}
-            </Space>
+            </div>
             <div style={{ fontSize: 12, color: '#888' }}>{row.currencyName} · {row.currencyNameEn}</div>
           </div>
-        </Space>
+        </div>
       ),
     },
     {

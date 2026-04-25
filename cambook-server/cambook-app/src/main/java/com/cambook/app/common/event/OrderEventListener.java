@@ -1,18 +1,23 @@
 package com.cambook.app.common.event;
 
 import com.cambook.app.common.statemachine.OrderStatus;
+import com.cambook.app.websocket.TechWsHandler;
+import com.cambook.app.websocket.TechWsRegistry;
+import com.cambook.app.websocket.WsMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * 订单事件监听器
  *
  * <p>所有副作用（消息推送、余额变更、技师状态重置）均在此处异步处理，
  * 与核心业务完全解耦（观察者模式）。
- * 新增通知渠道只需在此追加 {@code if} 分支或新增方法，不影响订单服务（开闭原则）。
+ * 新增通知渠道只需在此追加方法，不影响订单服务（开闭原则）。
  *
  * @author CamBook
  */
@@ -20,6 +25,14 @@ import org.springframework.stereotype.Component;
 public class OrderEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(OrderEventListener.class);
+
+    private final TechWsRegistry registry;
+    private final TechWsHandler  wsHandler;
+
+    public OrderEventListener(TechWsRegistry registry, TechWsHandler wsHandler) {
+        this.registry  = registry;
+        this.wsHandler = wsHandler;
+    }
 
     /**
      * 异步处理订单状态变更通知
@@ -37,7 +50,7 @@ public class OrderEventListener {
         if (to == OrderStatus.PENDING_ACCEPT.getCode()) {
             // 订单支付成功 → 推送"派单中"通知给用户，广播给附近技师
             pushToMember(event.getMemberId(), "订单已支付，正在为您匹配技师");
-            broadcastToNearbyTechnicians(event.getOrderId());
+            broadcastToNearbyTechnicians(event.getOrderId(), event.getTechnicianId());
         } else if (to == OrderStatus.ACCEPTED.getCode()) {
             // 技师接单 → 通知用户技师已接单
             pushToMember(event.getMemberId(), "技师已接单，正在赶来中");
@@ -64,9 +77,15 @@ public class OrderEventListener {
         log.info("[Push → Member] memberId={} msg={}", memberId, content);
     }
 
-    private void broadcastToNearbyTechnicians(Long orderId) {
-        // TODO: 通过 WebSocket 或推送广播给附近在线技师
-        log.info("[Broadcast] 新订单广播 orderId={}", orderId);
+    private void broadcastToNearbyTechnicians(Long orderId, Long technicianId) {
+        log.info("[Broadcast] 新订单 WS 推送 orderId={} techId={}", orderId, technicianId);
+        // 推送 NEW_ORDER 给指定技师（若已登录 WS）→ App 播放语音提示
+        Map<String, Object> payload = Map.of("orderId", orderId);
+        if (technicianId != null) {
+            registry.sendTo(technicianId, WsMessage.newOrder(payload));
+            // 随即刷新该技师的首页数据
+            wsHandler.pushHomeData(technicianId);
+        }
     }
 
     private void settleTechnicianEarnings(Long technicianId, Long orderId) {

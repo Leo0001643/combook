@@ -3,7 +3,7 @@
   "MERCHANT_KEY": "kasjdkflajsdfkl",
   "MERCHANT_NAME": "明玺休闲会所",
   "APP_NAME": "明玺休闲会所",
-  "API_BASE_URL": "http://192.168.21.211:8080",
+  "API_BASE_URL": "http://127.0.0.1:8080",
   "THEME_COLOR": "0EA472",
   "BANNER_URL": "https://cdn.spavibe.io/banner.jpg",
   "LOGO_URL": "https://cdn.spavibe.io/logo.png",
