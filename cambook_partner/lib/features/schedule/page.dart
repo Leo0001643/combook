@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/widgets/app_dialog.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../core/extensions/theme_ext.dart';import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../core/models/models.dart';
@@ -100,15 +100,15 @@ class _WorkDayCard extends StatelessWidget {
                   onTap: () => logic.toggleWorkDay(day),
                   child: Column(children: [
                     Text(logic.dayName(day).substring(1),
-                        style: TextStyle(fontSize: 11, color: active ? AppColors.primary : AppColors.textHint)),
+                        style: TextStyle(fontSize: 11, color: active ? context.primary : AppColors.textHint)),
                     const SizedBox(height: 4),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       width: 36, height: 36,
                       decoration: BoxDecoration(
-                        color: active ? AppColors.primary : AppColors.background,
+                        color: active ? context.primary : AppColors.background,
                         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                        border: Border.all(color: active ? AppColors.primary : AppColors.border),
+                        border: Border.all(color: active ? context.primary : AppColors.border),
                       ),
                       alignment: Alignment.center,
                       child: Icon(
@@ -138,7 +138,7 @@ class _WorkDayCard extends StatelessWidget {
             onTap: () => _pickWorkTime(context),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Text(l.edit, style: const TextStyle(fontSize: 13, color: AppColors.primary, fontWeight: FontWeight.w600)),
+              child: Text(l.edit, style: TextStyle(fontSize: 13, color: context.primary, fontWeight: FontWeight.w600)),
             ),
           ),
         ])),
@@ -174,7 +174,7 @@ class _AppointmentCard extends StatelessWidget {
         Container(
           width: 56, height: 56,
           decoration: BoxDecoration(
-            gradient: isToday ? AppColors.gradientPrimary : const LinearGradient(colors: [Color(0xFFF0F0F0), Color(0xFFE8E8E8)]),
+            gradient: isToday ? context.primaryGrad : const LinearGradient(colors: [Color(0xFFF0F0F0), Color(0xFFE8E8E8)]),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           alignment: Alignment.center,
@@ -208,13 +208,13 @@ class _AppointmentCard extends StatelessWidget {
         ])),
         Column(mainAxisSize: MainAxisSize.min, children: [
           Container(
-            decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: context.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
             child: BounceTap(
               pressScale: 0.80,
               onTap: () => _navigateToOrder(context),
-              child: const Padding(
-                padding: EdgeInsets.all(10),
-                child: Icon(Icons.arrow_forward_ios_rounded, color: AppColors.primary, size: 15),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Icon(Icons.arrow_forward_ios_rounded, color: context.primary, size: 15),
               ),
             ),
           ),

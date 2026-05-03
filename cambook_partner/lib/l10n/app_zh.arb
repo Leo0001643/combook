@@ -2,6 +2,9 @@
   "@@locale": "zh",
   "appName": "CamBook 技师端",
   "@appName": {},
+  "technicianWorkstation": "技师工作台",
+  "notifications": "消息通知",
+  "profileSettings": "我的资料",
   "navHome": "首页",
   "navOrders": "订单",
   "navMessages": "消息",
@@ -243,7 +246,7 @@
   "phoneHint": "请输入手机号",
   "password": "密码",
   "passwordHint": "请输入密码",
-  "loginBtn": "登录",
+  "loginBtn": "进入工作台",
   "forgotPassword": "忘记密码？",
   "loginSuccess": "登录成功",
   "loginFailed": "手机号或密码错误",
@@ -267,7 +270,7 @@
   "techIdHint": "请输入您的技师编号",
   "techIdRequired": "请输入技师编号",
   "noAccount": "还没有账号？",
-  "goRegister": "立即注册",
+  "goRegister": "注册新账号",
   "haveAccount": "已有账号？",
   "goLogin": "去登录",
   "registerTitle": "注册技师账号",
@@ -296,7 +299,7 @@
   "merchantCodeHint": "请输入商户邀请码",
   "merchantCodeRequired": "请输入商户代码",
   "selectCountry": "选择国家/地区",
-  "registerBtn": "立即注册",
+  "registerBtn": "加入技师团队",
   "registerSuccess": "注册成功！请等待商户审核",
   "registerFailed": "注册失败，请重试",
   "invalidPhone": "手机号格式不正确",
@@ -329,6 +332,8 @@
   "distanceFrom": "距您",
   "ignore": "忽略",
   "grabOrder": "立即接单",
+  "estimatedEarnings": "预计收入",
+  "unknownCustomer": "新客户",
   "announcements": "公告消息",
   "helpAndSupport": "帮助与支持",
   "rateApp": "评价应用",
@@ -347,14 +352,16 @@
   "totalOrders": "累计接单",
   "overallRating": "综合评分",
   "currentBalance": "当前余额",
-
   "statTodayAppointments": "今日预约",
   "statTodayCompleted": "今日完成",
   "statTodayCancelled": "今日取消",
-
   "schedOrderCount": "{n}单",
   "@schedOrderCount": {
-    "placeholders": { "n": { "type": "int" } }
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   },
   "schedInService": "进行中",
   "schedPending": "待服务",
@@ -362,37 +369,44 @@
   "scheduleProgress": "{completed} / {total} 单完成",
   "@scheduleProgress": {
     "placeholders": {
-      "completed": { "type": "int" },
-      "total":     { "type": "int" }
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "statusOnWay": "前往中",
   "statusCancelling": "取消中",
   "statusRefunding": "退款中",
   "statusRefunded": "已退款",
-
   "schedEndTime": "结束 {time} · {duration}min",
   "@schedEndTime": {
     "placeholders": {
-      "time":     { "type": "String" },
-      "duration": { "type": "String" }
+      "time": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "serviceInProgress": "服务进行中",
   "estimatedIncome": "预计 {amount}",
   "@estimatedIncome": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-
   "sessionExpiredTitle": "登出提醒",
   "sessionExpiredMessage": "您已经登出，请重新登录后继续操作",
   "goToLogin": "前往登录",
-
   "networkTimeout": "网络超时，请检查网络连接",
   "networkUnavailable": "网络不可用，请检查连接",
   "networkError": "网络请求失败，请稍后重试",
-
   "orderTypeOnline": "在线预约",
   "orderTypeWalkin": "门店散客",
   "walkinGuest": "散客",
@@ -403,5 +417,46 @@
   "rating": "评分",
   "myOrders": "我的订单",
   "reviews": "我的评价",
-  "langHint": "选择您偏好的显示语言"
+  "langHint": "选择您偏好的显示语言",
+  "welcomeBack": "欢迎回来",
+  "spaName": "水汇 SPA",
+  "loginHeroTagline": "身心放松 · 焕活之旅",
+  "rememberMe": "记住我",
+  "otherLoginMethods": "其他登录方式",
+  "genderHint": "性别",
+  "genderMale": "男",
+  "genderFemale": "女",
+  "genderOther": "其他",
+  "orRegisterVia": "或通过以下方式注册",
+  "telegramOptional": "Telegram账号（选填）",
+  "facebookOptional": "Facebook（选填）",
+  "registerJoinPrefix": "加入 ",
+  "registerJoinSuffix": "，开启您的服务之旅",
+  "themeRosePink": "玫瑰粉",
+  "themeChampagneGold": "香槟金",
+  "themeColor": "主题色",
+  "nicknameHint": "昵称",
+  "brandTitle": "明 玺 · 技 师 端",
+  "technicianLogin": "TECHNICIAN LOGIN",
+  "workbenchTitle": "技师工作台",
+  "sanctuaryAwaits": "Your Sanctuary Awaits",
+  "zenTagline": "禅意疗愈  ·  专属服务  ·  安全护航",
+  "privacySafe": "隐私保护",
+  "dataSafe": "数据安全",
+  "provenPlatform": "专业平台",
+  "themeForestGreen": "森林绿",
+  "dataUpdated": "数据更新",
+  "allFeatures": "全部功能",
+  "techRanking": "技师排名",
+  "performance": "业绩总览",
+  "thisWeek": "本周",
+  "vsYesterday": "较昨日",
+  "storeRanking": "门店排名",
+  "weeklyIncome": "本周收入",
+  "homeTagline": "专注服务 · 用心疗愈 · 传递美好",
+  "drawerWorkGroup": "工作管理",
+  "drawerDataGroup": "数据收益",
+  "drawerProfileGroup": "个人中心",
+  "drawerMoreGroup": "更多",
+  "drawerBrand": "CamBook Pro · 技师工作台"
 }

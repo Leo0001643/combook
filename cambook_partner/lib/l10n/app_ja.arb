@@ -1,6 +1,9 @@
 {
   "@@locale": "ja",
   "appName": "CamBook パートナー",
+  "technicianWorkstation": "テクニシャンワークステーション",
+  "notifications": "通知",
+  "profileSettings": "マイプロフィール",
   "navHome": "ホーム",
   "navOrders": "注文",
   "navMessages": "メッセージ",
@@ -242,7 +245,7 @@
   "phoneHint": "電話番号を入力",
   "password": "パスワード",
   "passwordHint": "パスワードを入力",
-  "loginBtn": "ログイン",
+  "loginBtn": "作業台に入る",
   "forgotPassword": "パスワードを忘れた方",
   "loginSuccess": "ログイン成功",
   "loginFailed": "認証情報が正しくありません",
@@ -295,7 +298,7 @@
   "merchantCodeHint": "加盟店招待コードを入力してください",
   "merchantCodeRequired": "加盟店コードを入力してください",
   "selectCountry": "国を選択",
-  "registerBtn": "今すぐ登録",
+  "registerBtn": "チームに参加",
   "registerSuccess": "登録完了！加盟店の承認をお待ちください",
   "registerFailed": "登録に失敗しました。再試行してください",
   "invalidPhone": "無効な電話番号",
@@ -328,6 +331,8 @@
   "distanceFrom": "距離:",
   "ignore": "無視",
   "grabOrder": "今すぐ受注",
+  "estimatedEarnings": "予想収入",
+  "unknownCustomer": "新規顧客",
   "announcements": "お知らせ",
   "helpAndSupport": "ヘルプ & サポート",
   "rateApp": "アプリを評価する",
@@ -346,14 +351,16 @@
   "totalOrders": "累計受注",
   "overallRating": "総合評価",
   "currentBalance": "現在の残高",
-
   "statTodayAppointments": "本日の予約",
   "statTodayCompleted": "本日の完了",
   "statTodayCancelled": "本日のキャンセル",
-
   "schedOrderCount": "{n}件",
   "@schedOrderCount": {
-    "placeholders": { "n": { "type": "int" } }
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   },
   "schedInService": "サービス中",
   "schedPending": "サービス待ち",
@@ -361,37 +368,44 @@
   "scheduleProgress": "{completed} / {total} 完了",
   "@scheduleProgress": {
     "placeholders": {
-      "completed": { "type": "int" },
-      "total":     { "type": "int" }
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "statusOnWay": "移動中",
   "statusCancelling": "キャンセル中",
   "statusRefunding": "返金中",
   "statusRefunded": "返金済み",
-
   "schedEndTime": "終了 {time} · {duration}分",
   "@schedEndTime": {
     "placeholders": {
-      "time":     { "type": "String" },
-      "duration": { "type": "String" }
+      "time": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "serviceInProgress": "サービス中",
   "estimatedIncome": "予定 {amount}",
   "@estimatedIncome": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-
   "sessionExpiredTitle": "セッション期限切れ",
   "sessionExpiredMessage": "ログアウトされました。続けるには再度ログインしてください。",
   "goToLogin": "ログインへ",
-
   "networkTimeout": "リクエストがタイムアウトしました。接続を確認してください。",
   "networkUnavailable": "ネットワークが利用できません。接続を確認してください。",
   "networkError": "リクエストが失敗しました。後でもう一度お試しください。",
-
   "orderTypeOnline": "オンライン予約",
   "orderTypeWalkin": "店頭来店",
   "walkinGuest": "一般来客",
@@ -402,5 +416,46 @@
   "rating": "評価",
   "myOrders": "注文一覧",
   "reviews": "レビュー",
-  "langHint": "表示言語を選択してください"
+  "langHint": "表示言語を選択してください",
+  "welcomeBack": "おかえりなさい",
+  "spaName": "ウォーター SPA",
+  "loginHeroTagline": "心身のリラックス · 活力の旅",
+  "rememberMe": "ログイン状態を保持",
+  "otherLoginMethods": "その他のログイン方法",
+  "genderHint": "性別",
+  "genderMale": "男性",
+  "genderFemale": "女性",
+  "genderOther": "その他",
+  "orRegisterVia": "または以下で登録",
+  "telegramOptional": "Telegram（任意）",
+  "facebookOptional": "Facebook（任意）",
+  "registerJoinPrefix": "参加する ",
+  "registerJoinSuffix": "、サービスの旅を始めましょう",
+  "themeRosePink": "ローズピンク",
+  "themeChampagneGold": "シャンパンゴールド",
+  "themeColor": "テーマカラー",
+  "nicknameHint": "ニックネーム",
+  "brandTitle": "明熙・テクニシャン",
+  "technicianLogin": "TECHNICIAN LOGIN",
+  "workbenchTitle": "テクニシャン作業台",
+  "sanctuaryAwaits": "Your Sanctuary Awaits",
+  "zenTagline": "癒し  ·  専属サービス  ·  安全保障",
+  "privacySafe": "プライバシー保護",
+  "dataSafe": "データセキュリティ",
+  "provenPlatform": "プロフェッショナル",
+  "themeForestGreen": "フォレストグリーン",
+  "dataUpdated": "更新済み",
+  "allFeatures": "全機能",
+  "techRanking": "テクランク",
+  "performance": "パフォーマンス",
+  "thisWeek": "今週",
+  "vsYesterday": "昨日比",
+  "storeRanking": "店舗ランク",
+  "weeklyIncome": "週収入",
+  "homeTagline": "集中 · 癒し · 伝える",
+  "drawerWorkGroup": "業務管理",
+  "drawerDataGroup": "収益データ",
+  "drawerProfileGroup": "マイページ",
+  "drawerMoreGroup": "その他",
+  "drawerBrand": "CamBook Pro · ワークステーション"
 }

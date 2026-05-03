@@ -12,6 +12,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appName => 'CamBook パートナー';
 
   @override
+  String get technicianWorkstation => 'テクニシャンワークステーション';
+
+  @override
+  String get notifications => '通知';
+
+  @override
+  String get profileSettings => 'マイプロフィール';
+
+  @override
   String get navHome => 'ホーム';
 
   @override
@@ -659,7 +668,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get passwordHint => 'パスワードを入力';
 
   @override
-  String get loginBtn => 'ログイン';
+  String get loginBtn => '作業台に入る';
 
   @override
   String get forgotPassword => 'パスワードを忘れた方';
@@ -780,7 +789,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectCountry => '国を選択';
 
   @override
-  String get registerBtn => '今すぐ登録';
+  String get registerBtn => 'チームに参加';
 
   @override
   String get registerSuccess => '登録完了！加盟店の承認をお待ちください';
@@ -858,6 +867,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get grabOrder => '今すぐ受注';
+
+  @override
+  String get estimatedEarnings => '予想収入';
+
+  @override
+  String get unknownCustomer => '新規顧客';
 
   @override
   String get announcements => 'お知らせ';
@@ -1016,4 +1031,127 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get langHint => '表示言語を選択してください';
+
+  @override
+  String get welcomeBack => 'おかえりなさい';
+
+  @override
+  String get spaName => 'ウォーター SPA';
+
+  @override
+  String get loginHeroTagline => '心身のリラックス · 活力の旅';
+
+  @override
+  String get rememberMe => 'ログイン状態を保持';
+
+  @override
+  String get otherLoginMethods => 'その他のログイン方法';
+
+  @override
+  String get genderHint => '性別';
+
+  @override
+  String get genderMale => '男性';
+
+  @override
+  String get genderFemale => '女性';
+
+  @override
+  String get genderOther => 'その他';
+
+  @override
+  String get orRegisterVia => 'または以下で登録';
+
+  @override
+  String get telegramOptional => 'Telegram（任意）';
+
+  @override
+  String get facebookOptional => 'Facebook（任意）';
+
+  @override
+  String get registerJoinPrefix => '参加する ';
+
+  @override
+  String get registerJoinSuffix => '、サービスの旅を始めましょう';
+
+  @override
+  String get themeRosePink => 'ローズピンク';
+
+  @override
+  String get themeChampagneGold => 'シャンパンゴールド';
+
+  @override
+  String get themeColor => 'テーマカラー';
+
+  @override
+  String get nicknameHint => 'ニックネーム';
+
+  @override
+  String get brandTitle => '明熙・テクニシャン';
+
+  @override
+  String get technicianLogin => 'TECHNICIAN LOGIN';
+
+  @override
+  String get workbenchTitle => 'テクニシャン作業台';
+
+  @override
+  String get sanctuaryAwaits => 'Your Sanctuary Awaits';
+
+  @override
+  String get zenTagline => '癒し  ·  専属サービス  ·  安全保障';
+
+  @override
+  String get privacySafe => 'プライバシー保護';
+
+  @override
+  String get dataSafe => 'データセキュリティ';
+
+  @override
+  String get provenPlatform => 'プロフェッショナル';
+
+  @override
+  String get themeForestGreen => 'フォレストグリーン';
+
+  @override
+  String get dataUpdated => '更新済み';
+
+  @override
+  String get allFeatures => '全機能';
+
+  @override
+  String get techRanking => 'テクランク';
+
+  @override
+  String get performance => 'パフォーマンス';
+
+  @override
+  String get thisWeek => '今週';
+
+  @override
+  String get vsYesterday => '昨日比';
+
+  @override
+  String get storeRanking => '店舗ランク';
+
+  @override
+  String get weeklyIncome => '週収入';
+
+  @override
+  String get homeTagline => '集中 · 癒し · 伝える';
+
+  @override
+  String get drawerWorkGroup => '業務管理';
+
+  @override
+  String get drawerDataGroup => '収益データ';
+
+  @override
+  String get drawerProfileGroup => 'マイページ';
+
+  @override
+  String get drawerMoreGroup => 'その他';
+
+  @override
+  String get drawerBrand => 'CamBook Pro · ワークステーション';
 }

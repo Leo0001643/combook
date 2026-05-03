@@ -14,7 +14,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import {
   Table, Input, Select, Button, Space, Typography, message,
   Modal, Form, InputNumber, Drawer, Descriptions,
-  Badge, Popconfirm, Avatar, Tag, Timeline,
+  Badge, Popconfirm, Avatar, Tag, Timeline, DatePicker,
 } from 'antd'
 import {
   PlusOutlined, SearchOutlined, ReloadOutlined, SettingOutlined,
@@ -80,30 +80,45 @@ const SVC_COLORS = [
 ]
 
 // ── 服务进度条组件（和门店订单共用同款 UI）───────────────────────────────────────
-function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
+function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap, orderStatus, orderStartTime }: {
   item: any; colorIdx: number; compact?: boolean
   svcStatusMap?: Record<number, { label: string; badge: string; badgeBg: string; icon: string }>
+  orderStatus?: number
+  orderStartTime?: number | null  // order-level startTime (Unix sec) fallback when item.startTime is null
 }) {
   const [now, setNow] = React.useState(dayjs())
   const color = SVC_COLORS[colorIdx % SVC_COLORS.length]
   const statusMap = svcStatusMap ?? SVC_STATUS_CFG_FB
-  const cfg = statusMap[item.svcStatus as 0|1|2] ?? SVC_STATUS_CFG_FB[0]
+
+  // Infer effective svcStatus when backend hasn't updated individual items:
+  //   order completed (6) → all items done (2)
+  //   order in service (5) and item still pending → treat as serving (1)
+  const effectiveSvcStatus: 0|1|2 = (() => {
+    if (item.svcStatus === 2) return 2
+    if (item.svcStatus === 1) return 1
+    if (orderStatus === 6) return 2       // order done → item done
+    if (orderStatus === 5) return 1       // order in service → item serving
+    return 0
+  })()
+
+  const cfg = statusMap[effectiveSvcStatus] ?? SVC_STATUS_CFG_FB[0]
 
   React.useEffect(() => {
-    if (item.svcStatus !== 1) return
+    if (effectiveSvcStatus !== 1) return
     const id = setInterval(() => setNow(dayjs()), 1000)
     return () => clearInterval(id)
-  }, [item.svcStatus])
+  }, [effectiveSvcStatus])
 
-  let pct = 0; let elapsed = 0; let remaining = item.serviceDuration ?? item.duration ?? 60
-  if (item.svcStatus === 1 && item.startTime) {
-    const start = dayjsFromApi(item.startTime)
+  const dur = Math.max(1, item.serviceDuration ?? item.duration ?? 60)
+  // Use item-level startTime first; fall back to order-level startTime when item hasn't recorded its own
+  const startSource = item.startTime || orderStartTime || null
+  let pct = 0; let elapsed = 0; let remaining = dur
+  if (effectiveSvcStatus === 1 && startSource) {
+    const start = dayjsFromApi(startSource)
     elapsed = start ? now.diff(start, 'minute') : 0
-    pct = Math.min(100, Math.round((elapsed / (item.serviceDuration ?? item.duration ?? 60)) * 100))
-    remaining = Math.max(0, (item.serviceDuration ?? item.duration ?? 60) - elapsed)
-  } else if (item.svcStatus === 2) { pct = 100; elapsed = item.serviceDuration ?? item.duration ?? 60; remaining = 0 }
-
-  const dur = item.serviceDuration ?? item.duration ?? 60
+    pct = Math.min(100, Math.round((elapsed / dur) * 100))
+    remaining = Math.max(0, dur - elapsed)
+  } else if (effectiveSvcStatus === 2) { pct = 100; elapsed = dur; remaining = 0 }
   const animId = `op-${item.id ?? item.serviceItemId}-${colorIdx}`
 
   if (compact) {
@@ -122,14 +137,14 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
         <div style={{ position:'relative', height:5, borderRadius:8, background:'#f1f5f9', overflow:'hidden' }}>
           <div style={{
             position:'absolute', left:0, top:0, bottom:0, width:`${pct}%`,
-            background: item.svcStatus===1 ? `${color.bar},linear-gradient(90deg,transparent 25%,rgba(255,255,255,.4) 50%,transparent 75%)` : color.bar,
-            backgroundSize: item.svcStatus===1 ? '200% 100%,200% 100%' : '100% 100%',
-            animation: item.svcStatus===1 ? `${animId} 1.8s linear infinite` : 'none',
-            borderRadius:8, boxShadow: item.svcStatus===1 ? `0 0 6px ${color.glow}` : 'none',
+            background: effectiveSvcStatus===1 ? `${color.bar},linear-gradient(90deg,transparent 25%,rgba(255,255,255,.4) 50%,transparent 75%)` : color.bar,
+            backgroundSize: effectiveSvcStatus===1 ? '200% 100%,200% 100%' : '100% 100%',
+            animation: effectiveSvcStatus===1 ? `${animId} 1.8s linear infinite` : 'none',
+            borderRadius:8, boxShadow: effectiveSvcStatus===1 ? `0 0 6px ${color.glow}` : 'none',
             transition:'width 1s linear',
           }} />
         </div>
-        {item.svcStatus===1 && (
+        {effectiveSvcStatus===1 && (
           <div style={{ display:'flex', justifyContent:'space-between', marginTop:2, fontSize:9, color:'#9ca3af' }}>
             <span>已用 {elapsed}min</span>
             <span style={{ color:color.text, fontWeight:700 }}>剩余 {remaining}min</span>
@@ -143,7 +158,7 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
     <div style={{ borderRadius:14, overflow:'hidden', border:`1.5px solid ${color.border}`, marginBottom:10 }}>
       <style>{`@keyframes ${animId}{0%{background-position:-200% center}100%{background-position:200% center}}@keyframes ${animId}-p{0%,100%{opacity:1}50%{opacity:.55}}`}</style>
       <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', background:color.bg, borderBottom:`1px solid ${color.border}` }}>
-        <div style={{ width:28, height:28, borderRadius:8, flexShrink:0, background:color.bar, boxShadow:`0 2px 8px ${color.glow}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, animation: item.svcStatus===1 ? `${animId}-p 2s ease-in-out infinite` : 'none' }}>
+        <div style={{ width:28, height:28, borderRadius:8, flexShrink:0, background:color.bar, boxShadow:`0 2px 8px ${color.glow}`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, animation: effectiveSvcStatus===1 ? `${animId}-p 2s ease-in-out infinite` : 'none' }}>
           <span>{cfg.icon}</span>
         </div>
         <div style={{ flex:1 }}>
@@ -160,21 +175,21 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
         <div style={{ position:'relative', height:10, borderRadius:10, background:'#f1f5f9', overflow:'hidden', marginBottom:8 }}>
           <div style={{
             position:'absolute', left:0, top:0, bottom:0, width:`${pct}%`, borderRadius:10,
-            background: item.svcStatus===1 ? `${color.bar},linear-gradient(90deg,transparent 20%,rgba(255,255,255,.5) 50%,transparent 80%)` : color.bar,
-            backgroundSize: item.svcStatus===1 ? '200% 100%,200% 100%' : '100% 100%',
-            animation: item.svcStatus===1 ? `${animId} 1.6s linear infinite` : 'none',
-            boxShadow: item.svcStatus===1 ? `0 0 10px ${color.glow}` : 'none',
+            background: effectiveSvcStatus===1 ? `${color.bar},linear-gradient(90deg,transparent 20%,rgba(255,255,255,.5) 50%,transparent 80%)` : color.bar,
+            backgroundSize: effectiveSvcStatus===1 ? '200% 100%,200% 100%' : '100% 100%',
+            animation: effectiveSvcStatus===1 ? `${animId} 1.6s linear infinite` : 'none',
+            boxShadow: effectiveSvcStatus===1 ? `0 0 10px ${color.glow}` : 'none',
             transition:'width 1s linear',
           }} />
-          {item.svcStatus===1 && pct>2 && (
+          {effectiveSvcStatus===1 && pct>2 && (
             <div style={{ position:'absolute', top:1, bottom:1, width:8, borderRadius:'50%', left:`calc(${pct}% - 4px)`, background:'#fff', boxShadow:`0 0 6px ${color.glow}`, animation:`${animId}-p 1.2s ease-in-out infinite` }} />
           )}
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8 }}>
           {[
             { label:'总时长', val:`${dur}min` },
-            { label:'已用时', val: item.svcStatus===0 ? '—' : `${elapsed}min` },
-            { label: item.svcStatus===2 ? '已完成' : '剩余', val: item.svcStatus===0 ? `${dur}min` : item.svcStatus===2 ? '完成' : `${remaining}min`, highlight: item.svcStatus===1 },
+            { label:'已用时', val: effectiveSvcStatus===0 ? '—' : `${elapsed}min` },
+            { label: effectiveSvcStatus===2 ? '已完成' : '剩余', val: effectiveSvcStatus===0 ? `${dur}min` : effectiveSvcStatus===2 ? '完成' : `${remaining}min`, highlight: effectiveSvcStatus===1 },
           ].map((s,i) => (
             <div key={i} style={{ textAlign:'center', padding:'6px 8px', borderRadius:8, background:'#f8fafc' }}>
               <div style={{ fontSize:10, color:'#9ca3af', marginBottom:2 }}>{s.label}</div>
@@ -188,80 +203,6 @@ function ServiceProgressBar({ item, colorIdx, compact = false, svcStatusMap }: {
 }
 
 // ── 整体服务计时单元格（实时倒计时，1秒刷新）────────────────────────────────
-function ServiceTimerCell({ totalMinutes, startEpochSec: rawStart, inService }: {
-  totalMinutes: number
-  startEpochSec: number | null
-  inService: boolean
-}) {
-  // 兼容秒和毫秒时间戳：>1e12 视为毫秒，自动转换为秒
-  const startEpochSec = rawStart != null
-    ? (rawStart > 1e12 ? Math.floor(rawStart / 1000) : rawStart)
-    : null
-
-  const [nowSec, setNowSec] = React.useState(() => Math.floor(Date.now() / 1000))
-  React.useEffect(() => {
-    if (!inService) return
-    const id = setInterval(() => setNowSec(Math.floor(Date.now() / 1000)), 1000)
-    return () => clearInterval(id)
-  }, [inService])
-
-  const fmt = (s: number) => {
-    const h = Math.floor(s / 3600)
-    const m = Math.floor((s % 3600) / 60)
-    const sc = s % 60
-    return h > 0
-      ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`
-      : `${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`
-  }
-
-  if (!inService || totalMinutes <= 0) {
-    return (
-      <div style={{ textAlign:'center', color:'#d1d5db', fontSize:12 }}>
-        {totalMinutes > 0 ? <span style={{ color:'#9ca3af' }}>{totalMinutes}min</span> : '—'}
-      </div>
-    )
-  }
-
-  const totalSecs = totalMinutes * 60
-  const elapsed   = startEpochSec ? Math.max(0, nowSec - startEpochSec) : 0
-  const remaining = Math.max(0, totalSecs - elapsed)
-  const pct       = Math.min(100, (elapsed / totalSecs) * 100)
-  const barColor  = pct >= 100 ? '#ef4444' : pct >= 85 ? '#f97316' : '#6366f1'
-  const remColor  = remaining === 0 ? '#ef4444' : remaining < 600 ? '#f97316' : '#10b981'
-
-  return (
-    <div style={{ minWidth:138, padding:'2px 0' }}>
-      <style>{`
-        @keyframes ol-svc-dot {
-          0%,100% { opacity:1; box-shadow:0 0 0 3px ${barColor}30 }
-          50%      { opacity:.6; box-shadow:0 0 0 5px ${barColor}18 }
-        }
-      `}</style>
-      <div style={{ display:'flex', alignItems:'center', gap:5, marginBottom:5 }}>
-        <div style={{ width:7, height:7, borderRadius:'50%', background:barColor, animation:'ol-svc-dot 1.4s ease-in-out infinite' }} />
-        <span style={{ fontSize:10, color:barColor, fontWeight:700, letterSpacing:.4 }}>服务中</span>
-        <span style={{ fontSize:9, color:'#9ca3af', marginLeft:'auto' }}>{totalMinutes}min</span>
-      </div>
-      <div style={{ height:5, borderRadius:5, background:'#f1f5f9', overflow:'hidden', marginBottom:5 }}>
-        <div style={{
-          height:'100%', borderRadius:5, width:`${Math.min(100,pct)}%`,
-          background:`linear-gradient(90deg,${barColor},${barColor}bb)`,
-          boxShadow:`0 0 6px ${barColor}55`, transition:'width 1s linear',
-        }} />
-      </div>
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:4 }}>
-        <div style={{ background:'#f8fafc', borderRadius:6, padding:'4px 6px', textAlign:'center' }}>
-          <div style={{ fontSize:9, color:'#9ca3af', marginBottom:1 }}>已服务</div>
-          <div style={{ fontSize:12, fontWeight:900, color:'#374151', fontFamily:'monospace', fontVariantNumeric:'tabular-nums' }}>{fmt(elapsed)}</div>
-        </div>
-        <div style={{ background: remaining<600 ? `${remColor}12` : '#f8fafc', borderRadius:6, padding:'4px 6px', textAlign:'center', border: remaining<600 ? `1px solid ${remColor}40` : '1px solid transparent' }}>
-          <div style={{ fontSize:9, color:'#9ca3af', marginBottom:1 }}>剩余</div>
-          <div style={{ fontSize:12, fontWeight:900, color:remColor, fontFamily:'monospace', fontVariantNumeric:'tabular-nums' }}>{fmt(remaining)}</div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // ════════════════════════════════════════════════════════════════════════════════
 export default function OrderListPage() {
@@ -630,27 +571,9 @@ export default function OrderListPage() {
         return (
           <div style={{ paddingTop:2, paddingBottom:2 }}>
             {items.map((it, idx) => (
-              <ServiceProgressBar key={it.id ?? idx} item={it} colorIdx={idx} compact svcStatusMap={SVC_STATUS_CFG} />
+              <ServiceProgressBar key={it.id ?? idx} item={it} colorIdx={idx} compact svcStatusMap={SVC_STATUS_CFG} orderStatus={r.status} orderStartTime={r.startTime ?? r.appointTime ?? null} />
             ))}
           </div>
-        )
-      },
-    },
-    // ⑥ᵇ 服务计时（实时）
-    {
-      title: col(<ClockCircleOutlined style={{ color:'#f97316' }} />, '服务计时', 'center'),
-      key: 'timer', width: 160, align: 'center',
-      render: (_, r) => {
-        const items: any[] = r.orderItems ?? []
-        const totalMinutes = items.length > 0
-          ? items.reduce((s: number, it: any) => s + (it.serviceDuration ?? it.duration ?? 0), 0)
-          : (r.serviceDuration ?? 0)
-        return (
-          <ServiceTimerCell
-            totalMinutes={totalMinutes}
-            startEpochSec={r.startTime ?? null}
-            inService={r.status === 5}
-          />
         )
       },
     },
@@ -949,7 +872,7 @@ export default function OrderListPage() {
                 </div>
                 {detailItems.length > 0
                   ? detailItems.map((it, idx) => (
-                      <ServiceProgressBar key={it.id ?? idx} item={it} colorIdx={idx} svcStatusMap={SVC_STATUS_CFG} />
+                      <ServiceProgressBar key={it.id ?? idx} item={it} colorIdx={idx} svcStatusMap={SVC_STATUS_CFG} orderStatus={detail.status} orderStartTime={detail.startTime ?? detail.appointTime ?? null} />
                     ))
                   : (
                     <div style={{ padding:'10px 14px', borderRadius:10, border:'1px solid #e0e4ff', background:'#f5f3ff' }}>
@@ -1469,9 +1392,12 @@ export default function OrderListPage() {
             </Form.Item>
             <Form.Item name="appointTime" label="预约时间"
               rules={[{ required: true, message: '请选择预约时间' }]} style={{ marginBottom:0 }}>
-              {/* Use dayjs-based date picker */}
-              <Input type="datetime-local" style={{ borderRadius:8 }}
-                onChange={e => createForm.setFieldValue('appointTime', e.target.value ? dayjs(e.target.value) : null)} />
+              <DatePicker
+                showTime={{ format: 'HH:mm' }}
+                format="YYYY-MM-DD HH:mm"
+                style={{ width: '100%', borderRadius: 8 }}
+                placeholder="请选择预约日期和时间"
+              />
             </Form.Item>
           </div>
 

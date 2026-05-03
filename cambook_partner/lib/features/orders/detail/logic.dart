@@ -37,8 +37,17 @@ class OrderDetailLogic extends GetxController with EventBusMixin {
 
   void _loadOrder(int id) {
     state.loading.value = true;
-    state.order.value = _svc.getById(id);
-    state.loading.value = false;
+    final cached = _svc.getById(id);
+    if (cached != null) {
+      state.order.value = cached;
+      state.loading.value = false;
+    } else {
+      // 订单不在本地缓存（如管理员刚建单），从服务端重新拉取
+      _svc.fetchFromApi().then((_) {
+        state.order.value = _svc.getById(id);
+        state.loading.value = false;
+      });
+    }
   }
 
   Future<void> accept() async {

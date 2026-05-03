@@ -2,6 +2,12 @@
 class Assets {
   Assets._();
 
+  static const String imagesBackgroundGeey = 'assets/images/background_geey.jpeg';
+  static const String imagesBackgroundGreen = 'assets/images/background_green.jpeg';
+  static const String imagesBackgroundHomeGeey = 'assets/images/background_home_geey.jpeg';
+  static const String imagesBackgroundHomeGreen = 'assets/images/background_home_green.jpeg';
+  static const String imagesBackgroundHomePink = 'assets/images/background_home_pink.jpeg';
+  static const String imagesBackgroundPink = 'assets/images/background_pink.jpeg';
   static const String mp3PromptTone = 'assets/mp3/prompt_tone.mp3';
 
 }

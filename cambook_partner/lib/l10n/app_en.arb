@@ -1,6 +1,9 @@
 {
   "@@locale": "en",
   "appName": "CamBook Partner",
+  "technicianWorkstation": "TECHNICIAN WORKSTATION",
+  "notifications": "Notifications",
+  "profileSettings": "My Profile",
   "navHome": "Home",
   "navOrders": "Orders",
   "navMessages": "Messages",
@@ -242,7 +245,7 @@
   "phoneHint": "Enter phone number",
   "password": "Password",
   "passwordHint": "Enter password",
-  "loginBtn": "Sign In",
+  "loginBtn": "Enter Workbench",
   "forgotPassword": "Forgot password?",
   "loginSuccess": "Welcome back!",
   "loginFailed": "Invalid credentials",
@@ -295,7 +298,7 @@
   "merchantCodeHint": "Enter merchant invite code",
   "merchantCodeRequired": "Merchant code is required",
   "selectCountry": "Select Country",
-  "registerBtn": "Register Now",
+  "registerBtn": "Join the Team",
   "registerSuccess": "Registered! Awaiting merchant approval",
   "registerFailed": "Registration failed, please retry",
   "invalidPhone": "Invalid phone number",
@@ -328,6 +331,8 @@
   "distanceFrom": "Distance:",
   "ignore": "Ignore",
   "grabOrder": "Accept Now",
+  "estimatedEarnings": "Est. Earnings",
+  "unknownCustomer": "New Customer",
   "announcements": "Announcements",
   "helpAndSupport": "Help & Support",
   "rateApp": "Rate App",
@@ -346,14 +351,16 @@
   "totalOrders": "Total Orders",
   "overallRating": "Overall Rating",
   "currentBalance": "Current Balance",
-
   "statTodayAppointments": "Today's Appts",
   "statTodayCompleted": "Completed",
   "statTodayCancelled": "Cancelled",
-
   "schedOrderCount": "{n} Orders",
   "@schedOrderCount": {
-    "placeholders": { "n": { "type": "int" } }
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   },
   "schedInService": "In Service",
   "schedPending": "Pending",
@@ -361,37 +368,44 @@
   "scheduleProgress": "{completed} / {total} done",
   "@scheduleProgress": {
     "placeholders": {
-      "completed": { "type": "int" },
-      "total":     { "type": "int" }
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "statusOnWay": "On Way",
   "statusCancelling": "Cancelling",
   "statusRefunding": "Refunding",
   "statusRefunded": "Refunded",
-
   "schedEndTime": "End {time} · {duration}min",
   "@schedEndTime": {
     "placeholders": {
-      "time":     { "type": "String" },
-      "duration": { "type": "String" }
+      "time": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "serviceInProgress": "In Service",
   "estimatedIncome": "Est. {amount}",
   "@estimatedIncome": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-
   "sessionExpiredTitle": "Session Expired",
   "sessionExpiredMessage": "You have been logged out. Please sign in again to continue.",
   "goToLogin": "Go to Login",
-
   "networkTimeout": "Request timed out. Please check your connection.",
   "networkUnavailable": "Network unavailable. Please check your connection.",
   "networkError": "Request failed. Please try again later.",
-
   "orderTypeOnline": "Online Appt.",
   "orderTypeWalkin": "Walk-in",
   "walkinGuest": "Walk-in Guest",
@@ -402,5 +416,46 @@
   "rating": "Rating",
   "myOrders": "My Orders",
   "reviews": "Reviews",
-  "langHint": "Select your preferred display language"
+  "langHint": "Select your preferred display language",
+  "welcomeBack": "Welcome Back",
+  "spaName": "Water Spa",
+  "loginHeroTagline": "Relax Body & Mind · Rejuvenate",
+  "rememberMe": "Remember me",
+  "otherLoginMethods": "Other login methods",
+  "genderHint": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "orRegisterVia": "Or register via",
+  "telegramOptional": "Telegram (optional)",
+  "facebookOptional": "Facebook (optional)",
+  "registerJoinPrefix": "Join ",
+  "registerJoinSuffix": ", start your service journey",
+  "themeRosePink": "Rose Pink",
+  "themeChampagneGold": "Champagne Gold",
+  "themeColor": "Theme Color",
+  "nicknameHint": "Nickname",
+  "brandTitle": "Ming Xi · Technician",
+  "technicianLogin": "TECHNICIAN LOGIN",
+  "workbenchTitle": "Tech Workbench",
+  "sanctuaryAwaits": "Your Sanctuary Awaits",
+  "zenTagline": "Zen Healing  ·  Exclusive Service  ·  Safe & Secure",
+  "privacySafe": "Privacy Safe",
+  "dataSafe": "Data Secure",
+  "provenPlatform": "Pro Platform",
+  "themeForestGreen": "Forest Green",
+  "dataUpdated": "Updated",
+  "allFeatures": "All Features",
+  "techRanking": "Tech Rank",
+  "performance": "Performance",
+  "thisWeek": "This Week",
+  "vsYesterday": "vs Yesterday",
+  "storeRanking": "Store Rank",
+  "weeklyIncome": "Weekly Income",
+  "homeTagline": "Focus · Heal · Deliver",
+  "drawerWorkGroup": "Work",
+  "drawerDataGroup": "Revenue",
+  "drawerProfileGroup": "Profile",
+  "drawerMoreGroup": "More",
+  "drawerBrand": "CamBook Pro · Workstation"
 }

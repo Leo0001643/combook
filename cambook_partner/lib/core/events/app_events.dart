@@ -81,3 +81,11 @@ class GrabExpiredEvent {
   final int orderId;
   const GrabExpiredEvent(this.orderId);
 }
+
+/// 触发首页统计数据 HTTP 刷新（WS 新订单到达 / 服务完成 / 其他状态变更时触发）
+///
+/// HomeLogic 订阅此事件并调用 HTTP 接口拉取最新 stats + schedule + pendingCount，
+/// 避免依赖 WS HOME_DATA 的推送周期延迟。
+class HomeStatsRefreshEvent {
+  const HomeStatsRefreshEvent();
+}

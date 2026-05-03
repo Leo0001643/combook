@@ -20,14 +20,21 @@ class OrderListLogic extends GetxController with EventBusMixin {
   @override
   void onInit() {
     super.onInit();
+    _refresh();
+
+    // 新订单到达（WS 推送）→ 自动切换到"待处理"Tab 并刷新列表
+    subscribe<NewOrderEvent>((_) {
+      state.tabIndex.value = 0;
+    });
+
+    // 订单状态变更为 pending（如接单失败回滚）→ 切换到待处理 Tab
     subscribe<OrderStatusChangedEvent>((e) {
-      // 新 pending 订单 → 自动跳到"待接单" Tab
       if (e.newStatus == OrderStatus.pending) state.tabIndex.value = 0;
     });
-    // 订单完成 → 自动跳到"已完成" Tab 并刷新列表
+
     subscribe<ServiceCompletedEvent>((_) {
-      state.tabIndex.value = 3; // 已完成 tab index
-      _svc.fetchFromApi();
+      state.tabIndex.value = 3;
+      _refresh();
     });
   }
 
@@ -37,8 +44,17 @@ class OrderListLogic extends GetxController with EventBusMixin {
     super.onClose();
   }
 
+  Future<void> _refresh() async {
+    state.loading.value = true;
+    try {
+      await _svc.fetchFromApi();
+    } finally {
+      state.loading.value = false;
+    }
+  }
+
   @override
-  Future<void> refresh() => _svc.fetchFromApi();
+  Future<void> refresh() => _refresh();
 
   Future<void> accept(int id) async {
     final ok = await _svc.accept(id);
@@ -52,7 +68,7 @@ class OrderListLogic extends GetxController with EventBusMixin {
 
   Future<void> start(int id) async {
     final ok = await _svc.start(id);
-    if (!ok) return;  // API 失败时不进入服务模式
+    if (!ok) return;
     Get.find<UserService>().setStatus(TechStatus.busy);
     Get.toNamed(AppRoutes.serviceActive);
   }

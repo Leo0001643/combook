@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_sizes.dart';
+import '../../../core/extensions/theme_ext.dart';import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../core/models/models.dart';
@@ -141,10 +141,20 @@ class _TabBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     return Obx(() {
+      if (logic.state.loading.value) {
+        return Center(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            CircularProgressIndicator(color: context.primary, strokeWidth: 2.5),
+            const SizedBox(height: 14),
+            Text(l.loading, style: TextStyle(color: context.primary.withValues(alpha: .65),
+                fontSize: 14, fontWeight: FontWeight.w500)),
+          ]),
+        );
+      }
       final orders = logic.byStatus(status);
       if (orders.isEmpty) return EmptyView(message: l.noOrders);
       return RefreshIndicator(
-        color: AppColors.primary,
+        color: context.primary,
         onRefresh: logic.refresh,
         child: ListView.separated(
           padding: const EdgeInsets.all(AppSizes.pagePadding),

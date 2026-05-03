@@ -93,7 +93,6 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.language,
       page: () => const LanguagePage(),
-      middlewares: _auth,
       transition: Transition.rightToLeft,
     ),
   ];

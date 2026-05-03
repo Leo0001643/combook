@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/widgets/app_dialog.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/theme_ext.dart';import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../core/models/models.dart';
@@ -184,7 +184,7 @@ class _StatsCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           _StatTile('${tech?.completedOrders ?? 0}', l.completedOrders,
-              Icons.receipt_long_rounded, AppColors.primary),
+              Icons.receipt_long_rounded, context.primary),
           Container(width: 1, height: 40, color: AppColors.divider),
           _StatTile('\$${tech?.balance.toStringAsFixed(0) ?? '0'}',
               l.availableBalance, Icons.account_balance_wallet_rounded, AppColors.success),

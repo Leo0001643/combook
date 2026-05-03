@@ -1,6 +1,9 @@
 {
   "@@locale": "vi",
   "appName": "CamBook Partner",
+  "technicianWorkstation": "TRẠM LÀM VIỆC KỸ THUẬT VIÊN",
+  "notifications": "Thông báo",
+  "profileSettings": "Hồ sơ của tôi",
   "navHome": "Trang chủ",
   "navOrders": "Đơn hàng",
   "navMessages": "Tin nhắn",
@@ -242,7 +245,7 @@
   "phoneHint": "Nhập số điện thoại",
   "password": "Mật khẩu",
   "passwordHint": "Nhập mật khẩu",
-  "loginBtn": "Đăng nhập",
+  "loginBtn": "Vào Bàn Làm Việc",
   "forgotPassword": "Quên mật khẩu?",
   "loginSuccess": "Đăng nhập thành công",
   "loginFailed": "Thông tin sai",
@@ -266,7 +269,7 @@
   "techIdHint": "Nhập mã kỹ thuật viên",
   "techIdRequired": "Vui lòng nhập mã KTV",
   "noAccount": "Chưa có tài khoản?",
-  "goRegister": "Đăng ký ngay",
+  "goRegister": "Đăng Ký Ngay",
   "haveAccount": "Đã có tài khoản?",
   "goLogin": "Đăng nhập",
   "registerTitle": "Tạo tài khoản KTV",
@@ -295,7 +298,7 @@
   "merchantCodeHint": "Nhập mã mời thương nhân",
   "merchantCodeRequired": "Vui lòng nhập mã thương nhân",
   "selectCountry": "Chọn quốc gia",
-  "registerBtn": "Đăng ký ngay",
+  "registerBtn": "Gia Nhập Đội Ngũ",
   "registerSuccess": "Đăng ký thành công! Chờ xét duyệt",
   "registerFailed": "Đăng ký thất bại, thử lại",
   "invalidPhone": "Số điện thoại không hợp lệ",
@@ -328,6 +331,8 @@
   "distanceFrom": "Khoảng cách:",
   "ignore": "Bỏ qua",
   "grabOrder": "Nhận ngay",
+  "estimatedEarnings": "Thu nhập ước tính",
+  "unknownCustomer": "Khách mới",
   "announcements": "Thông báo",
   "helpAndSupport": "Trợ giúp & Hỗ trợ",
   "rateApp": "Đánh giá ứng dụng",
@@ -346,14 +351,16 @@
   "totalOrders": "Tổng đơn hàng",
   "overallRating": "Đánh giá tổng thể",
   "currentBalance": "Số dư hiện tại",
-
   "statTodayAppointments": "Đặt lịch hôm nay",
   "statTodayCompleted": "Hoàn thành hôm nay",
   "statTodayCancelled": "Huỷ hôm nay",
-
   "schedOrderCount": "{n} đơn",
   "@schedOrderCount": {
-    "placeholders": { "n": { "type": "int" } }
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   },
   "schedInService": "Đang phục vụ",
   "schedPending": "Chờ phục vụ",
@@ -361,37 +368,44 @@
   "scheduleProgress": "{completed} / {total} hoàn thành",
   "@scheduleProgress": {
     "placeholders": {
-      "completed": { "type": "int" },
-      "total":     { "type": "int" }
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "statusOnWay": "Đang đến",
   "statusCancelling": "Đang huỷ",
   "statusRefunding": "Đang hoàn tiền",
   "statusRefunded": "Đã hoàn tiền",
-
   "schedEndTime": "Kết thúc {time} · {duration}ph",
   "@schedEndTime": {
     "placeholders": {
-      "time":     { "type": "String" },
-      "duration": { "type": "String" }
+      "time": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "serviceInProgress": "Đang phục vụ",
   "estimatedIncome": "Dự tính {amount}",
   "@estimatedIncome": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-
   "sessionExpiredTitle": "Phiên Đăng Nhập Hết Hạn",
   "sessionExpiredMessage": "Bạn đã bị đăng xuất. Vui lòng đăng nhập lại để tiếp tục.",
   "goToLogin": "Đến Đăng Nhập",
-
   "networkTimeout": "Yêu cầu hết thời gian. Vui lòng kiểm tra kết nối.",
   "networkUnavailable": "Mạng không khả dụng. Vui lòng kiểm tra kết nối.",
   "networkError": "Yêu cầu thất bại. Vui lòng thử lại sau.",
-
   "orderTypeOnline": "Đặt lịch",
   "orderTypeWalkin": "Khách vãng lai",
   "walkinGuest": "Khách vãng lai",
@@ -402,5 +416,46 @@
   "rating": "Đánh giá",
   "myOrders": "Đơn hàng",
   "reviews": "Đánh giá",
-  "langHint": "Chọn ngôn ngữ hiển thị ưa thích"
+  "langHint": "Chọn ngôn ngữ hiển thị ưa thích",
+  "welcomeBack": "Chào Mừng Trở Lại",
+  "spaName": "Water Spa",
+  "loginHeroTagline": "Thư Giãn · Hành Trình Tái Tạo",
+  "rememberMe": "Nhớ tôi",
+  "otherLoginMethods": "Phương thức đăng nhập khác",
+  "genderHint": "Giới tính",
+  "genderMale": "Nam",
+  "genderFemale": "Nữ",
+  "genderOther": "Khác",
+  "orRegisterVia": "Hoặc đăng ký qua",
+  "telegramOptional": "Telegram (tùy chọn)",
+  "facebookOptional": "Facebook (tùy chọn)",
+  "registerJoinPrefix": "Tham gia ",
+  "registerJoinSuffix": ", bắt đầu hành trình dịch vụ",
+  "themeRosePink": "Hồng Đào",
+  "themeChampagneGold": "Vàng Sâm Panh",
+  "themeColor": "Màu chủ đề",
+  "nicknameHint": "Tên hiệu",
+  "brandTitle": "Ming Xi · Kỹ Thuật Viên",
+  "technicianLogin": "TECHNICIAN LOGIN",
+  "workbenchTitle": "Bàn Làm Việc KTV",
+  "sanctuaryAwaits": "Your Sanctuary Awaits",
+  "zenTagline": "Chữa Lành  ·  Dịch Vụ Riêng  ·  An Toàn",
+  "privacySafe": "Bảo Mật",
+  "dataSafe": "An Toàn Dữ Liệu",
+  "provenPlatform": "Nền Tảng Chuyên Nghiệp",
+  "themeForestGreen": "Xanh Rừng",
+  "dataUpdated": "Cập nhật",
+  "allFeatures": "Tất cả",
+  "techRanking": "Xếp hạng",
+  "performance": "Hiệu suất",
+  "thisWeek": "Tuần này",
+  "vsYesterday": "So hôm qua",
+  "storeRanking": "Cửa hàng",
+  "weeklyIncome": "Thu nhập tuần",
+  "homeTagline": "Tập trung · Chữa lành · Trao giá trị",
+  "drawerWorkGroup": "Công việc",
+  "drawerDataGroup": "Doanh thu",
+  "drawerProfileGroup": "Cá nhân",
+  "drawerMoreGroup": "Thêm",
+  "drawerBrand": "CamBook Pro · Trạm làm việc"
 }

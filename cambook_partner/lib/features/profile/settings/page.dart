@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/theme_ext.dart';import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../core/widgets/app_dialog.dart';
@@ -32,7 +32,7 @@ class SettingsPage extends StatelessWidget {
             padding: EdgeInsets.zero,
             child: Column(children: [
               _SectionHeader(l.notifySection),
-              _SwitchTile(l.orderNotify, Icons.receipt_long_rounded, AppColors.primary,
+              _SwitchTile(l.orderNotify, Icons.receipt_long_rounded, context.primary,
                   logic.state.notifyOrder.value, (v) => logic.toggleNotify('order', v)),
               const Divider(indent: 58, height: 1),
               _SwitchTile(l.messageNotify, Icons.chat_bubble_rounded, AppColors.info,
@@ -57,7 +57,7 @@ class SettingsPage extends StatelessWidget {
                     child: ListTile(
                       title: Text(lang.$2(l), style: AppTextStyles.body2),
                       trailing: active
-                          ? const Icon(Icons.check_circle_rounded, color: AppColors.primary)
+                          ? Icon(Icons.check_circle_rounded, color: context.primary)
                           : null,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                     ),
@@ -217,8 +217,8 @@ class SettingsPage extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Container(
             width: 80, height: 80,
-            decoration: const BoxDecoration(
-              gradient: AppColors.gradientPrimary, shape: BoxShape.circle,
+            decoration: BoxDecoration(
+              gradient: ctx.primaryGrad, shape: BoxShape.circle,
             ),
             child: const Icon(Icons.spa_rounded, color: Colors.white, size: 42),
           ),
@@ -271,7 +271,7 @@ class _SwitchTile extends StatelessWidget {
         decoration: BoxDecoration(color: color.withValues(alpha:0.1), borderRadius: BorderRadius.circular(8)),
         child: Icon(icon, color: color, size: 18)),
     title: Text(label, style: AppTextStyles.body2),
-    trailing: Switch(value: value, onChanged: onChanged, activeColor: AppColors.primary),
+    trailing: Switch(value: value, onChanged: onChanged, activeColor: context.primary),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
   );
 }

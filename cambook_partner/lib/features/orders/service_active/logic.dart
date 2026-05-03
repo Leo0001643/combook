@@ -3,6 +3,7 @@ import '../../../core/widgets/app_dialog.dart';
 import 'package:get/get.dart';
 import '../../../core/models/models.dart';
 import '../../../core/services/order_service.dart';
+import '../../../core/services/storage_service.dart';
 import '../../../core/services/user_service.dart';
 import '../../../core/utils/toast_util.dart';
 import '../../../core/routes/app_routes.dart';
@@ -31,9 +32,9 @@ class ServiceActiveLogic extends GetxController {
     super.onClose();
   }
 
-  /// 应用订单数据并立即更新 nowSec
+  /// 应用订单数据，并在 startTime 缺失时补全 fallback，确保计时器立即运行
   void _applyOrder(OrderModel? order) {
-    state.order.value = order;
+    state.order.value = order != null ? _withStartTime(order) : null;
     state.nowSec.value = DateTime.now().millisecondsSinceEpoch ~/ 1000;
   }
 
@@ -53,13 +54,27 @@ class ServiceActiveLogic extends GetxController {
       await Get.find<OrderService>().fetchFromApi();
       final fresh = Get.find<OrderService>().activeOrder;
       if (fresh != null) {
-        state.order.value = fresh;
-        // 刷新后重新对齐 nowSec，消除拉取期间的细微偏差
+        state.order.value = _withStartTime(fresh);
         state.nowSec.value = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       }
     } catch (_) {
       // 静默失败：保留内存缓存值继续计时
     }
+  }
+
+  /// startTime 三级兜底：
+  ///   1. 后端返回的真实 startTime（最优）
+  ///   2. 本地持久化存储（跨重启/登出后恢复）
+  ///   3. appointTime（预约时间，总是非空，保证计时器不归零）
+  OrderModel _withStartTime(OrderModel order) {
+    if (order.startTime != null) return order;
+    final storage = Get.find<StorageService>();
+    final storedMs = storage.getServiceStartMs(order.id);
+    final fallback = storedMs != null
+        ? DateTime.fromMillisecondsSinceEpoch(storedMs)
+        : order.appointTime; // appointTime 始终非空（fromEpochSec fallback to now）
+    storage.saveServiceStartMs(order.id, fallback);
+    return order.copyWith(startTime: fallback);
   }
 
   void togglePause() => state.paused.value = !state.paused.value;

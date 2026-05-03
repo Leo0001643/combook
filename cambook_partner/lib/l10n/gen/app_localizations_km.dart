@@ -12,6 +12,15 @@ class AppLocalizationsKm extends AppLocalizations {
   String get appName => 'CamBook Partner';
 
   @override
+  String get technicianWorkstation => 'កន្លែងធ្វើការជាងបច្ចេកទេស';
+
+  @override
+  String get notifications => 'ការជូនដំណឹង';
+
+  @override
+  String get profileSettings => 'ប្រវត្តិរូបរបស់ខ្ញុំ';
+
+  @override
   String get navHome => 'ទំព័រដើម';
 
   @override
@@ -659,7 +668,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get passwordHint => 'បញ្ចូលពាក្យសម្ងាត់';
 
   @override
-  String get loginBtn => 'ចូល';
+  String get loginBtn => 'ចូលតុការងារ';
 
   @override
   String get forgotPassword => 'ភ្លេចពាក្យសម្ងាត់?';
@@ -712,7 +721,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get noAccount => 'មិនទាន់មានគណនី?';
 
   @override
-  String get goRegister => 'ចុះឈ្មោះឥឡូវ';
+  String get goRegister => 'ចុះឈ្មោះ';
 
   @override
   String get haveAccount => 'មានគណនីរួចហើយ?';
@@ -780,7 +789,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get selectCountry => 'ជ្រើសប្រទេស';
 
   @override
-  String get registerBtn => 'ចុះឈ្មោះឥឡូវ';
+  String get registerBtn => 'ចូលរួមក្រុម';
 
   @override
   String get registerSuccess => 'ចុះឈ្មោះបានជោគជ័យ! កំពុងរង់ចាំការអនុម័ត';
@@ -858,6 +867,12 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get grabOrder => 'ទទួលឥឡូវ';
+
+  @override
+  String get estimatedEarnings => 'ចំណូលប្រមាណ';
+
+  @override
+  String get unknownCustomer => 'អតិថិជនថ្មី';
 
   @override
   String get announcements => 'សេចក្ដីជូនដំណឹង';
@@ -1016,4 +1031,127 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get langHint => 'ជ្រើសរើសភាសាបង្ហាញដែលអ្នកចូលចិត្ត';
+
+  @override
+  String get welcomeBack => 'សូមស្វាគមន៍ការត្រលប់មកវិញ';
+
+  @override
+  String get spaName => 'Water Spa';
+
+  @override
+  String get loginHeroTagline => 'សម្រាក · ធ្វើឱ្យស្រស់ស្រាយ';
+
+  @override
+  String get rememberMe => 'ចំណាំខ្ញុំ';
+
+  @override
+  String get otherLoginMethods => 'វិធីចូលផ្សេង';
+
+  @override
+  String get genderHint => 'ភេទ';
+
+  @override
+  String get genderMale => 'ប្រុស';
+
+  @override
+  String get genderFemale => 'ស្រី';
+
+  @override
+  String get genderOther => 'ផ្សេង';
+
+  @override
+  String get orRegisterVia => 'ឬចុះឈ្មោះតាម';
+
+  @override
+  String get telegramOptional => 'Telegram (ស្រេចចិត្ត)';
+
+  @override
+  String get facebookOptional => 'Facebook (ស្រេចចិត្ត)';
+
+  @override
+  String get registerJoinPrefix => 'ចូលរួម ';
+
+  @override
+  String get registerJoinSuffix => 'ចាប់ផ្ដើមដំណើរសេវាកម្ម';
+
+  @override
+  String get themeRosePink => 'ផ្កាកុហក';
+
+  @override
+  String get themeChampagneGold => 'មាស ចំពែន';
+
+  @override
+  String get themeColor => 'ពណ៌ប្រធានបទ';
+
+  @override
+  String get nicknameHint => 'ឈ្មោះហៅ';
+
+  @override
+  String get brandTitle => 'Ming Xi · បច្ចេកទេស';
+
+  @override
+  String get technicianLogin => 'TECHNICIAN LOGIN';
+
+  @override
+  String get workbenchTitle => 'តុការងារបច្ចេកទេស';
+
+  @override
+  String get sanctuaryAwaits => 'Your Sanctuary Awaits';
+
+  @override
+  String get zenTagline => 'ព្យាបាល  ·  សេវាផ្ទាល់  ·  សុវត្ថិភាព';
+
+  @override
+  String get privacySafe => 'ឯកជនភាព';
+
+  @override
+  String get dataSafe => 'ទិន្នន័យសុវត្ថិភាព';
+
+  @override
+  String get provenPlatform => 'វេទិកាប្រកបដោយវិជ្ជាជីវៈ';
+
+  @override
+  String get themeForestGreen => 'បៃតងព្រៃ';
+
+  @override
+  String get dataUpdated => 'បានធ្វើបច្ចុប្បន្នភាព';
+
+  @override
+  String get allFeatures => 'ទាំងអស់';
+
+  @override
+  String get techRanking => 'លំដាប់';
+
+  @override
+  String get performance => 'ការអនុវត្ត';
+
+  @override
+  String get thisWeek => 'សប្តាហ៍នេះ';
+
+  @override
+  String get vsYesterday => 'ម្សិលមិញ';
+
+  @override
+  String get storeRanking => 'ហាង';
+
+  @override
+  String get weeklyIncome => 'ប្រាក់ចំណូលសប្តាហ៍';
+
+  @override
+  String get homeTagline => 'ផ្តោត · ព្យាបាល · ប្រគល់';
+
+  @override
+  String get drawerWorkGroup => 'ការងារ';
+
+  @override
+  String get drawerDataGroup => 'ចំណូល';
+
+  @override
+  String get drawerProfileGroup => 'ប្រវត្តិ';
+
+  @override
+  String get drawerMoreGroup => 'ច្រើន';
+
+  @override
+  String get drawerBrand => 'CamBook Pro · កន្លែងធ្វើការ';
 }

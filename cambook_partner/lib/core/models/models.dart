@@ -48,27 +48,49 @@ class TechnicianModel {
   });
 
   factory TechnicianModel.fromJson(Map<String, dynamic> j) => TechnicianModel(
-    id:             j['id'] as int?     ?? 0,
-    nickname:       j['nickname'] as String? ?? '',
-    techNo:         j['techNo']   as String? ?? '',
-    phone:          j['phone']    as String? ?? '',
-    avatar:         j['avatar']   as String?,
-    level:          TechLevel.values.firstWhere(
-                      (e) => e.name == j['level'],
-                      orElse: () => TechLevel.normal),
-    rating:         (j['rating']  as num?)?.toDouble() ?? 0.0,
-    completedOrders:(j['completedOrders'] as num?)?.toInt() ?? 0,
-    balance:        (j['balance'] as num?)?.toDouble() ?? 0.0,
-    skills:         (j['skills'] as List?)
-                        ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
-                        .toList() ?? [],
-    memberSince:    j['memberSince'] as String? ?? '',
-    merchantId:     j['merchantId']   as String? ?? 'cambook',
-    merchantName:   j['merchantName'] as String? ?? 'CamBook',
-    telegram:       j['telegram']  as String?,
-    facebook:       j['facebook']  as String?,
-    email:          j['email']     as String?,
+    id:              JsonUtil.intFrom(j['id']),
+    nickname:        JsonUtil.strFrom(j['nickname']),
+    techNo:          JsonUtil.strFrom(j['techNo']),
+    phone:           JsonUtil.strFrom(j['phone']),
+    avatar:          j['avatar']?.toString(),
+    level:           TechLevel.values.firstWhere(
+                       (e) => e.name == j['level'],
+                       orElse: () => TechLevel.normal),
+    rating:          JsonUtil.dblFrom(j['rating']),
+    completedOrders: JsonUtil.intFrom(j['completedOrders']),
+    balance:         JsonUtil.dblFrom(j['balance']),
+    skills:          (j['skills'] as List?)
+                         ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
+                         .toList() ?? [],
+    memberSince:     JsonUtil.strFrom(j['memberSince']),
+    // merchantId 后端可能返回 int 或 String，统一安全转换
+    merchantId:      j['merchantId'] != null
+                         ? j['merchantId'].toString()
+                         : 'cambook',
+    merchantName:    JsonUtil.strFrom(j['merchantName']),
+    telegram:        j['telegram']?.toString(),
+    facebook:        j['facebook']?.toString(),
+    email:           j['email']?.toString(),
   );
+
+  Map<String, dynamic> toJson() => {
+    'id':              id,
+    'nickname':        nickname,
+    'techNo':          techNo,
+    'phone':           phone,
+    if (avatar      != null) 'avatar':      avatar,
+    'level':           level.name,
+    'rating':          rating,
+    'completedOrders': completedOrders,
+    'balance':         balance,
+    'skills':          skills.map((s) => s.toJson()).toList(),
+    'memberSince':     memberSince,
+    'merchantId':      merchantId,
+    'merchantName':    merchantName,
+    if (telegram    != null) 'telegram':    telegram,
+    if (facebook    != null) 'facebook':    facebook,
+    if (email       != null) 'email':       email,
+  };
 
   TechnicianModel copyWith({
     int? id, String? nickname, String? techNo, String? phone,
@@ -106,6 +128,8 @@ class SkillModel {
 
   factory SkillModel.fromJson(Map<String, dynamic> j) =>
       SkillModel(id: j['id'], name: j['name'], enabled: j['enabled'] ?? true);
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'enabled': enabled};
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

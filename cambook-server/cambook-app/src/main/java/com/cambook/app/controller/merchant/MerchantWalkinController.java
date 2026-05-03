@@ -400,12 +400,15 @@ public class MerchantWalkinController {
         CbOrder order = requireOrder(orderId, id);
         if (order.getStatus() != 2 && order.getStatus() != 1)
             throw new BusinessException("当前状态无法开始服务");
+        long nowSec = System.currentTimeMillis() / 1000L;
         order.setStatus(5);       // 服务中
-        order.setStartTime(System.currentTimeMillis() / 1000L);
+        order.setStartTime(nowSec);
         orderMapper.updateById(order);
 
-        if (session.getStatus() == 0) {
-            session.setStatus(1); // 接待中 → 服务中
+        if (session.getStatus() == 0 || session.getServiceStartTime() == null) {
+            // 接待中 → 服务中；同时补录首次服务开始时间（历史遗留 null 也一并修复）
+            session.setStatus(1);
+            session.setServiceStartTime(nowSec);
             sessionMapper.updateById(session);
         }
         return Result.success();

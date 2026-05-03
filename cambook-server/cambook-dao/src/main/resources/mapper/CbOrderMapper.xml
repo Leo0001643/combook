@@ -98,33 +98,43 @@
 
     <!--
         今日已结算订单的技师实际收入总和
-        ─ 在线预约（order_type=1）：仅统计 status=6 的 cb_order_item，按 tech_income 或 unit_price×qty
+        ─ 在线预约（order_type=1）：按订单分组，优先用 tech_income，其次 unit_price×qty，
+          两者均为零时回退到 cb_order.pay_amount（防止漏计）
         ─ 门店散客（order_type=2）：统计 session status=3 的关联 cb_order，按 tech_income 或 pay_amount
         ─ 多技师订单中每人只计算自己服务项的收入
     -->
     <select id="sumTodayIncome" resultType="java.math.BigDecimal">
         SELECT COALESCE(
-            (SELECT SUM(
-                CASE
-                    WHEN oi.tech_income IS NOT NULL THEN oi.tech_income
-                    ELSE oi.unit_price * oi.qty
-                END
-             )
-             FROM cb_order o
-             JOIN cb_order_item oi
-               ON oi.order_id = o.id
-              AND oi.technician_id = #{techId}
-              AND oi.deleted = 0
-             WHERE FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
-               AND o.status = 6
-               AND o.deleted = 0)
+            /* 在线预约订单：按订单分组再汇总，避免多服务项时 pay_amount 重复累加 */
+            (SELECT SUM(order_income)
+             FROM (
+                 SELECT
+                     CASE
+                         WHEN SUM(oi.tech_income) IS NOT NULL AND SUM(oi.tech_income) > 0
+                             THEN SUM(oi.tech_income)
+                         WHEN SUM(oi.unit_price * oi.qty) > 0
+                             THEN SUM(oi.unit_price * oi.qty)
+                         ELSE MAX(o.pay_amount)
+                     END AS order_income
+                 FROM cb_order o
+                 JOIN cb_order_item oi
+                   ON oi.order_id = o.id
+                  AND oi.technician_id = #{techId}
+                  AND oi.deleted = 0
+                 WHERE FROM_UNIXTIME(o.appoint_time, '%Y-%m-%d') = CURDATE()
+                   AND o.status = 6
+                   AND o.pay_time IS NOT NULL
+                   AND o.deleted = 0
+                 GROUP BY o.id
+             ) t)
         , 0)
         +
         COALESCE(
+            /* 门店散客订单：session 结算后，按关联 cb_order 汇总每项服务收入 */
             (SELECT SUM(
                 CASE
-                    WHEN o.tech_income IS NOT NULL THEN o.tech_income
-                    ELSE o.pay_amount
+                    WHEN o.tech_income IS NOT NULL AND o.tech_income > 0 THEN o.tech_income
+                    ELSE COALESCE(o.pay_amount, 0)
                 END
              )
              FROM cb_order o

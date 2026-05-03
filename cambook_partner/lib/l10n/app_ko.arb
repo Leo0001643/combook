@@ -1,6 +1,9 @@
 {
   "@@locale": "ko",
   "appName": "CamBook 파트너",
+  "technicianWorkstation": "기술자 워크스테이션",
+  "notifications": "알림",
+  "profileSettings": "내 프로필",
   "navHome": "홈",
   "navOrders": "주문",
   "navMessages": "메시지",
@@ -242,7 +245,7 @@
   "phoneHint": "전화번호 입력",
   "password": "비밀번호",
   "passwordHint": "비밀번호 입력",
-  "loginBtn": "로그인",
+  "loginBtn": "워크벤치 입장",
   "forgotPassword": "비밀번호 찾기",
   "loginSuccess": "로그인 성공",
   "loginFailed": "잘못된 정보",
@@ -295,7 +298,7 @@
   "merchantCodeHint": "가맹점 초대 코드를 입력하세요",
   "merchantCodeRequired": "가맹점 코드를 입력하세요",
   "selectCountry": "국가 선택",
-  "registerBtn": "지금 등록",
+  "registerBtn": "팀에 합류",
   "registerSuccess": "등록 완료! 가맹점 승인을 기다려 주세요",
   "registerFailed": "등록 실패, 다시 시도해 주세요",
   "invalidPhone": "잘못된 전화번호",
@@ -328,6 +331,8 @@
   "distanceFrom": "거리:",
   "ignore": "무시",
   "grabOrder": "즉시 수락",
+  "estimatedEarnings": "예상 수입",
+  "unknownCustomer": "신규 고객",
   "announcements": "공지사항",
   "helpAndSupport": "도움말 & 지원",
   "rateApp": "앱 평가하기",
@@ -346,14 +351,16 @@
   "totalOrders": "누적 주문",
   "overallRating": "종합 평점",
   "currentBalance": "현재 잔액",
-
   "statTodayAppointments": "오늘 예약",
   "statTodayCompleted": "오늘 완료",
   "statTodayCancelled": "오늘 취소",
-
   "schedOrderCount": "{n}건",
   "@schedOrderCount": {
-    "placeholders": { "n": { "type": "int" } }
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   },
   "schedInService": "진행 중",
   "schedPending": "대기 중",
@@ -361,37 +368,44 @@
   "scheduleProgress": "{completed} / {total} 완료",
   "@scheduleProgress": {
     "placeholders": {
-      "completed": { "type": "int" },
-      "total":     { "type": "int" }
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "statusOnWay": "이동 중",
   "statusCancelling": "취소 중",
   "statusRefunding": "환불 중",
   "statusRefunded": "환불 완료",
-
   "schedEndTime": "종료 {time} · {duration}분",
   "@schedEndTime": {
     "placeholders": {
-      "time":     { "type": "String" },
-      "duration": { "type": "String" }
+      "time": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "serviceInProgress": "서비스 중",
   "estimatedIncome": "예상 {amount}",
   "@estimatedIncome": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-
   "sessionExpiredTitle": "세션 만료",
   "sessionExpiredMessage": "로그아웃되었습니다. 계속하려면 다시 로그인해주세요.",
   "goToLogin": "로그인으로 이동",
-
   "networkTimeout": "요청 시간이 초과되었습니다. 연결을 확인해주세요.",
   "networkUnavailable": "네트워크를 사용할 수 없습니다. 연결을 확인해주세요.",
   "networkError": "요청이 실패했습니다. 나중에 다시 시도해주세요.",
-
   "orderTypeOnline": "온라인 예약",
   "orderTypeWalkin": "방문 고객",
   "walkinGuest": "일반 고객",
@@ -402,5 +416,46 @@
   "rating": "평점",
   "myOrders": "내 주문",
   "reviews": "리뷰",
-  "langHint": "선호하는 표시 언어를 선택하세요"
+  "langHint": "선호하는 표시 언어를 선택하세요",
+  "welcomeBack": "돌아오신 것을 환영합니다",
+  "spaName": "Water Spa",
+  "loginHeroTagline": "몸과 마음의 휴식 · 활력 여행",
+  "rememberMe": "로그인 유지",
+  "otherLoginMethods": "다른 로그인 방법",
+  "genderHint": "성별",
+  "genderMale": "남성",
+  "genderFemale": "여성",
+  "genderOther": "기타",
+  "orRegisterVia": "또는 다음으로 가입",
+  "telegramOptional": "Telegram (선택)",
+  "facebookOptional": "Facebook (선택)",
+  "registerJoinPrefix": "가입하세요 ",
+  "registerJoinSuffix": ", 서비스 여정을 시작하세요",
+  "themeRosePink": "로즈 핑크",
+  "themeChampagneGold": "샴페인 골드",
+  "themeColor": "테마 색상",
+  "nicknameHint": "닉네임",
+  "brandTitle": "명희 · 테크니션",
+  "technicianLogin": "TECHNICIAN LOGIN",
+  "workbenchTitle": "테크니션 워크벤치",
+  "sanctuaryAwaits": "Your Sanctuary Awaits",
+  "zenTagline": "힐링  ·  전문 서비스  ·  안전 보장",
+  "privacySafe": "개인정보 보호",
+  "dataSafe": "데이터 보안",
+  "provenPlatform": "전문 플랫폼",
+  "themeForestGreen": "포레스트 그린",
+  "dataUpdated": "업데이트됨",
+  "allFeatures": "전체 기능",
+  "techRanking": "기술자 순위",
+  "performance": "실적 요약",
+  "thisWeek": "이번 주",
+  "vsYesterday": "어제 대비",
+  "storeRanking": "매장 순위",
+  "weeklyIncome": "주간 수입",
+  "homeTagline": "집중 · 치유 · 전달",
+  "drawerWorkGroup": "업무",
+  "drawerDataGroup": "수입",
+  "drawerProfileGroup": "프로필",
+  "drawerMoreGroup": "더보기",
+  "drawerBrand": "CamBook Pro · 워크스테이션"
 }

@@ -3,7 +3,7 @@ import '../../../core/widgets/app_dialog.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../core/extensions/theme_ext.dart';import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../core/models/models.dart';
@@ -207,13 +207,13 @@ class _ChartCard extends StatelessWidget {
                 spots: data.asMap().entries
                     .map((e) => FlSpot(e.key.toDouble(), e.value.amount)).toList(),
                 isCurved: true, curveSmoothness: 0.3,
-                color: AppColors.primary, barWidth: 2.5,
+                color: context.primary, barWidth: 2.5,
                 belowBarData: BarAreaData(show: true,
                   gradient: LinearGradient(
                     begin: Alignment.topCenter, end: Alignment.bottomCenter,
                     colors: [
-                      AppColors.primary.withValues(alpha: 0.25),
-                      AppColors.primary.withValues(alpha: 0),
+                      context.primary.withValues(alpha: 0.25),
+                      context.primary.withValues(alpha: 0),
                     ],
                   )),
                 dotData: const FlDotData(show: false),
@@ -237,7 +237,7 @@ class _Tab extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: active ? AppColors.primary : AppColors.background,
+          color: active ? context.primary : AppColors.background,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Text(label, style: TextStyle(
@@ -368,7 +368,7 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
                   AppToast.success(l.withdrawSuccess);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: context.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -389,13 +389,13 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: _method == idx
-              ? AppColors.primary.withValues(alpha: 0.2) : Colors.white10,
+              ? context.primary.withValues(alpha: 0.2) : Colors.white10,
           borderRadius: BorderRadius.circular(10),
           border: _method == idx
-              ? Border.all(color: AppColors.primary) : Border.all(color: Colors.white24),
+              ? Border.all(color: context.primary) : Border.all(color: Colors.white24),
         ),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(icon, color: _method == idx ? AppColors.primaryLight : Colors.white60, size: 18),
+          Icon(icon, color: _method == idx ? context.primaryLt : Colors.white60, size: 18),
           const SizedBox(width: 6),
           Text(label, style: TextStyle(
               color: _method == idx ? Colors.white : Colors.white60,

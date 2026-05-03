@@ -5,56 +5,59 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/api/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/api/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/merchant/DeptPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/merchant/DeptPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cambook_partner/assets/images/background_geey.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cambook_partner/assets/images/background_green.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cambook_partner/assets/images/background_home_geey.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cambook_partner/assets/images/background_home_green.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cambook_partner/assets/images/background_home_pink.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cambook_partner/assets/images/background_pink.jpeg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/dashboard/DashboardPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/dashboard/DashboardPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/order/OrderHistoryPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/order/OrderHistoryPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/order/OrderListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/order/OrderListPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook-admin/src/pages/walkin/WalkinSessionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/pages/walkin/WalkinSessionPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/CamBookApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/CamBookApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/common/aspect/ScheduleLogAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/common/aspect/ScheduleLogAspect.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/common/event/OrderEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/common/event/OrderEventListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/common/statemachine/OrderStateMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/common/statemachine/OrderStateMachine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/common/statemachine/OrderStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/common/statemachine/OrderStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/admin/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/admin/CategoryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/admin/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/admin/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/app/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/app/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/merchant/MerchantCategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/merchant/MerchantCategoryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/merchant/MerchantOrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/merchant/MerchantOrderController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/merchant/MerchantWalkinController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/merchant/MerchantWalkinController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/technician/TechHomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/technician/TechHomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/dto/CreateOrderDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/dto/CreateOrderDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/dto/OrderQueryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/dto/OrderQueryDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/vo/OrderVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/vo/OrderVO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/vo/ScheduleItemVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/domain/vo/ScheduleItemVO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/admin/IAdminOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/admin/IAdminOrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/technician/TechOrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/controller/technician/TechOrderController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/admin/impl/AdminOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/admin/impl/AdminOrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/app/impl/AppOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/app/impl/AppOrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/technician/ITechHomeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/technician/ITechHomeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/technician/impl/TechHomeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/technician/impl/TechHomeServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/technician/impl/TechOrderItemServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/technician/impl/TechOrderItemServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/entity/CbOrderItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/entity/CbOrderItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/technician/impl/TechnicianAuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-app/src/main/java/com/cambook/app/service/technician/impl/TechnicianAuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-common/src/main/java/com/cambook/common/utils/MapRowUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-common/src/main/java/com/cambook/common/utils/MapRowUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/entity/CbWalkinSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/entity/CbWalkinSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/mapper/CbOrderItemMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/mapper/CbOrderItemMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/mapper/CbOrderMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/mapper/CbOrderMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/mapper/CbWalkinSessionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/src/main/java/com/cambook/dao/mapper/CbWalkinSessionMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-dao/src/main/resources/mapper/CbOrderItemMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/src/main/resources/mapper/CbOrderItemMapper.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cambook-dao/src/main/resources/mapper/CbOrderMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-dao/src/main/resources/mapper/CbOrderMapper.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/ios/Podfile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/config/app_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/config/app_config.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/models/models.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/models/models.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/network/api_endpoints.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/network/api_endpoints.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/network/http_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/network/http_util.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/routes/app_pages.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/routes/app_pages.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/services/global_notification_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/services/global_notification_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/services/storage_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/services/storage_service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/services/user_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/services/user_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/widgets/common_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/utils/audio_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/utils/audio_util.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/auth_shared.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/auth_shared.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/binding.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/binding.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/logic.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/logic.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/register/binding.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/register/binding.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/register/logic.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/register/logic.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/register/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/register/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/register/state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/register/state.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/home/logic.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/home/logic.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/home/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/home/page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/home/state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/home/state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/income/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/income/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/messages/chat/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/messages/chat/page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/messages/list/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/messages/list/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/detail/logic.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/detail/logic.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/detail/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/detail/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/list/logic.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/list/logic.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/list/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/list/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/list/state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/list/state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/service_active/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/orders/service_active/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/profile/index/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/profile/index/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/profile/reviews/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/profile/reviews/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/profile/settings/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/profile/settings/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/schedule/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/schedule/page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/shell/main_shell.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/shell/main_shell.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/shell/shell_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/shell/shell_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/generated/assets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/generated/assets.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_en.arb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_ja.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_ja.arb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_km.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_km.arb" afterDir="false" />
@@ -71,7 +74,9 @@
       <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/merchants/cambook.json" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/merchants/cambook.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/merchants/spavibe.json" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/merchants/spavibe.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../cambook_partner/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/scripts/build_merchant.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/scripts/build_merchant.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +116,8 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "two.files.diff.last.used.folder": "/Users/leo/Documents/cambook/cambook-server/cambook-app/src/main/java/com/cambook/app/domain/voi",
-    "vue.rearranger.settings.migration": "true"
+    "vue.rearranger.settings.migration": "true",
+    "应用程序.CamBookApplication.executor": "Run"
   }
 }]]></component>
   <component name="ReactorSettings">
@@ -131,7 +137,20 @@
       <recent name="com.cambook.app.controller.admin" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="应用程序.CamBookApplication">
+    <configuration name="CamBookApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.cambook.app.CamBookApplication" />
+      <module name="cambook-app" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.cambook.app.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="CamBookApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="cambook-app" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.cambook.app.CamBookApplication" />
@@ -139,6 +158,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="应用程序.CamBookApplication" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -159,7 +183,9 @@
       <workItem from="1776070209993" duration="54286000" />
       <workItem from="1776360112895" duration="43286000" />
       <workItem from="1776826414056" duration="8028000" />
-      <workItem from="1777043880401" duration="17463000" />
+      <workItem from="1777043880401" duration="18221000" />
+      <workItem from="1777216050799" duration="11892000" />
+      <workItem from="1777713839218" duration="3881000" />
     </task>
     <servers />
   </component>

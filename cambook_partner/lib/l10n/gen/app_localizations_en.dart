@@ -12,6 +12,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'CamBook Partner';
 
   @override
+  String get technicianWorkstation => 'TECHNICIAN WORKSTATION';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get profileSettings => 'My Profile';
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -659,7 +668,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordHint => 'Enter password';
 
   @override
-  String get loginBtn => 'Sign In';
+  String get loginBtn => 'Enter Workbench';
 
   @override
   String get forgotPassword => 'Forgot password?';
@@ -780,7 +789,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectCountry => 'Select Country';
 
   @override
-  String get registerBtn => 'Register Now';
+  String get registerBtn => 'Join the Team';
 
   @override
   String get registerSuccess => 'Registered! Awaiting merchant approval';
@@ -858,6 +867,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get grabOrder => 'Accept Now';
+
+  @override
+  String get estimatedEarnings => 'Est. Earnings';
+
+  @override
+  String get unknownCustomer => 'New Customer';
 
   @override
   String get announcements => 'Announcements';
@@ -1016,4 +1031,127 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get langHint => 'Select your preferred display language';
+
+  @override
+  String get welcomeBack => 'Welcome Back';
+
+  @override
+  String get spaName => 'Water Spa';
+
+  @override
+  String get loginHeroTagline => 'Relax Body & Mind · Rejuvenate';
+
+  @override
+  String get rememberMe => 'Remember me';
+
+  @override
+  String get otherLoginMethods => 'Other login methods';
+
+  @override
+  String get genderHint => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get orRegisterVia => 'Or register via';
+
+  @override
+  String get telegramOptional => 'Telegram (optional)';
+
+  @override
+  String get facebookOptional => 'Facebook (optional)';
+
+  @override
+  String get registerJoinPrefix => 'Join ';
+
+  @override
+  String get registerJoinSuffix => ', start your service journey';
+
+  @override
+  String get themeRosePink => 'Rose Pink';
+
+  @override
+  String get themeChampagneGold => 'Champagne Gold';
+
+  @override
+  String get themeColor => 'Theme Color';
+
+  @override
+  String get nicknameHint => 'Nickname';
+
+  @override
+  String get brandTitle => 'Ming Xi · Technician';
+
+  @override
+  String get technicianLogin => 'TECHNICIAN LOGIN';
+
+  @override
+  String get workbenchTitle => 'Tech Workbench';
+
+  @override
+  String get sanctuaryAwaits => 'Your Sanctuary Awaits';
+
+  @override
+  String get zenTagline => 'Zen Healing  ·  Exclusive Service  ·  Safe & Secure';
+
+  @override
+  String get privacySafe => 'Privacy Safe';
+
+  @override
+  String get dataSafe => 'Data Secure';
+
+  @override
+  String get provenPlatform => 'Pro Platform';
+
+  @override
+  String get themeForestGreen => 'Forest Green';
+
+  @override
+  String get dataUpdated => 'Updated';
+
+  @override
+  String get allFeatures => 'All Features';
+
+  @override
+  String get techRanking => 'Tech Rank';
+
+  @override
+  String get performance => 'Performance';
+
+  @override
+  String get thisWeek => 'This Week';
+
+  @override
+  String get vsYesterday => 'vs Yesterday';
+
+  @override
+  String get storeRanking => 'Store Rank';
+
+  @override
+  String get weeklyIncome => 'Weekly Income';
+
+  @override
+  String get homeTagline => 'Focus · Heal · Deliver';
+
+  @override
+  String get drawerWorkGroup => 'Work';
+
+  @override
+  String get drawerDataGroup => 'Revenue';
+
+  @override
+  String get drawerProfileGroup => 'Profile';
+
+  @override
+  String get drawerMoreGroup => 'More';
+
+  @override
+  String get drawerBrand => 'CamBook Pro · Workstation';
 }

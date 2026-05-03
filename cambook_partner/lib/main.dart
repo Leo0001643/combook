@@ -12,13 +12,13 @@ import 'core/services/order_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/services/tech_ws_service.dart';
 import 'core/services/user_service.dart';
-import 'core/theme/app_theme.dart';
+import 'core/theme/app_theme_controller.dart';
 import 'l10n/gen/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpUtil.init();
-  await AudioUtil.init();   // 初始化本地通知插件（必须在 runApp 前调用）
+  await AudioUtil.init();
   await _initServices();
   runApp(const App());
 }
@@ -29,10 +29,10 @@ Future<void> _initServices() async {
   await Get.putAsync<OrderService>(() => OrderService().init());
   await Get.putAsync<MessageService>(() => MessageService().init());
   await Get.putAsync<TechWsService>(() => TechWsService().init());
-  // GlobalNotificationService 倒数第二初始化，确保其他服务都就绪
   await Get.putAsync<GlobalNotificationService>(() => GlobalNotificationService().init());
-  // AuthGuardService 最后初始化：监听 UserService.isSessionExpired 弹出登出弹窗
   await Get.putAsync<AuthGuardService>(() => AuthGuardService().init());
+  // 全局主题控制器 — 所有路由共享，读取本地存储的主题色
+  Get.put<AppThemeController>(AppThemeController(), permanent: true);
 }
 
 class App extends StatelessWidget {
@@ -43,39 +43,40 @@ class App extends StatelessWidget {
     final storage = Get.find<StorageService>();
     final initial = Get.find<UserService>().isLoggedIn ? AppRoutes.main : AppRoutes.login;
 
-    return GetMaterialApp(
-      title: 'CamBook Partner',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+    return Obx(() {
+      final theme = AppThemeController.to.themeData;
+      return GetMaterialApp(
+        title: 'CamBook Partner',
+        debugShowCheckedModeBanner: false,
+        theme: theme,
 
-      // ── 国际化 ─────────────────────────────────────────────────────
-      locale: Locale(storage.locale),
-      fallbackLocale: const Locale('zh'),
-      supportedLocales: const [
-        Locale('zh'), Locale('en'), Locale('vi'),
-        Locale('km'), Locale('ko'), Locale('ja'),
-      ],
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+        // ── 国际化 ──────────────────────────────────────────────────────
+        locale: Locale(storage.locale),
+        fallbackLocale: const Locale('zh'),
+        supportedLocales: const [
+          Locale('zh'), Locale('en'), Locale('vi'),
+          Locale('km'), Locale('ko'), Locale('ja'),
+        ],
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
 
-      // ── 翻译（GetX 内置简单 key-value，用于 .tr 调用）──────────────
-      translations: _AppTranslations(),
+        // ── 翻译（GetX 内置） ───────────────────────────────────────────
+        translations: _AppTranslations(),
 
-      // ── 路由 ──────────────────────────────────────────────────────
-      initialRoute: initial,
-      getPages: AppPages.pages,
-      defaultTransition: Transition.rightToLeft,
-      transitionDuration: const Duration(milliseconds: 180),
-    );
+        // ── 路由 ────────────────────────────────────────────────────────
+        initialRoute: initial,
+        getPages: AppPages.pages,
+        defaultTransition: Transition.rightToLeft,
+        transitionDuration: const Duration(milliseconds: 180),
+      );
+    });
   }
 }
 
-/// GetX 内置翻译 —— 提供少量全局通用词（confirm / cancel 等）
-/// 页面级文案优先使用 ARB（AppLocalizations），保持分层清晰
 class _AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {

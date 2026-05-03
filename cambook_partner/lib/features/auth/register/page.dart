@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import '../../../core/config/app_config.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
-import '../../../core/widgets/app_dialog.dart';
+import '../../../core/routes/app_routes.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../auth_shared.dart';
+import '../auth_theme_controller.dart';
 import '../login/logic.dart';
 import 'logic.dart';
 
-const _kRegisterCountries = [
-  ('+855', '🇰🇭', 'Cambodia'), ('+63',  '🇵🇭', 'Philippines'),
-  ('+1',   '🇺🇸', 'USA'),      ('+84',  '🇻🇳', 'Vietnam'),
-  ('+82',  '🇰🇷', 'Korea'),    ('+81',  '🇯🇵', 'Japan'),
-  ('+86',  '🇨🇳', 'China'),    ('+66',  '🇹🇭', 'Thailand'),
-  ('+65',  '🇸🇬', 'Singapore'),('+60',  '🇲🇾', 'Malaysia'),
-  ('+62',  '🇮🇩', 'Indonesia'),('+91',  '🇮🇳', 'India'),
-  ('+44',  '🇬🇧', 'UK'),       ('+61',  '🇦🇺', 'Australia'),
-  ('+33',  '🇫🇷', 'France'),   ('+49', '🇩🇪', 'Germany'),
+const _kCountries = [
+  ('+855','🇰🇭','Cambodia'),  ('+86','🇨🇳','China'),       ('+1','🇺🇸','USA'),
+  ('+84','🇻🇳','Vietnam'),    ('+63','🇵🇭','Philippines'),  ('+66','🇹🇭','Thailand'),
+  ('+65','🇸🇬','Singapore'),  ('+60','🇲🇾','Malaysia'),    ('+82','🇰🇷','Korea'),
+  ('+81','🇯🇵','Japan'),      ('+62','🇮🇩','Indonesia'),   ('+91','🇮🇳','India'),
+  ('+44','🇬🇧','UK'),         ('+61','🇦🇺','Australia'),
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -30,346 +26,327 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  late final RegisterLogic _logic = Get.find<RegisterLogic>();
+  late final _logic  = Get.find<RegisterLogic>();
+  late final _tc     = AuthThemeController.to;
 
   @override
   Widget build(BuildContext context) {
-    final l     = context.l10n;
-    final state = _logic.state;
+    final l   = context.l10n;
+    final mq  = MediaQuery.of(context);
+    final bot = mq.padding.bottom;
 
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: const Color(0xFFF4F5FA),
-      endDrawer: AuthMoreDrawer(
-        onLangChanged: (code) => Get.find<LoginLogic>().changeLocale(code),
-      ),
-
-      // ── AppBar ─────────────────────────────────────────────────────────────
-      appBar: AppBar(
-        centerTitle: false,
-        titleSpacing: 0,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft, end: Alignment.bottomRight,
-              colors: [Color(0xFF4F46E5), Color(0xFF6D3BE8), Color(0xFF7C3AED)],
-            ),
-          ),
+    return Obx(() {
+      final t = _tc.theme;
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.white,
         ),
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_rounded,
-              color: Colors.white, size: 20),
-        ),
-        title: const AuthAppBarBrand(),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined,
-                color: Colors.white, size: 22),
-            onPressed: () => AppToast.info(l.comingSoon),
+        child: Stack(children: [
+          Positioned.fill(child: LuxuryBackground(theme: t)),
+          Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: Colors.transparent,
+          resizeToAvoidBottomInset: true,
+          endDrawer: AuthMoreDrawer(
+            theme: t,
+            onLangChanged: (c) => Get.find<LoginLogic>().changeLocale(c),
           ),
-          LangMenuButton(
-            onChanged: (code) => Get.find<LoginLogic>().changeLocale(code),
-          ),
-          IconButton(
-            icon: const Icon(Icons.more_horiz_rounded,
-                color: Colors.white, size: 24),
-            onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
-          ),
-          const SizedBox(width: 2),
-        ],
-      ),
+          body: Column(children: [
+              SizedBox(height: mq.padding.top),
 
-      // ── Body ───────────────────────────────────────────────────────────────
-      body: Column(children: [
-        AuthHeroSection(
-          title: l.registerTitle,
-          subtitle: l.registerSubtitle(AppConfig.merchantName),
-        ),
-        Expanded(
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                    color: Color(0x0C000000),
-                    blurRadius: 24, offset: Offset(0, -6)),
-              ],
-            ),
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── 商户徽章 ─────────────────────────────────────────────
-                  const _MerchantBadge(name: AppConfig.merchantName),
-                  const SizedBox(height: 24),
-
-                  // ── 姓名 ─────────────────────────────────────────────────
-                  AuthFieldLabel(l.fieldFullName),
-                  const SizedBox(height: 8),
-                  _RegField(controller: _logic.nameCtrl,
-                      hint: l.fullNameHint, icon: Icons.person_rounded),
-                  const SizedBox(height: 18),
-
-                  // ── 手机号 ───────────────────────────────────────────────
-                  AuthFieldLabel(l.phone),
-                  const SizedBox(height: 8),
-                  _RegisterPhoneRow(
-                      logic: _logic, hint: l.phoneHint,
-                      onTap: () => _showCountryPicker(context)),
-                  const SizedBox(height: 18),
-
-                  // ── 邮箱 ─────────────────────────────────────────────────
-                  AuthFieldLabel(l.fieldEmail),
-                  const SizedBox(height: 8),
-                  _RegField(controller: _logic.emailCtrl,
-                      hint: l.emailHint, icon: Icons.email_rounded,
-                      type: TextInputType.emailAddress),
-                  const SizedBox(height: 18),
-
-                  // ── 密码 ─────────────────────────────────────────────────
-                  AuthFieldLabel(l.password),
-                  const SizedBox(height: 8),
-                  Obx(() => AuthPasswordField(
-                    controller: _logic.passCtrl,
-                    hint: l.passwordHint,
-                    obscure: state.obscurePass.value,
-                    onToggle: _logic.togglePass,
-                  )),
-                  const SizedBox(height: 18),
-
-                  // ── 确认密码 ─────────────────────────────────────────────
-                  AuthFieldLabel(l.fieldConfirmPassword),
-                  const SizedBox(height: 8),
-                  Obx(() => AuthPasswordField(
-                    controller: _logic.confirmCtrl,
-                    hint: l.confirmPasswordHint,
-                    obscure: state.obscureConfirm.value,
-                    onToggle: _logic.toggleConfirm,
-                  )),
-                  const SizedBox(height: 18),
-
-                  // ── 商户码 ───────────────────────────────────────────────
-                  AuthFieldLabel(l.fieldMerchantCode),
-                  const SizedBox(height: 8),
-                  _RegField(controller: _logic.merchantCodeCtrl,
-                      hint: l.merchantCodeHint, icon: Icons.store_rounded),
-                  const SizedBox(height: 24),
-
-                  // ── 可选社交账号分隔 ─────────────────────────────────────
-                  Row(children: [
-                    const Expanded(child: Divider(color: Color(0xFFF0F0F6))),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Text(l.optionalField,
-                          style: const TextStyle(
-                              color: Color(0xFFADB5C8), fontSize: 12,
-                              fontWeight: FontWeight.w500)),
+              // ── Brand bar ────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                child: Row(children: [
+                  // Back arrow
+                  BounceTap(
+                    pressScale: 0.78,
+                    onTap: () => Get.back(),
+                    child: const Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 19,
+                          color: Colors.black87),
                     ),
-                    const Expanded(child: Divider(color: Color(0xFFF0F0F6))),
-                  ]),
-                  const SizedBox(height: 18),
-
-                  // ── Telegram ─────────────────────────────────────────────
-                  AuthFieldLabel(l.fieldTelegram),
-                  const SizedBox(height: 8),
-                  _RegField(controller: _logic.telegramCtrl,
-                      hint: l.telegramHint, icon: Icons.send_rounded),
-                  const SizedBox(height: 18),
-
-                  // ── Facebook ─────────────────────────────────────────────
-                  AuthFieldLabel(l.fieldFacebook),
-                  const SizedBox(height: 8),
-                  _RegField(controller: _logic.facebookCtrl,
-                      hint: l.facebookHint, icon: Icons.facebook_rounded),
-                  const SizedBox(height: 32),
-
-                  // ── 注册按钮 ─────────────────────────────────────────────
-                  Obx(() => AuthGradientButton(
-                    loading: state.loading.value,
-                    label: l.registerBtn,
-                    onTap: _logic.register,
-                  )),
-                  const SizedBox(height: 18),
-
-                  // ── 去登录 ───────────────────────────────────────────────
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Text(l.haveAccount,
-                        style: const TextStyle(
-                            fontSize: 13, color: Color(0xFFADB5C8),
-                            fontWeight: FontWeight.w500)),
-                    TextButton(
-                      onPressed: () => Get.back(),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(l.goLogin,
-                          style: const TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700, fontSize: 13)),
+                  ),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.spa_rounded, color: Colors.black87, size: 18),
+                  const SizedBox(width: 5),
+                  Text(l.brandTitle,
+                      style: const TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w700,
+                          color: Colors.black87, letterSpacing: 1.3)),
+                  const Spacer(),
+                  // Language button
+                  BounceTap(
+                    pressScale: 0.80,
+                    onTap: () => Get.toNamed(AppRoutes.language),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(Icons.language_rounded,
+                          size: 22,
+                          color: Colors.black87),
                     ),
-                  ]),
-                ],
+                  ),
+                  // More (drawer) button
+                  BounceTap(
+                    pressScale: 0.80,
+                    onTap: () =>
+                        _scaffoldKey.currentState?.openEndDrawer(),
+                    child: const Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(Icons.more_horiz_rounded,
+                          size: 30,
+                          color: Colors.black87),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-          ),
-        ),
-      ]),
-    );
+
+              // ── Hero ────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 14, 24, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l.registerTitle,
+                        style: TextStyle(
+                            fontSize: 34, fontWeight: FontWeight.w800,
+                            color: t.ink, height: 1.1,
+                            shadows: const [
+                              Shadow(color: Colors.white60, blurRadius: 12)
+                            ])),
+                    const SizedBox(height: 6),
+                    RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: l.registerJoinPrefix,
+                            style: TextStyle(
+                                fontSize: 14, color: t.inkMid,
+                                fontWeight: FontWeight.w500, height: 1.5)),
+                        TextSpan(
+                            text: 'SPA 水汇',
+                            style: TextStyle(
+                                fontSize: 14, color: t.accent,
+                                fontWeight: FontWeight.w700, height: 1.5)),
+                        TextSpan(
+                            text: l.registerJoinSuffix,
+                            style: TextStyle(
+                                fontSize: 14, color: t.inkMid,
+                                fontWeight: FontWeight.w500, height: 1.5)),
+                      ]),
+                    ),
+                    const SizedBox(height: 8),
+                    SpaVerifiedBadge(theme: t),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              // ── White form card ─────────────────────────────────────
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .97),
+                    borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(28)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: t.accent.withValues(alpha: .12),
+                        blurRadius: 20, offset: const Offset(0, -4),
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(20, 22, 20, bot + 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+
+                        // ── 昵称 ────────────────────────────────────
+                        TextField(
+                          controller: _logic.nicknameCtrl,
+                          style: TextStyle(color: t.ink, fontSize: 16),
+                          decoration: t.field(
+                            hint: l.nicknameHint,
+                            prefix: fieldPrefixIcon(
+                                Icons.person_outline_rounded, t),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+
+                        // ── 手机号: 区号 + 号码 ─────────────────────
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Obx(() => BounceTap(
+                              pressScale: 0.92,
+                              onTap: () => _pickCountry(context, t),
+                              child: Container(
+                                height: 56,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: t.fieldBg,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                      color: t.fieldBorder, width: .8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(_logic.state.countryFlag.value,
+                                        style: const TextStyle(
+                                            fontSize: 21)),
+                                    const SizedBox(width: 4),
+                                    Text(_logic.state.countryCode.value,
+                                        style: TextStyle(
+                                            fontSize: 14, color: t.ink,
+                                            fontWeight: FontWeight.w700)),
+                                    Icon(
+                                        Icons.keyboard_arrow_down_rounded,
+                                        size: 16,
+                                        color: t.inkFaint),
+                                  ],
+                                ),
+                              ),
+                            )),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextField(
+                                controller: _logic.phoneCtrl,
+                                keyboardType: TextInputType.phone,
+                                style: TextStyle(color: t.ink, fontSize: 16),
+                                decoration: t.field(hint: l.phone),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+
+                        // ── 密码 ────────────────────────────────────
+                        Obx(() => SpaPasswordField(
+                          controller: _logic.passCtrl,
+                          hint: l.passwordHint,
+                          obscure: _logic.state.obscurePass.value,
+                          onToggle: _logic.togglePass, theme: t,
+                        )),
+                        const SizedBox(height: 14),
+
+                        // ── 确认密码 ─────────────────────────────────
+                        Obx(() => SpaPasswordField(
+                          controller: _logic.confirmCtrl,
+                          hint: l.confirmPasswordHint,
+                          obscure: _logic.state.obscureConfirm.value,
+                          onToggle: _logic.toggleConfirm, theme: t,
+                        )),
+                        const SizedBox(height: 14),
+
+                        // ── 商户邀请码 ───────────────────────────────
+                        TextField(
+                          controller: _logic.merchantCodeCtrl,
+                          style: TextStyle(color: t.ink, fontSize: 16),
+                          decoration: t.field(
+                            hint: l.merchantCodeHint,
+                            prefix: fieldPrefixIcon(
+                                Icons.lock_outline_rounded, t),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // ── 分隔线 ───────────────────────────────────
+                        Row(children: [
+                          Expanded(child: Divider(
+                              color: t.divider, height: 1,
+                              thickness: .6)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12),
+                            child: Text(l.orRegisterVia,
+                                style: TextStyle(
+                                    fontSize: 13, color: t.inkFaint,
+                                    letterSpacing: .4)),
+                          ),
+                          Expanded(child: Divider(
+                              color: t.divider, height: 1,
+                              thickness: .6)),
+                        ]),
+                        const SizedBox(height: 14),
+
+                        // ── Telegram（选填）──────────────────────────
+                        TextField(
+                          controller: _logic.telegramCtrl,
+                          style: TextStyle(color: t.inkMid, fontSize: 16),
+                          decoration: t.field(
+                            hint: l.telegramOptional,
+                            prefix: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 2, right: 8),
+                              child: Icon(Icons.send_rounded, size: 18,
+                                  color: t.accent.withValues(alpha: .55)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 26),
+
+                        // ── 加入技师团队 ─────────────────────────────
+                        Obx(() => SpaButton(
+                          loading: _logic.state.loading.value,
+                          label: l.registerBtn, theme: t,
+                          onTap: _logic.register,
+                        )),
+                        const SizedBox(height: 16),
+
+                        // ── 已有账号？去登录 ──────────────────────────
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(l.haveAccount,
+                                style: TextStyle(
+                                    color: t.inkFaint, fontSize: 14.5)),
+                            BounceTap(
+                              pressScale: 0.88,
+                              onTap: () => Get.back(),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 4),
+                                child: Text(l.goLogin,
+                                    style: TextStyle(
+                                        color: t.accent, fontSize: 14.5,
+                                        fontWeight: FontWeight.w800)),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // ── 隐私保护 · 数据安全 · 专业平台  (+20px) ───
+                        const SizedBox(height: 36),
+                        SpaSafetyBar(theme: t),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),  // closes body Column
+        ),    // closes Scaffold
+        ]), // outer Stack (bg + scaffold)
+      );
+    });
   }
 
-  void _showCountryPicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => AuthCountrySheet(
-        countries: _kRegisterCountries,
-        title: context.l10n.selectCountry,
-        onSelect: _logic.setCountry,
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 商户徽章
-// ─────────────────────────────────────────────────────────────────────────────
-class _MerchantBadge extends StatelessWidget {
-  final String name;
-  const _MerchantBadge({required this.name});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-    decoration: BoxDecoration(
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft, end: Alignment.bottomRight,
-        colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
-      ),
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: const [
-        BoxShadow(
-            color: Color(0x354F46E5), blurRadius: 16, offset: Offset(0, 6)),
-      ],
-    ),
-    child: Row(children: [
-      Container(
-        width: 44, height: 44,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.18),
-          shape: BoxShape.circle,
+  void _pickCountry(BuildContext context, SpaAuthTheme t) =>
+      showModalBottomSheet(
+        context: context, backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (_) => AuthCountrySheet(
+          countries: _kCountries,
+          title: context.l10n.selectCountry,
+          onSelect: _logic.setCountry, theme: t,
         ),
-        child: const Icon(Icons.store_rounded, color: Colors.white, size: 22),
-      ),
-      const SizedBox(width: 12),
-      Expanded(child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w800,
-                  fontSize: 15, letterSpacing: 0.1)),
-          const SizedBox(height: 2),
-          Text(context.l10n.merchantVerified,
-              style: const TextStyle(
-                  color: Colors.white70, fontSize: 11,
-                  fontWeight: FontWeight.w500)),
-        ],
-      )),
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.18),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.verified_rounded, color: Colors.white, size: 12),
-          SizedBox(width: 4),
-          Text('Verified',
-              style: TextStyle(
-                  color: Colors.white, fontSize: 10,
-                  fontWeight: FontWeight.w700)),
-        ]),
-      ),
-    ]),
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 通用文本输入框
-// ─────────────────────────────────────────────────────────────────────────────
-class _RegField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hint;
-  final IconData icon;
-  final TextInputType type;
-  const _RegField({
-    required this.controller, required this.hint, required this.icon,
-    this.type = TextInputType.text,
-  });
-
-  @override
-  Widget build(BuildContext context) => TextField(
-    controller: controller,
-    keyboardType: type,
-    decoration: InputDecoration(
-      hintText: hint,
-      prefixIcon: Icon(icon, size: 18, color: const Color(0xFFADB5C8)),
-    ),
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 手机号行
-// ─────────────────────────────────────────────────────────────────────────────
-class _RegisterPhoneRow extends StatelessWidget {
-  final RegisterLogic logic;
-  final String hint;
-  final VoidCallback onTap;
-  const _RegisterPhoneRow(
-      {required this.logic, required this.hint, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) => Obx(() => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 52,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF9FAFB),
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Text(logic.state.countryFlag.value,
-                style: const TextStyle(fontSize: 20)),
-            const SizedBox(width: 4),
-            Text(logic.state.countryCode.value,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 13,
-                    color: Color(0xFF374151))),
-            const SizedBox(width: 2),
-            const Icon(Icons.arrow_drop_down_rounded,
-                size: 18, color: Color(0xFFADB5C8)),
-          ]),
-        ),
-      ),
-      const SizedBox(width: 8),
-      Expanded(child: TextField(
-        controller: logic.phoneCtrl,
-        keyboardType: TextInputType.phone,
-        decoration: InputDecoration(hintText: hint),
-      )),
-    ],
-  ));
+      );
 }

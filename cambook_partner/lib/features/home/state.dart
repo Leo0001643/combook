@@ -2,6 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import '../../../core/models/models.dart'; // also exports JsonUtil
 
+// UTC 秒级时间戳 → DateTime（可空；null 或无效值返回 null）
+DateTime? _fromUnixSecsNullable(dynamic v) {
+  if (v == null) return null;
+  final secs = v is num ? v.toInt() : int.tryParse(v.toString());
+  if (secs == null || secs == 0) return null;
+  return DateTime.fromMillisecondsSinceEpoch(secs * 1000);
+}
+
 // ── 服务项模型（与后端 OrderItemVO 一一对应）─────────────────────────────────
 class ScheduleServiceItem {
   final int id;
@@ -15,6 +23,10 @@ class ScheduleServiceItem {
   final int svcStatus;
   /// 多语言名称映射，key=语言码(zh/en/vi/km/ja/ko)，后端有数据时才非空
   final Map<String, String>? nameI18n;
+  /// 实际服务开始时间（后端 startTime，UTC 秒级时间戳转换后；用于精确进度计算）
+  final DateTime? startTime;
+  /// 实际服务结束时间（后端 endTime）
+  final DateTime? endTime;
 
   const ScheduleServiceItem({
     required this.id,
@@ -25,6 +37,8 @@ class ScheduleServiceItem {
     required this.qty,
     required this.svcStatus,
     this.nameI18n,
+    this.startTime,
+    this.endTime,
   });
 
   factory ScheduleServiceItem.fromJson(Map<String, dynamic> j) {
@@ -43,8 +57,19 @@ class ScheduleServiceItem {
       qty:             JsonUtil.intFrom(j['qty'] ?? 1),
       svcStatus:       JsonUtil.intFrom(j['svcStatus']),
       nameI18n:        i18n,
+      startTime:       _fromUnixSecsNullable(j['startTime']),
+      endTime:         _fromUnixSecsNullable(j['endTime']),
     );
   }
+
+  // ── 语义状态 getter（消除调用侧魔法数字）─────────────────────────────────
+  bool get isPending  => svcStatus == 0;
+  bool get isServing  => svcStatus == 1;
+  bool get isDone     => svcStatus == 2;
+
+  /// 根据 svcStatus 合成对应的整型值（供 fallback ScheduleServiceItem 构造使用）
+  static int svcStatusFor({required bool isDone, required bool isServing}) =>
+      isDone ? 2 : isServing ? 1 : 0;
 
   /// 根据当前 locale 返回服务项名称。
   /// 回退顺序：当前语言 → 英文 → 中文 → serviceName 快照。
@@ -124,6 +149,14 @@ class HomeScheduleItem {
     );
   }
 
+  // ── 语义状态 getter（rawStatus 说明：
+  //    0=待支付 1=待接单 2=已接单 3=前往 4=到达 5=服务中 6=已完成 7=取消中 8=已取消 9=已退款）
+  bool get isActive      => rawStatus == 5;
+  bool get isCompleted   => rawStatus == 6;
+  bool get isCancelled   => rawStatus >= 7;
+  /// 待接单且未被接受（rawStatus ≤ 1）
+  bool get isUnaccepted  => rawStatus <= 1;
+
   /// 展示用服务名称列表（最多取前 2 项，其余显示 "+N"）
   String get displayServiceNames {
     if (items.isEmpty) return serviceName.isNotEmpty ? serviceName : '--';
@@ -140,13 +173,13 @@ class HomeScheduleItem {
   }
 
   /// 原始整型状态映射到 Flutter 枚举：
-  /// 0=待支付 1=已支付 2=接单 3=前往 4=到达 5=服务中 6=已完成 7=取消 8=退款中 9=已退款
+  /// 0=待支付 1=待接单 2=已接单 3=前往 4=到达 5=服务中 6=已完成 7=取消中 8=已取消 9=已退款
   OrderStatus get orderStatus => switch (rawStatus) {
-        1            => OrderStatus.pending,
+        0 || 1       => OrderStatus.pending,   // 0=待支付 1=待接单
         2 || 3 || 4  => OrderStatus.accepted,
         5            => OrderStatus.inService,
         6            => OrderStatus.completed,
-        _            => OrderStatus.cancelled,
+        _            => OrderStatus.cancelled, // 7/8/9
       };
 
   static DateTime _fromUnixSecs(dynamic v) {

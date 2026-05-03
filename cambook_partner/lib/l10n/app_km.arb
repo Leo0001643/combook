@@ -1,6 +1,9 @@
 {
   "@@locale": "km",
   "appName": "CamBook Partner",
+  "technicianWorkstation": "កន្លែងធ្វើការជាងបច្ចេកទេស",
+  "notifications": "ការជូនដំណឹង",
+  "profileSettings": "ប្រវត្តិរូបរបស់ខ្ញុំ",
   "navHome": "ទំព័រដើម",
   "navOrders": "បញ្ជាទិញ",
   "navMessages": "សារ",
@@ -242,7 +245,7 @@
   "phoneHint": "បញ្ចូលលេខទូរស័ព្ទ",
   "password": "ពាក្យសម្ងាត់",
   "passwordHint": "បញ្ចូលពាក្យសម្ងាត់",
-  "loginBtn": "ចូល",
+  "loginBtn": "ចូលតុការងារ",
   "forgotPassword": "ភ្លេចពាក្យសម្ងាត់?",
   "loginSuccess": "ចូលបានជោគជ័យ",
   "loginFailed": "ព័ត៌មានមិនត្រឹមត្រូវ",
@@ -266,7 +269,7 @@
   "techIdHint": "បញ្ចូលលេខខ",
   "techIdRequired": "សូមបញ្ចូលលេខខ",
   "noAccount": "មិនទាន់មានគណនី?",
-  "goRegister": "ចុះឈ្មោះឥឡូវ",
+  "goRegister": "ចុះឈ្មោះ",
   "haveAccount": "មានគណនីរួចហើយ?",
   "goLogin": "ចូល",
   "registerTitle": "បង្កើតគណនីជាង",
@@ -295,7 +298,7 @@
   "merchantCodeHint": "បញ្ចូលលេខកូដអញ្ជើញ",
   "merchantCodeRequired": "សូមបញ្ចូលលេខកូដអ្នកជំនួញ",
   "selectCountry": "ជ្រើសប្រទេស",
-  "registerBtn": "ចុះឈ្មោះឥឡូវ",
+  "registerBtn": "ចូលរួមក្រុម",
   "registerSuccess": "ចុះឈ្មោះបានជោគជ័យ! កំពុងរង់ចាំការអនុម័ត",
   "registerFailed": "ការចុះឈ្មោះបរាជ័យ សូមព្យាយាមម្ដងទៀត",
   "invalidPhone": "លេខទូរស័ព្ទមិនត្រឹមត្រូវ",
@@ -328,6 +331,8 @@
   "distanceFrom": "ចម្ងាយ:",
   "ignore": "មិនអើពើ",
   "grabOrder": "ទទួលឥឡូវ",
+  "estimatedEarnings": "ចំណូលប្រមាណ",
+  "unknownCustomer": "អតិថិជនថ្មី",
   "announcements": "សេចក្ដីជូនដំណឹង",
   "helpAndSupport": "ជំនួយ និង ការគាំទ្រ",
   "rateApp": "វាយតម្លៃ App",
@@ -346,14 +351,16 @@
   "totalOrders": "ការបញ្ជាទិញសរុប",
   "overallRating": "ការវាយតម្លៃទូទៅ",
   "currentBalance": "សមតុល្យបច្ចុប្បន្ន",
-
   "statTodayAppointments": "ការណាត់ថ្ងៃនេះ",
   "statTodayCompleted": "បានបញ្ចប់ថ្ងៃនេះ",
   "statTodayCancelled": "បានលុបថ្ងៃនេះ",
-
   "schedOrderCount": "{n} ការបញ្ជាទិញ",
   "@schedOrderCount": {
-    "placeholders": { "n": { "type": "int" } }
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   },
   "schedInService": "កំពុងបម្រើ",
   "schedPending": "រង់ចាំ",
@@ -361,37 +368,44 @@
   "scheduleProgress": "{completed} / {total} បានបញ្ចប់",
   "@scheduleProgress": {
     "placeholders": {
-      "completed": { "type": "int" },
-      "total":     { "type": "int" }
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "statusOnWay": "កំពុងទៅ",
   "statusCancelling": "កំពុងលុប",
   "statusRefunding": "កំពុងសងប្រាក់",
   "statusRefunded": "បានសងប្រាក់",
-
   "schedEndTime": "ចប់ {time} · {duration}នាទី",
   "@schedEndTime": {
     "placeholders": {
-      "time":     { "type": "String" },
-      "duration": { "type": "String" }
+      "time": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "serviceInProgress": "កំពុងបម្រើ",
   "estimatedIncome": "ប្រហាក់ {amount}",
   "@estimatedIncome": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
-
   "sessionExpiredTitle": "សម័យបានផុតកំណត់",
   "sessionExpiredMessage": "អ្នកត្រូវបានចេញពីប្រព័ន្ធ។ សូមចូលម្ដងទៀតដើម្បីបន្ត។",
   "goToLogin": "ទៅកាន់ការចូល",
-
   "networkTimeout": "ការស្នើសុំអស់ពេល។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក។",
   "networkUnavailable": "បណ្ដាញមិនអាចប្រើបាន។ សូមពិនិត្យការតភ្ជាប់។",
   "networkError": "ការស្នើសុំបានបរាជ័យ។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។",
-
   "orderTypeOnline": "កក់ទុក",
   "orderTypeWalkin": "អតិថិជនចូល",
   "walkinGuest": "អតិថិជនទូទៅ",
@@ -402,5 +416,46 @@
   "rating": "ការវាយតម្លៃ",
   "myOrders": "តុ​ Order ​របស់ខ្ញុំ",
   "reviews": "ការពិនិត្យ",
-  "langHint": "ជ្រើសរើសភាសាបង្ហាញដែលអ្នកចូលចិត្ត"
+  "langHint": "ជ្រើសរើសភាសាបង្ហាញដែលអ្នកចូលចិត្ត",
+  "welcomeBack": "សូមស្វាគមន៍ការត្រលប់មកវិញ",
+  "spaName": "Water Spa",
+  "loginHeroTagline": "សម្រាក · ធ្វើឱ្យស្រស់ស្រាយ",
+  "rememberMe": "ចំណាំខ្ញុំ",
+  "otherLoginMethods": "វិធីចូលផ្សេង",
+  "genderHint": "ភេទ",
+  "genderMale": "ប្រុស",
+  "genderFemale": "ស្រី",
+  "genderOther": "ផ្សេង",
+  "orRegisterVia": "ឬចុះឈ្មោះតាម",
+  "telegramOptional": "Telegram (ស្រេចចិត្ត)",
+  "facebookOptional": "Facebook (ស្រេចចិត្ត)",
+  "registerJoinPrefix": "ចូលរួម ",
+  "registerJoinSuffix": "ចាប់ផ្ដើមដំណើរសេវាកម្ម",
+  "themeRosePink": "ផ្កាកុហក",
+  "themeChampagneGold": "មាស ចំពែន",
+  "themeColor": "ពណ៌ប្រធានបទ",
+  "nicknameHint": "ឈ្មោះហៅ",
+  "brandTitle": "Ming Xi · បច្ចេកទេស",
+  "technicianLogin": "TECHNICIAN LOGIN",
+  "workbenchTitle": "តុការងារបច្ចេកទេស",
+  "sanctuaryAwaits": "Your Sanctuary Awaits",
+  "zenTagline": "ព្យាបាល  ·  សេវាផ្ទាល់  ·  សុវត្ថិភាព",
+  "privacySafe": "ឯកជនភាព",
+  "dataSafe": "ទិន្នន័យសុវត្ថិភាព",
+  "provenPlatform": "វេទិកាប្រកបដោយវិជ្ជាជីវៈ",
+  "themeForestGreen": "បៃតងព្រៃ",
+  "dataUpdated": "បានធ្វើបច្ចុប្បន្នភាព",
+  "allFeatures": "ទាំងអស់",
+  "techRanking": "លំដាប់",
+  "performance": "ការអនុវត្ត",
+  "thisWeek": "សប្តាហ៍នេះ",
+  "vsYesterday": "ម្សិលមិញ",
+  "storeRanking": "ហាង",
+  "weeklyIncome": "ប្រាក់ចំណូលសប្តាហ៍",
+  "homeTagline": "ផ្តោត · ព្យាបាល · ប្រគល់",
+  "drawerWorkGroup": "ការងារ",
+  "drawerDataGroup": "ចំណូល",
+  "drawerProfileGroup": "ប្រវត្តិ",
+  "drawerMoreGroup": "ច្រើន",
+  "drawerBrand": "CamBook Pro · កន្លែងធ្វើការ"
 }

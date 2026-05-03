@@ -30,8 +30,12 @@ public final class MapRowUtils {
     public static long toLong(Object v) {
         if (v == null) return 0L;
         if (v instanceof Long l) return l;
+        if (v instanceof Boolean b) return b ? 1L : 0L;
         if (v instanceof Number n) return n.longValue();
-        return Long.parseLong(v.toString());
+        String s = v.toString();
+        if ("true".equalsIgnoreCase(s))  return 1L;
+        if ("false".equalsIgnoreCase(s)) return 0L;
+        return Long.parseLong(s);
     }
 
     /**
@@ -40,18 +44,27 @@ public final class MapRowUtils {
     public static Long toLongOrNull(Object v) {
         if (v == null) return null;
         if (v instanceof Long l) return l;
+        if (v instanceof Boolean b) return b ? 1L : 0L;
         if (v instanceof Number n) return n.longValue();
-        return Long.parseLong(v.toString());
+        String s = v.toString();
+        if ("true".equalsIgnoreCase(s))  return 1L;
+        if ("false".equalsIgnoreCase(s)) return 0L;
+        return Long.parseLong(s);
     }
 
     /**
      * 任意 Number 或字符串 → {@code int}；null 返回 0。
+     * 注意：MySQL TINYINT(1) 经 JDBC 驱动会以 Boolean 返回，此处统一处理。
      */
     public static int toInt(Object v) {
         if (v == null) return 0;
         if (v instanceof Integer i) return i;
+        if (v instanceof Boolean b) return b ? 1 : 0;
         if (v instanceof Number n) return n.intValue();
-        return Integer.parseInt(v.toString());
+        String s = v.toString();
+        if ("true".equalsIgnoreCase(s))  return 1;
+        if ("false".equalsIgnoreCase(s)) return 0;
+        return Integer.parseInt(s);
     }
 
     /**

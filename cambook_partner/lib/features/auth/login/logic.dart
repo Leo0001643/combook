@@ -25,6 +25,7 @@ class LoginLogic extends GetxController {
 
   void setMode(int m) => state.mode.value = m;
   void toggleObscure() => state.obscure.value = !state.obscure.value;
+  void toggleRemember() => state.rememberMe.value = !state.rememberMe.value;
 
   void setCountry(String code, String flag) {
     state.countryCode.value = code;

@@ -109,6 +109,24 @@ abstract class AppLocalizations {
   /// **'CamBook 技师端'**
   String get appName;
 
+  /// No description provided for @technicianWorkstation.
+  ///
+  /// In zh, this message translates to:
+  /// **'技师工作台'**
+  String get technicianWorkstation;
+
+  /// No description provided for @notifications.
+  ///
+  /// In zh, this message translates to:
+  /// **'消息通知'**
+  String get notifications;
+
+  /// No description provided for @profileSettings.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的资料'**
+  String get profileSettings;
+
   /// No description provided for @navHome.
   ///
   /// In zh, this message translates to:
@@ -1390,7 +1408,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginBtn.
   ///
   /// In zh, this message translates to:
-  /// **'登录'**
+  /// **'进入工作台'**
   String get loginBtn;
 
   /// No description provided for @forgotPassword.
@@ -1492,7 +1510,7 @@ abstract class AppLocalizations {
   /// No description provided for @goRegister.
   ///
   /// In zh, this message translates to:
-  /// **'立即注册'**
+  /// **'注册新账号'**
   String get goRegister;
 
   /// No description provided for @haveAccount.
@@ -1624,7 +1642,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerBtn.
   ///
   /// In zh, this message translates to:
-  /// **'立即注册'**
+  /// **'加入技师团队'**
   String get registerBtn;
 
   /// No description provided for @registerSuccess.
@@ -1776,6 +1794,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'立即接单'**
   String get grabOrder;
+
+  /// No description provided for @estimatedEarnings.
+  ///
+  /// In zh, this message translates to:
+  /// **'预计收入'**
+  String get estimatedEarnings;
+
+  /// No description provided for @unknownCustomer.
+  ///
+  /// In zh, this message translates to:
+  /// **'新客户'**
+  String get unknownCustomer;
 
   /// No description provided for @announcements.
   ///
@@ -2076,6 +2106,252 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'选择您偏好的显示语言'**
   String get langHint;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In zh, this message translates to:
+  /// **'欢迎回来'**
+  String get welcomeBack;
+
+  /// No description provided for @spaName.
+  ///
+  /// In zh, this message translates to:
+  /// **'水汇 SPA'**
+  String get spaName;
+
+  /// No description provided for @loginHeroTagline.
+  ///
+  /// In zh, this message translates to:
+  /// **'身心放松 · 焕活之旅'**
+  String get loginHeroTagline;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In zh, this message translates to:
+  /// **'记住我'**
+  String get rememberMe;
+
+  /// No description provided for @otherLoginMethods.
+  ///
+  /// In zh, this message translates to:
+  /// **'其他登录方式'**
+  String get otherLoginMethods;
+
+  /// No description provided for @genderHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'性别'**
+  String get genderHint;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In zh, this message translates to:
+  /// **'男'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In zh, this message translates to:
+  /// **'女'**
+  String get genderFemale;
+
+  /// No description provided for @genderOther.
+  ///
+  /// In zh, this message translates to:
+  /// **'其他'**
+  String get genderOther;
+
+  /// No description provided for @orRegisterVia.
+  ///
+  /// In zh, this message translates to:
+  /// **'或通过以下方式注册'**
+  String get orRegisterVia;
+
+  /// No description provided for @telegramOptional.
+  ///
+  /// In zh, this message translates to:
+  /// **'Telegram账号（选填）'**
+  String get telegramOptional;
+
+  /// No description provided for @facebookOptional.
+  ///
+  /// In zh, this message translates to:
+  /// **'Facebook（选填）'**
+  String get facebookOptional;
+
+  /// No description provided for @registerJoinPrefix.
+  ///
+  /// In zh, this message translates to:
+  /// **'加入 '**
+  String get registerJoinPrefix;
+
+  /// No description provided for @registerJoinSuffix.
+  ///
+  /// In zh, this message translates to:
+  /// **'，开启您的服务之旅'**
+  String get registerJoinSuffix;
+
+  /// No description provided for @themeRosePink.
+  ///
+  /// In zh, this message translates to:
+  /// **'玫瑰粉'**
+  String get themeRosePink;
+
+  /// No description provided for @themeChampagneGold.
+  ///
+  /// In zh, this message translates to:
+  /// **'香槟金'**
+  String get themeChampagneGold;
+
+  /// No description provided for @themeColor.
+  ///
+  /// In zh, this message translates to:
+  /// **'主题色'**
+  String get themeColor;
+
+  /// No description provided for @nicknameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'昵称'**
+  String get nicknameHint;
+
+  /// No description provided for @brandTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'明 玺 · 技 师 端'**
+  String get brandTitle;
+
+  /// No description provided for @technicianLogin.
+  ///
+  /// In zh, this message translates to:
+  /// **'TECHNICIAN LOGIN'**
+  String get technicianLogin;
+
+  /// No description provided for @workbenchTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'技师工作台'**
+  String get workbenchTitle;
+
+  /// No description provided for @sanctuaryAwaits.
+  ///
+  /// In zh, this message translates to:
+  /// **'Your Sanctuary Awaits'**
+  String get sanctuaryAwaits;
+
+  /// No description provided for @zenTagline.
+  ///
+  /// In zh, this message translates to:
+  /// **'禅意疗愈  ·  专属服务  ·  安全护航'**
+  String get zenTagline;
+
+  /// No description provided for @privacySafe.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐私保护'**
+  String get privacySafe;
+
+  /// No description provided for @dataSafe.
+  ///
+  /// In zh, this message translates to:
+  /// **'数据安全'**
+  String get dataSafe;
+
+  /// No description provided for @provenPlatform.
+  ///
+  /// In zh, this message translates to:
+  /// **'专业平台'**
+  String get provenPlatform;
+
+  /// No description provided for @themeForestGreen.
+  ///
+  /// In zh, this message translates to:
+  /// **'森林绿'**
+  String get themeForestGreen;
+
+  /// No description provided for @dataUpdated.
+  ///
+  /// In zh, this message translates to:
+  /// **'数据更新'**
+  String get dataUpdated;
+
+  /// No description provided for @allFeatures.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部功能'**
+  String get allFeatures;
+
+  /// No description provided for @techRanking.
+  ///
+  /// In zh, this message translates to:
+  /// **'技师排名'**
+  String get techRanking;
+
+  /// No description provided for @performance.
+  ///
+  /// In zh, this message translates to:
+  /// **'业绩总览'**
+  String get performance;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In zh, this message translates to:
+  /// **'本周'**
+  String get thisWeek;
+
+  /// No description provided for @vsYesterday.
+  ///
+  /// In zh, this message translates to:
+  /// **'较昨日'**
+  String get vsYesterday;
+
+  /// No description provided for @storeRanking.
+  ///
+  /// In zh, this message translates to:
+  /// **'门店排名'**
+  String get storeRanking;
+
+  /// No description provided for @weeklyIncome.
+  ///
+  /// In zh, this message translates to:
+  /// **'本周收入'**
+  String get weeklyIncome;
+
+  /// No description provided for @homeTagline.
+  ///
+  /// In zh, this message translates to:
+  /// **'专注服务 · 用心疗愈 · 传递美好'**
+  String get homeTagline;
+
+  /// No description provided for @drawerWorkGroup.
+  ///
+  /// In zh, this message translates to:
+  /// **'工作管理'**
+  String get drawerWorkGroup;
+
+  /// No description provided for @drawerDataGroup.
+  ///
+  /// In zh, this message translates to:
+  /// **'数据收益'**
+  String get drawerDataGroup;
+
+  /// No description provided for @drawerProfileGroup.
+  ///
+  /// In zh, this message translates to:
+  /// **'个人中心'**
+  String get drawerProfileGroup;
+
+  /// No description provided for @drawerMoreGroup.
+  ///
+  /// In zh, this message translates to:
+  /// **'更多'**
+  String get drawerMoreGroup;
+
+  /// No description provided for @drawerBrand.
+  ///
+  /// In zh, this message translates to:
+  /// **'CamBook Pro · 技师工作台'**
+  String get drawerBrand;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/theme_ext.dart';import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../core/models/models.dart';
@@ -52,7 +52,7 @@ class _RatingSummary extends StatelessWidget {
       margin: const EdgeInsets.all(AppSizes.pagePadding),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: AppColors.gradientPrimary,
+        gradient: context.primaryGrad,
         borderRadius: BorderRadius.circular(AppSizes.radiusXl),
       ),
       child: Row(children: [
@@ -100,10 +100,10 @@ class _ReviewCard extends StatelessWidget {
       Row(children: [
         CircleAvatar(
           radius: 18,
-          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+          backgroundColor: context.primary.withValues(alpha: 0.1),
           child: Text(
               review.customerName.isNotEmpty ? review.customerName[0].toUpperCase() : '?',
-              style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 14)),
+              style: TextStyle(color: context.primary, fontWeight: FontWeight.bold, fontSize: 14)),
         ),
         const SizedBox(width: 10),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -124,10 +124,10 @@ class _ReviewCard extends StatelessWidget {
         Wrap(spacing: 6, children: review.tags.map((tag) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.08),
+            color: context.primary.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(AppSizes.radiusFull),
           ),
-          child: Text(tag, style: const TextStyle(fontSize: 11, color: AppColors.primary)),
+          child: Text(tag, style: TextStyle(fontSize: 11, color: context.primary)),
         )).toList()),
       ],
     ]),

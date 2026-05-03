@@ -547,7 +547,7 @@ export default function DashboardPage() {
                   }}>
                     <ShopOutlined style={{ color: '#fff', fontSize: 24 }} />
                   </div>
-                  <div>
+    <div>
                     <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>
                       {isAdmin ? 'Super Admin · 超级管理员' : 'Merchant Portal · 商户看板'}
                     </div>
@@ -564,7 +564,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div>
+        <div>
                 <Select
                   value={period}
                   onChange={v => setPeriod(v)}
@@ -619,7 +619,7 @@ export default function DashboardPage() {
             {kpiList.map((k, i) => (
               <KpiCard key={i} {...k} />
             ))}
-          </div>
+      </div>
 
           {/* ── Trend Chart + Status Pie ────────────────────────────────────── */}
           <Row gutter={[20, 20]} style={{ marginBottom: 20 }}>
@@ -638,7 +638,7 @@ export default function DashboardPage() {
                     }}>
                       <LineChartOutlined style={{ color: '#fff', fontSize: 14 }} />
                     </div>
-                    <div>
+                <div>
                       <div style={{ fontWeight: 800, color: '#111827', fontSize: 14 }}>营业趋势</div>
                       <div style={{ color: '#9ca3af', fontSize: 11 }}>{PERIOD_LABELS[period]}</div>
                     </div>
@@ -721,7 +721,7 @@ export default function DashboardPage() {
                               background: i === 0 ? 'linear-gradient(135deg,#f59e0b,#fbbf24)' :
                                            i === 1 ? 'linear-gradient(135deg,#9ca3af,#d1d5db)' :
                                            i === 2 ? 'linear-gradient(135deg,#b45309,#d97706)' : '#f3f4f6',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                               fontSize: 10, fontWeight: 800,
                               color: i < 3 ? '#fff' : '#6b7280',
                             }}>
@@ -772,7 +772,7 @@ export default function DashboardPage() {
                   />
                 </div>
               </div>
-            </Col>
+          </Col>
 
             <Col xs={24} lg={7}>
               <div style={{ ...glassCard, padding: 0, overflow: 'hidden', height: '100%' }}>
@@ -831,7 +831,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             </Col>
-          </Row>
+      </Row>
 
           {/* ── Admin-only: Merchant Rank ───────────────────────────────────── */}
           {isAdmin && merchantRankRaw.length > 0 && (
@@ -944,10 +944,10 @@ export default function DashboardPage() {
                 </div>
               ) }}
             />
-          </div>
+                  </div>
 
-        </div>
-      </div>
+                </div>
+    </div>
     </Spin>
   )
 }

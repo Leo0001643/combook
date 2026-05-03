@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/extensions/theme_ext.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../core/models/models.dart';
+import '../../../core/theme/app_theme_controller.dart';
 import '../../../core/utils/date_util.dart';
 import '../../../core/widgets/common_widgets.dart';
 import 'logic.dart';
@@ -22,10 +24,10 @@ class MessageListPage extends StatelessWidget {
         if (convs.isEmpty) {
           return EmptyView(
               message: l.noMessages,
-              iconWidget: WeChatBubbleIcon(color: AppColors.textHint, size: 64));
+              iconWidget: const WeChatBubbleIcon(color: AppColors.textHint, size: 64));
         }
         return RefreshIndicator(
-          color: AppColors.primary,
+          color: context.primary,
           onRefresh: logic.refresh,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -53,7 +55,7 @@ class _ConvTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: hasUnread
-              ? AppColors.primary.withValues(alpha: 0.03)
+              ? context.primary.withValues(alpha: 0.03)
               : Colors.transparent,
           border: const Border(
             bottom: BorderSide(color: Color(0xFFF3F4F6)),
@@ -117,7 +119,7 @@ class _ConvTile extends StatelessWidget {
                 Text(DateUtil.relative(conv.lastTime),
                     style: TextStyle(
                         fontSize: 11,
-                        color: hasUnread ? AppColors.primary : AppColors.textHint,
+                        color: hasUnread ? context.primary : AppColors.textHint,
                         fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400)),
               ]),
               const SizedBox(height: 4),
@@ -138,7 +140,7 @@ class _ConvTile extends StatelessWidget {
 
   Color _avatarColor(ConversationType t) => switch (t) {
     ConversationType.system   => AppColors.info,
-    ConversationType.customer => AppColors.primary,
+    ConversationType.customer => AppThemeController.to.primary,
     ConversationType.order    => AppColors.success,
   };
 

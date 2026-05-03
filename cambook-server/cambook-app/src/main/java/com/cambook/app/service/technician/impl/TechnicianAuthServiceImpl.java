@@ -51,13 +51,10 @@ public class TechnicianAuthServiceImpl implements ITechnicianAuthService {
 
     @Override
     public TechLoginVO login(TechLoginDTO dto) {
-        // 多租户隔离在 SQL 层完成：tech_no/mobile + merchant_id 联合查询
         CbTechnician tech = loadByAccount(dto.getLoginType(), dto.getAccount(), dto.getMerchantId());
-
         checkAuditStatus(tech);
         checkAccountStatus(tech);
         verifyPassword(dto.getPassword(), tech.getPassword());
-
         String token     = generateToken(tech, dto.getLang());
         long   expiresAt = Instant.now().getEpochSecond() + 7 * 24 * 3600L;
         return TechLoginVO.of(token, expiresAt, tech);

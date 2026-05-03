@@ -78,13 +78,27 @@ public class OrderEventListener {
     }
 
     private void broadcastToNearbyTechnicians(Long orderId, Long technicianId) {
-        log.info("[Broadcast] 新订单 WS 推送 orderId={} techId={}", orderId, technicianId);
-        // 推送 NEW_ORDER 给指定技师（若已登录 WS）→ App 播放语音提示
+        log.info("[Broadcast] 新订单 WS 推送 orderId={} techId={} 在线人数={}",
+                orderId, technicianId, registry.size());
         Map<String, Object> payload = Map.of("orderId", orderId);
+
         if (technicianId != null) {
+            // 已指定技师：精准推送
+            log.info("[Broadcast] 精准推送 orderId={} → techId={}", orderId, technicianId);
             registry.sendTo(technicianId, WsMessage.newOrder(payload));
-            // 随即刷新该技师的首页数据
             wsHandler.pushHomeData(technicianId);
+        } else {
+            // 未指定技师（散客 / 管理员创建）：广播给所有在线技师
+            var onlineIds = registry.onlineTechIds();
+            if (onlineIds.isEmpty()) {
+                log.warn("[Broadcast] 当前无在线技师，orderId={} 无法推送 NEW_ORDER", orderId);
+                return;
+            }
+            for (Long onlineTechId : onlineIds) {
+                log.info("[Broadcast] 广播新订单 orderId={} → techId={}", orderId, onlineTechId);
+                registry.sendTo(onlineTechId, WsMessage.newOrder(payload));
+                wsHandler.pushHomeData(onlineTechId);
+            }
         }
     }
 

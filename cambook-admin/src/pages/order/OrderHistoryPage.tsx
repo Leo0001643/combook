@@ -34,16 +34,21 @@ const { RangePicker } = DatePicker
 
 // ── Status map ───────────────────────────────────────────────────────────────
 
+// 与后端 order status 保持一致（0-9）
 const STATUS_MAP_FB: Record<number, {
   color: string; text: string; icon: React.ReactNode
   badgeStatus: 'default' | 'processing' | 'success' | 'error' | 'warning'
 }> = {
-  0: { color: 'gold',    text: '待支付', icon: <DollarOutlined />,      badgeStatus: 'warning' },
-  1: { color: 'blue',    text: '待接单', icon: <ClockCircleOutlined />,  badgeStatus: 'processing' },
-  2: { color: 'cyan',    text: '已接单', icon: <CheckCircleOutlined />,  badgeStatus: 'processing' },
-  3: { color: 'orange',  text: '服务中', icon: <CarOutlined />,          badgeStatus: 'processing' },
-  4: { color: 'green',   text: '已完成', icon: <CheckCircleOutlined />,  badgeStatus: 'success' },
-  5: { color: 'default', text: '已取消', icon: <CloseCircleOutlined />,  badgeStatus: 'default' },
+  0: { color: 'gold',    text: '待支付',   icon: <DollarOutlined />,        badgeStatus: 'warning' },
+  1: { color: 'blue',    text: '预约订单', icon: <ClockCircleOutlined />,    badgeStatus: 'processing' },
+  2: { color: 'cyan',    text: '已接单',   icon: <CheckCircleOutlined />,    badgeStatus: 'processing' },
+  3: { color: 'orange',  text: '前往中',   icon: <CarOutlined />,            badgeStatus: 'processing' },
+  4: { color: 'geekblue',text: '已到达',   icon: <SafetyCertificateOutlined />, badgeStatus: 'processing' },
+  5: { color: 'volcano', text: '服务中',   icon: <ClockCircleOutlined />,    badgeStatus: 'processing' },
+  6: { color: 'green',   text: '已完成',   icon: <CheckCircleOutlined />,    badgeStatus: 'success' },
+  7: { color: 'default', text: '已取消',   icon: <CloseCircleOutlined />,    badgeStatus: 'default' },
+  8: { color: 'pink',    text: '退款中',   icon: <StopOutlined />,           badgeStatus: 'warning' },
+  9: { color: 'gray',    text: '已退款',   icon: <CloseCircleOutlined />,    badgeStatus: 'default' },
 }
 
 // ════════════════════════════════════════════════════════════════════════════════
@@ -167,18 +172,20 @@ export default function OrderHistoryPage() {
     const header = ['订单号', '客户', '手机号', '技师', '服务项目', '状态', '实付金额', '下单时间', '完成时间']
     const csv = [header, ...rows].map(row => row.join(',')).join('\n')
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url  = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
+    a.href = url
     a.download = `历史订单_${dayjs().format('YYYYMMDD')}.csv`
     a.click()
+    URL.revokeObjectURL(url)
     message.success('导出成功')
   }
 
   // ── Summary stats from current page data ──────────────────────────────────
 
-  const completedCount = data.filter(r => r.status === 4).length
-  const servingCount   = data.filter(r => r.status === 3).length
-  const totalRevenue   = data.filter(r => r.status === 4).reduce((s, r) => s + Number(r.payAmount ?? 0), 0)
+  const completedCount = data.filter(r => r.status === 6).length
+  const servingCount   = data.filter(r => r.status === 5).length
+  const totalRevenue   = data.filter(r => r.status === 6).reduce((s, r) => s + Number(r.payAmount ?? 0), 0)
 
   const stats = [
     { label: '订单总数', value: total,           color: '#6366f1', bg: '#eef2ff',  border: '#c7d2fe' },
@@ -284,7 +291,7 @@ export default function OrderHistoryPage() {
             onClick={() => { setDetail(r); setDrawerOpen(true) }}>
             详情
           </Button>
-          {[0, 1, 2].includes(r.status) && (
+          {r.status <= 4 && (
             <PermGuard code="order:cancel">
               <Popconfirm title="确认取消该订单？" onConfirm={() => handleCancel(r)}
                 okText="取消订单" cancelText="返回" okButtonProps={{ danger: true }}>
@@ -294,7 +301,7 @@ export default function OrderHistoryPage() {
               </Popconfirm>
             </PermGuard>
           )}
-          {r.status === 5 && (
+          {r.status >= 7 && (
             <PermGuard code="order:delete">
               <Popconfirm title="确认删除该订单？此操作不可恢复" onConfirm={() => handleDelete(r)}
                 okText="删除" cancelText="返回" okButtonProps={{ danger: true }}>
@@ -516,15 +523,15 @@ export default function OrderHistoryPage() {
             {/* 金额高亮卡片 */}
             <div style={{
               borderRadius: 14, padding: '18px 22px',
-              background: detail.status === 4
+              background: detail.status === 6
                 ? 'linear-gradient(135deg,#ecfdf5,#d1fae5)'
                 : 'linear-gradient(135deg,#f8fafc,#f1f5f9)',
-              border: detail.status === 4 ? '1px solid #a7f3d0' : '1px solid #e2e8f0',
+              border: detail.status === 6 ? '1px solid #a7f3d0' : '1px solid #e2e8f0',
             }}>
               <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>实付金额</div>
               <div style={{
                 fontSize: 32, fontWeight: 900, lineHeight: 1,
-                color: detail.status === 4 ? '#059669' : '#94a3b8',
+                color: detail.status === 6 ? '#059669' : '#94a3b8',
               }}>
                 ${Number(detail.payAmount ?? 0).toFixed(2)}
               </div>
@@ -619,7 +626,7 @@ export default function OrderHistoryPage() {
                       </div>
                     ),
                   }] : []),
-                  ...(detail.status >= 3 ? [{
+                  ...(detail.status >= 5 ? [{
                     color: 'orange',
                     dot: <CarOutlined style={{ fontSize: 14 }} />,
                     children: (
@@ -629,7 +636,7 @@ export default function OrderHistoryPage() {
                       </div>
                     ),
                   }] : []),
-                  ...(detail.status === 4 ? [{
+                  ...(detail.status === 6 ? [{
                     color: 'green',
                     dot: <TrophyOutlined style={{ fontSize: 14 }} />,
                     children: (
@@ -642,13 +649,15 @@ export default function OrderHistoryPage() {
                       </div>
                     ),
                   }] : []),
-                  ...(detail.status === 5 ? [{
+                  ...(detail.status >= 7 ? [{
                     color: 'red',
                     dot: <CloseCircleOutlined style={{ fontSize: 14 }} />,
                     children: (
                       <div>
                         <div style={{ fontWeight: 600, color: '#ef4444' }}>订单取消</div>
-                        <div style={{ fontSize: 12, color: '#94a3b8' }}>已取消</div>
+                        <div style={{ fontSize: 12, color: '#94a3b8' }}>
+                          {detail.status === 8 ? '退款中' : detail.status === 9 ? '已退款' : '已取消'}
+                        </div>
                       </div>
                     ),
                   }] : []),
@@ -657,7 +666,7 @@ export default function OrderHistoryPage() {
             </div>
 
             {/* 快捷操作 */}
-            {[0, 1, 2].includes(detail.status) && (
+            {detail.status <= 4 && (
               <Popconfirm title="确认取消该订单？"
                 onConfirm={() => { handleCancel(detail); setDrawerOpen(false) }}
                 okText="取消订单" cancelText="返回" okButtonProps={{ danger: true }}>

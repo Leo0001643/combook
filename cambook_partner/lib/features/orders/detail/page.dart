@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/theme_ext.dart';import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -20,7 +20,7 @@ class OrderDetailPage extends StatelessWidget {
     final logic = Get.find<OrderDetailLogic>();
     return Obx(() {
       if (logic.state.loading.value) {
-        return const Scaffold(body: Center(child: CircularProgressIndicator(color: AppColors.primary)));
+        return Scaffold(body: Center(child: CircularProgressIndicator(color: context.primary)));
       }
       final order = logic.state.order.value;
       if (order == null) {
@@ -58,7 +58,7 @@ class OrderDetailPage extends StatelessWidget {
     return SliverAppBar(
       expandedHeight: 130,
       pinned: true,
-      backgroundColor: AppColors.primary,
+      backgroundColor: context.primary,
       leading: BounceTap(
         pressScale: 0.78,
         onTap: () => Get.back(),
@@ -70,7 +70,7 @@ class OrderDetailPage extends StatelessWidget {
       actions: const [MainAppBarActions()],
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(gradient: AppColors.gradientPrimary),
+          decoration: BoxDecoration(gradient: context.primaryGrad),
           padding: const EdgeInsets.fromLTRB(20, 80, 20, 16),
           alignment: Alignment.bottomLeft,
           child: Column(
@@ -143,8 +143,8 @@ class _ProgressCard extends StatelessWidget {
                     width: 28, height: 28,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: done ? AppColors.primary : AppColors.border,
-                      boxShadow: active ? [BoxShadow(color: AppColors.primary.withValues(alpha:0.4), blurRadius: 8)] : null,
+                      color: done ? context.primary : AppColors.border,
+                      boxShadow: active ? [BoxShadow(color: context.primary.withValues(alpha:0.4), blurRadius: 8)] : null,
                     ),
                     alignment: Alignment.center,
                     child: done
@@ -155,7 +155,7 @@ class _ProgressCard extends StatelessWidget {
                   Text(steps[i], textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 9,
-                        color: done ? AppColors.primary : AppColors.textHint,
+                        color: done ? context.primary : AppColors.textHint,
                         fontWeight: active ? FontWeight.w700 : FontWeight.w400,
                       )),
                 ])),
@@ -163,7 +163,7 @@ class _ProgressCard extends StatelessWidget {
                   Expanded(child: Container(
                       height: 2,
                       margin: const EdgeInsets.only(bottom: 20),
-                      color: (done && i < _current) ? AppColors.primary : AppColors.border)),
+                      color: (done && i < _current) ? context.primary : AppColors.border)),
               ]));
             }),
           ),
@@ -191,9 +191,9 @@ class _CustomerCard extends StatelessWidget {
           Row(children: [
             CircleAvatar(
               radius: 22,
-              backgroundColor: AppColors.primary.withValues(alpha:0.1),
+              backgroundColor: context.primary.withValues(alpha:0.1),
               child: Text((order.customer.nickname.isNotEmpty ? order.customer.nickname[0] : '?').toUpperCase(),
-                  style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 18)),
+                  style: TextStyle(color: context.primary, fontWeight: FontWeight.bold, fontSize: 18)),
             ),
             const SizedBox(width: 12),
             Expanded(child: Column(
@@ -206,7 +206,7 @@ class _CustomerCard extends StatelessWidget {
             )),
             _IconBtn(Icons.phone_rounded, AppColors.success, l.call, logic.callCustomer),
             const SizedBox(width: 8),
-            _IconBtn(Icons.chat_bubble_rounded, AppColors.primary, l.messagesTitle, () {
+            _IconBtn(Icons.chat_bubble_rounded, context.primary, l.messagesTitle, () {
               final c = order.customer;
               Get.toNamed(AppRoutes.chat, arguments: {
                 'id': 'cust_${c.id}',

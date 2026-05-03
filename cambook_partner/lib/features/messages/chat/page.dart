@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/widgets/app_dialog.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../../core/extensions/theme_ext.dart';import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
 import '../../../core/models/models.dart';
@@ -106,7 +106,7 @@ class ChatPage extends StatelessWidget {
             if (msgs.isEmpty) {
               return EmptyView(
                 message: l.noChatMessages,
-                iconWidget: WeChatBubbleIcon(color: AppColors.textHint, size: 64));
+                iconWidget: const WeChatBubbleIcon(color: AppColors.textHint, size: 64));
             }
             return ListView.builder(
               controller: logic.scrollCtrl,
@@ -131,12 +131,12 @@ class ChatPage extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.08),
+                    color: context.primary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                    border: Border.all(color: context.primary.withValues(alpha: 0.2)),
                   ),
                   child: Text(quickReplies[i],
-                      style: const TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w500)),
+                      style: TextStyle(fontSize: 12, color: context.primary, fontWeight: FontWeight.w500)),
                 ),
               ),
             ),
@@ -186,8 +186,8 @@ class ChatPage extends StatelessWidget {
               onTap: logic.send,
               child: Container(
                 width: 40, height: 40,
-                decoration: const BoxDecoration(
-                  gradient: AppColors.gradientPrimary, shape: BoxShape.circle,
+                decoration: BoxDecoration(
+                  gradient: context.primaryGrad, shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
               ),
@@ -213,8 +213,8 @@ class _MessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
-            CircleAvatar(radius: 14, backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                child: const Icon(Icons.person_rounded, size: 16, color: AppColors.primary)),
+            CircleAvatar(radius: 14, backgroundColor: context.primary.withValues(alpha: 0.15),
+                child: Icon(Icons.person_rounded, size: 16, color: context.primary)),
             const SizedBox(width: 6),
           ],
           Column(
@@ -224,7 +224,7 @@ class _MessageBubble extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isMe ? AppColors.primary : Colors.white,
+                  color: isMe ? context.primary : Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(16), topRight: const Radius.circular(16),
                     bottomLeft: Radius.circular(isMe ? 16 : 4),
@@ -241,8 +241,8 @@ class _MessageBubble extends StatelessWidget {
           ),
           if (isMe) ...[
             const SizedBox(width: 6),
-            CircleAvatar(radius: 14, backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                child: const Icon(Icons.person_rounded, size: 16, color: AppColors.primary)),
+            CircleAvatar(radius: 14, backgroundColor: context.primary.withValues(alpha: 0.15),
+                child: Icon(Icons.person_rounded, size: 16, color: context.primary)),
           ],
         ],
       ),

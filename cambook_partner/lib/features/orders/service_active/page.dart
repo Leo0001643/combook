@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/extensions/theme_ext.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/i18n/l10n_ext.dart';
@@ -35,7 +36,7 @@ class ServiceActivePage extends StatelessWidget {
               if (id != null) Get.toNamed(AppRoutes.orderDetail, arguments: {'id': id});
             },
             child: ListTile(
-              leading: const Icon(Icons.info_outline_rounded, color: AppColors.primary),
+              leading: Icon(Icons.info_outline_rounded, color: context.primary),
               title: Text(l.btnDetail),
             ),
           ),

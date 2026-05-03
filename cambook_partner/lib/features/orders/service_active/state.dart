@@ -13,11 +13,11 @@ class ServiceActiveState {
     return st.millisecondsSinceEpoch ~/ 1000;
   }
 
-  /// 已服务秒数 = 当前时间 - 服务开始时间
-  /// 每次访问都实时计算，不受重进页面影响
+  /// 已服务秒数 = 当前 Unix 秒 - 服务开始 Unix 秒
+  /// nowSec 每秒更新（由 Timer 驱动），startTimeSec 来自后端或持久化存储
   int get elapsedSec {
     final st = startTimeSec;
-    if (st == null) return nowSec.value > 0 ? 0 : 0;
+    if (st == null) return 0;
     return (nowSec.value - st).clamp(0, 86400);
   }
 }

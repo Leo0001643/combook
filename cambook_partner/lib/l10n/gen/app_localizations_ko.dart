@@ -12,6 +12,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appName => 'CamBook 파트너';
 
   @override
+  String get technicianWorkstation => '기술자 워크스테이션';
+
+  @override
+  String get notifications => '알림';
+
+  @override
+  String get profileSettings => '내 프로필';
+
+  @override
   String get navHome => '홈';
 
   @override
@@ -659,7 +668,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get passwordHint => '비밀번호 입력';
 
   @override
-  String get loginBtn => '로그인';
+  String get loginBtn => '워크벤치 입장';
 
   @override
   String get forgotPassword => '비밀번호 찾기';
@@ -780,7 +789,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get selectCountry => '국가 선택';
 
   @override
-  String get registerBtn => '지금 등록';
+  String get registerBtn => '팀에 합류';
 
   @override
   String get registerSuccess => '등록 완료! 가맹점 승인을 기다려 주세요';
@@ -858,6 +867,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get grabOrder => '즉시 수락';
+
+  @override
+  String get estimatedEarnings => '예상 수입';
+
+  @override
+  String get unknownCustomer => '신규 고객';
 
   @override
   String get announcements => '공지사항';
@@ -1016,4 +1031,127 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get langHint => '선호하는 표시 언어를 선택하세요';
+
+  @override
+  String get welcomeBack => '돌아오신 것을 환영합니다';
+
+  @override
+  String get spaName => 'Water Spa';
+
+  @override
+  String get loginHeroTagline => '몸과 마음의 휴식 · 활력 여행';
+
+  @override
+  String get rememberMe => '로그인 유지';
+
+  @override
+  String get otherLoginMethods => '다른 로그인 방법';
+
+  @override
+  String get genderHint => '성별';
+
+  @override
+  String get genderMale => '남성';
+
+  @override
+  String get genderFemale => '여성';
+
+  @override
+  String get genderOther => '기타';
+
+  @override
+  String get orRegisterVia => '또는 다음으로 가입';
+
+  @override
+  String get telegramOptional => 'Telegram (선택)';
+
+  @override
+  String get facebookOptional => 'Facebook (선택)';
+
+  @override
+  String get registerJoinPrefix => '가입하세요 ';
+
+  @override
+  String get registerJoinSuffix => ', 서비스 여정을 시작하세요';
+
+  @override
+  String get themeRosePink => '로즈 핑크';
+
+  @override
+  String get themeChampagneGold => '샴페인 골드';
+
+  @override
+  String get themeColor => '테마 색상';
+
+  @override
+  String get nicknameHint => '닉네임';
+
+  @override
+  String get brandTitle => '명희 · 테크니션';
+
+  @override
+  String get technicianLogin => 'TECHNICIAN LOGIN';
+
+  @override
+  String get workbenchTitle => '테크니션 워크벤치';
+
+  @override
+  String get sanctuaryAwaits => 'Your Sanctuary Awaits';
+
+  @override
+  String get zenTagline => '힐링  ·  전문 서비스  ·  안전 보장';
+
+  @override
+  String get privacySafe => '개인정보 보호';
+
+  @override
+  String get dataSafe => '데이터 보안';
+
+  @override
+  String get provenPlatform => '전문 플랫폼';
+
+  @override
+  String get themeForestGreen => '포레스트 그린';
+
+  @override
+  String get dataUpdated => '업데이트됨';
+
+  @override
+  String get allFeatures => '전체 기능';
+
+  @override
+  String get techRanking => '기술자 순위';
+
+  @override
+  String get performance => '실적 요약';
+
+  @override
+  String get thisWeek => '이번 주';
+
+  @override
+  String get vsYesterday => '어제 대비';
+
+  @override
+  String get storeRanking => '매장 순위';
+
+  @override
+  String get weeklyIncome => '주간 수입';
+
+  @override
+  String get homeTagline => '집중 · 치유 · 전달';
+
+  @override
+  String get drawerWorkGroup => '업무';
+
+  @override
+  String get drawerDataGroup => '수입';
+
+  @override
+  String get drawerProfileGroup => '프로필';
+
+  @override
+  String get drawerMoreGroup => '더보기';
+
+  @override
+  String get drawerBrand => 'CamBook Pro · 워크스테이션';
 }

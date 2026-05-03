@@ -68,18 +68,24 @@ public class TechOrderController {
         return Result.success();
     }
 
-    /** 开始服务（在线预约）：status 2 → 5 */
+    /** 开始服务（在线预约）：status 2/3/4 → 5，兼容跳过前往/到达步骤的场景 */
     @Operation(summary = "开始服务（在线预约）")
     @PostMapping("/{id}/start")
     @Transactional(rollbackFor = Exception.class)
     public Result<Void> startOnline(@PathVariable Long id) {
         CbOrder order = getOwnOrder(id);
-        if (order.getStatus() != OrderStatus.ACCEPTED.getCode()) {
+        int st = order.getStatus();
+        if (st != OrderStatus.ACCEPTED.getCode()
+                && st != OrderStatus.ARRIVING.getCode()
+                && st != OrderStatus.ARRIVED.getCode()) {
             throw new BusinessException("当前订单状态不允许开始服务");
         }
         orderMapper.update(null, new LambdaUpdateWrapper<CbOrder>()
                 .eq(CbOrder::getId, id)
-                .eq(CbOrder::getStatus, OrderStatus.ACCEPTED.getCode())
+                .in(CbOrder::getStatus,
+                        OrderStatus.ACCEPTED.getCode(),
+                        OrderStatus.ARRIVING.getCode(),
+                        OrderStatus.ARRIVED.getCode())
                 .set(CbOrder::getStatus, OrderStatus.IN_SERVICE.getCode())
                 .set(CbOrder::getStartTime, System.currentTimeMillis() / 1000L));
         return Result.success();
@@ -96,10 +102,15 @@ public class TechOrderController {
             throw new BusinessException("当前订单状态不允许完成服务");
         }
         // WHERE status = :currentStatus 防止并发修改覆盖非法状态
+        long now = System.currentTimeMillis() / 1000L;
         int rows = orderMapper.update(null, new LambdaUpdateWrapper<CbOrder>()
                 .eq(CbOrder::getId, id)
                 .in(CbOrder::getStatus, OrderStatus.ACCEPTED.getCode(), OrderStatus.IN_SERVICE.getCode())
-                .set(CbOrder::getStatus, OrderStatus.COMPLETED.getCode()));
+                .set(CbOrder::getStatus, OrderStatus.COMPLETED.getCode())
+                .set(CbOrder::getEndTime, now)
+                // 若 startTime 未设置（如跳过 start 直接 complete），补全为当前时间
+                .set(order.getStartTime() == null || order.getStartTime() == 0,
+                        CbOrder::getStartTime, now));
         if (rows == 0) throw new BusinessException("订单状态已变更，请刷新后重试");
         return Result.success();
     }

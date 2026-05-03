@@ -4,6 +4,7 @@ import 'package:badges/badges.dart' as bdg;
 import '../../core/constants/app_colors.dart';
 import '../../core/i18n/l10n_ext.dart';
 import '../../core/services/message_service.dart';
+import '../../core/theme/app_theme_controller.dart';
 import '../../core/widgets/common_widgets.dart';
 import '../home/page.dart';
 import '../orders/list/page.dart';
@@ -16,7 +17,6 @@ import 'shell_controller.dart';
 const _kFabR    = 28.0;              // FAB radius → diameter 56
 const _kNotchR  = 34.0;              // Notch radius (FAB + 6 px gap)
 const _kNavH    = 62.0;              // Nav bar content height (excl. safe-area)
-const _kCorner  = 24.0;              // Nav bar top corner radius
 const _kIconSz  = 24.0;              // Tab icon size
 const _kLblSz   = 10.5;              // Tab label font size
 const _kGray    = Color(0xFFC2CBD4); // Inactive tab colour
@@ -45,8 +45,10 @@ class MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final ctrl = Get.find<ShellController>();
     return Scaffold(
-      // White matches the nav bar — the notch cut-out blends seamlessly.
-      backgroundColor: Colors.white,
+      // Transparent lets each page own its background; extendBody lets the
+      // glass nav bar blur what's beneath it.
+      backgroundColor: Colors.transparent,
+      extendBody: true,
       body: Obx(() => IndexedStack(
         index: ctrl.currentIdx.value,
         children: _pages,
@@ -108,17 +110,20 @@ class _BottomNavState extends State<_BottomNav> with TickerProviderStateMixin {
 
     return Obx(() {
       final curIdx = shell.currentIdx.value;
-      return SizedBox(
+      return Material(
+        color: Colors.white,
+        elevation: 4,
+        shadowColor: Colors.black26,
+        child: SizedBox(
         height: _kNavH + pad,
         child: Stack(
           clipBehavior: Clip.none,   // FAB overflows upward
           children: [
 
-            // ① White card background with circular notch (drawn once)
-            const Positioned.fill(
-              child: RepaintBoundary(
-                child: CustomPaint(painter: _NavPainter()),
-              ),
+            // Thin top separator
+            const Positioned(
+              top: 0, left: 0, right: 0,
+              child: Divider(height: 0.5, thickness: 0.5, color: Color(0x18000000)),
             ),
 
             // ② Four regular tab items
@@ -165,59 +170,13 @@ class _BottomNavState extends State<_BottomNav> with TickerProviderStateMixin {
               ),
             ),
           ],
-        ),
-      );
+        ),      // Stack
+        ),      // SizedBox
+      );        // Material
     });
   }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// _NavPainter — white rounded-top card, NO notch.
-// The FAB floats above the bar via Stack overflow; no hole needed.
-// ═════════════════════════════════════════════════════════════════════════════
-class _NavPainter extends CustomPainter {
-  const _NavPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = _buildPath(size);
-
-    // Subtle top shadow for separation
-    canvas.drawShadow(path, const Color(0xFF000000), 14, false);
-
-    // White fill
-    canvas.drawPath(path, Paint()..color = Colors.white);
-
-    // Very light top-edge gradient for depth
-    canvas.drawPath(
-      path,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end:   const Alignment(0, 0.3),
-          colors: [
-            Colors.black.withValues(alpha: 0.04),
-            Colors.transparent,
-          ],
-        ).createShader(Offset.zero & size),
-    );
-  }
-
-  // Flat-top rounded rectangle — no notch.
-  Path _buildPath(Size size) => Path()
-    ..moveTo(0, size.height)
-    ..lineTo(0, _kCorner)
-    ..arcToPoint(const Offset(_kCorner, 0),
-        radius: const Radius.circular(_kCorner))
-    ..lineTo(size.width - _kCorner, 0)
-    ..arcToPoint(Offset(size.width, _kCorner),
-        radius: const Radius.circular(_kCorner))
-    ..lineTo(size.width, size.height)
-    ..close();
-
-  @override
-  bool shouldRepaint(covariant CustomPainter old) => false;
-}
 
 // ═════════════════════════════════════════════════════════════════════════════
 // _NavTab — single regular tab item
@@ -245,7 +204,7 @@ class _NavTab extends StatelessWidget {
           animation: ctrl,
           builder: (_, __) {
             final t     = Curves.easeOut.transform(ctrl.value);
-            final color = Color.lerp(_kGray, AppColors.primary, t)!;
+            final color = Color.lerp(_kGray, AppThemeController.to.primary, t)!;
             return Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -277,7 +236,28 @@ class _NavTab extends StatelessWidget {
     Widget icon = desc.isMsgTab
         ? WeChatBubbleIcon(color: color, size: _kIconSz)
         : Icon(desc.icon, color: color, size: _kIconSz);
-    if (!desc.isMsgTab) return icon;
+    if (!desc.isMsgTab) {
+      // Glow-behind-icon 3-D effect: radial gradient halo, no visible circle
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: _kIconSz + 16,
+            height: _kIconSz + 16,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  color.withValues(alpha: .22),
+                  color.withValues(alpha: .0),
+                ],
+              ),
+            ),
+          ),
+          Icon(desc.icon, color: color, size: _kIconSz),
+        ],
+      );
+    }
 
     return Obx(() {
       final n = Get.find<MessageService>().totalUnread;
@@ -326,7 +306,7 @@ class _CenterLabel extends StatelessWidget {
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 220),
               style: TextStyle(
-                color:      isActive ? AppColors.primary : _kGray,
+                color:      isActive ? AppThemeController.to.primary : _kGray,
                 fontSize:   _kLblSz,
                 height:     1.0,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
@@ -411,8 +391,8 @@ class _OrderFabState extends State<_OrderFab>
                       begin: Alignment.topLeft,
                       end:   Alignment.bottomRight,
                       colors: widget.isActive
-                          ? const [Color(0xFF818CF8), Color(0xFF4338CA)]
-                          : const [Color(0xFFB0B8F8), Color(0xFF7C3AED)],
+                          ? [AppThemeController.to.primaryLt, AppThemeController.to.primaryDk]
+                          : [AppThemeController.to.primary, AppThemeController.to.primaryDk],
                     ),
                     border: Border.all(color: Colors.white, width: 3.5),
                     boxShadow: [

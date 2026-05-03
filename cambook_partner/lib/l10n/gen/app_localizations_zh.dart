@@ -12,6 +12,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appName => 'CamBook 技师端';
 
   @override
+  String get technicianWorkstation => '技师工作台';
+
+  @override
+  String get notifications => '消息通知';
+
+  @override
+  String get profileSettings => '我的资料';
+
+  @override
   String get navHome => '首页';
 
   @override
@@ -659,7 +668,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get passwordHint => '请输入密码';
 
   @override
-  String get loginBtn => '登录';
+  String get loginBtn => '进入工作台';
 
   @override
   String get forgotPassword => '忘记密码？';
@@ -712,7 +721,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noAccount => '还没有账号？';
 
   @override
-  String get goRegister => '立即注册';
+  String get goRegister => '注册新账号';
 
   @override
   String get haveAccount => '已有账号？';
@@ -780,7 +789,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectCountry => '选择国家/地区';
 
   @override
-  String get registerBtn => '立即注册';
+  String get registerBtn => '加入技师团队';
 
   @override
   String get registerSuccess => '注册成功！请等待商户审核';
@@ -858,6 +867,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get grabOrder => '立即接单';
+
+  @override
+  String get estimatedEarnings => '预计收入';
+
+  @override
+  String get unknownCustomer => '新客户';
 
   @override
   String get announcements => '公告消息';
@@ -1016,4 +1031,127 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get langHint => '选择您偏好的显示语言';
+
+  @override
+  String get welcomeBack => '欢迎回来';
+
+  @override
+  String get spaName => '水汇 SPA';
+
+  @override
+  String get loginHeroTagline => '身心放松 · 焕活之旅';
+
+  @override
+  String get rememberMe => '记住我';
+
+  @override
+  String get otherLoginMethods => '其他登录方式';
+
+  @override
+  String get genderHint => '性别';
+
+  @override
+  String get genderMale => '男';
+
+  @override
+  String get genderFemale => '女';
+
+  @override
+  String get genderOther => '其他';
+
+  @override
+  String get orRegisterVia => '或通过以下方式注册';
+
+  @override
+  String get telegramOptional => 'Telegram账号（选填）';
+
+  @override
+  String get facebookOptional => 'Facebook（选填）';
+
+  @override
+  String get registerJoinPrefix => '加入 ';
+
+  @override
+  String get registerJoinSuffix => '，开启您的服务之旅';
+
+  @override
+  String get themeRosePink => '玫瑰粉';
+
+  @override
+  String get themeChampagneGold => '香槟金';
+
+  @override
+  String get themeColor => '主题色';
+
+  @override
+  String get nicknameHint => '昵称';
+
+  @override
+  String get brandTitle => '明 玺 · 技 师 端';
+
+  @override
+  String get technicianLogin => 'TECHNICIAN LOGIN';
+
+  @override
+  String get workbenchTitle => '技师工作台';
+
+  @override
+  String get sanctuaryAwaits => 'Your Sanctuary Awaits';
+
+  @override
+  String get zenTagline => '禅意疗愈  ·  专属服务  ·  安全护航';
+
+  @override
+  String get privacySafe => '隐私保护';
+
+  @override
+  String get dataSafe => '数据安全';
+
+  @override
+  String get provenPlatform => '专业平台';
+
+  @override
+  String get themeForestGreen => '森林绿';
+
+  @override
+  String get dataUpdated => '数据更新';
+
+  @override
+  String get allFeatures => '全部功能';
+
+  @override
+  String get techRanking => '技师排名';
+
+  @override
+  String get performance => '业绩总览';
+
+  @override
+  String get thisWeek => '本周';
+
+  @override
+  String get vsYesterday => '较昨日';
+
+  @override
+  String get storeRanking => '门店排名';
+
+  @override
+  String get weeklyIncome => '本周收入';
+
+  @override
+  String get homeTagline => '专注服务 · 用心疗愈 · 传递美好';
+
+  @override
+  String get drawerWorkGroup => '工作管理';
+
+  @override
+  String get drawerDataGroup => '数据收益';
+
+  @override
+  String get drawerProfileGroup => '个人中心';
+
+  @override
+  String get drawerMoreGroup => '更多';
+
+  @override
+  String get drawerBrand => 'CamBook Pro · 技师工作台';
 }

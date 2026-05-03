@@ -12,6 +12,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get appName => 'CamBook Partner';
 
   @override
+  String get technicianWorkstation => 'TRẠM LÀM VIỆC KỸ THUẬT VIÊN';
+
+  @override
+  String get notifications => 'Thông báo';
+
+  @override
+  String get profileSettings => 'Hồ sơ của tôi';
+
+  @override
   String get navHome => 'Trang chủ';
 
   @override
@@ -659,7 +668,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get passwordHint => 'Nhập mật khẩu';
 
   @override
-  String get loginBtn => 'Đăng nhập';
+  String get loginBtn => 'Vào Bàn Làm Việc';
 
   @override
   String get forgotPassword => 'Quên mật khẩu?';
@@ -712,7 +721,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get noAccount => 'Chưa có tài khoản?';
 
   @override
-  String get goRegister => 'Đăng ký ngay';
+  String get goRegister => 'Đăng Ký Ngay';
 
   @override
   String get haveAccount => 'Đã có tài khoản?';
@@ -780,7 +789,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get selectCountry => 'Chọn quốc gia';
 
   @override
-  String get registerBtn => 'Đăng ký ngay';
+  String get registerBtn => 'Gia Nhập Đội Ngũ';
 
   @override
   String get registerSuccess => 'Đăng ký thành công! Chờ xét duyệt';
@@ -858,6 +867,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get grabOrder => 'Nhận ngay';
+
+  @override
+  String get estimatedEarnings => 'Thu nhập ước tính';
+
+  @override
+  String get unknownCustomer => 'Khách mới';
 
   @override
   String get announcements => 'Thông báo';
@@ -1016,4 +1031,127 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get langHint => 'Chọn ngôn ngữ hiển thị ưa thích';
+
+  @override
+  String get welcomeBack => 'Chào Mừng Trở Lại';
+
+  @override
+  String get spaName => 'Water Spa';
+
+  @override
+  String get loginHeroTagline => 'Thư Giãn · Hành Trình Tái Tạo';
+
+  @override
+  String get rememberMe => 'Nhớ tôi';
+
+  @override
+  String get otherLoginMethods => 'Phương thức đăng nhập khác';
+
+  @override
+  String get genderHint => 'Giới tính';
+
+  @override
+  String get genderMale => 'Nam';
+
+  @override
+  String get genderFemale => 'Nữ';
+
+  @override
+  String get genderOther => 'Khác';
+
+  @override
+  String get orRegisterVia => 'Hoặc đăng ký qua';
+
+  @override
+  String get telegramOptional => 'Telegram (tùy chọn)';
+
+  @override
+  String get facebookOptional => 'Facebook (tùy chọn)';
+
+  @override
+  String get registerJoinPrefix => 'Tham gia ';
+
+  @override
+  String get registerJoinSuffix => ', bắt đầu hành trình dịch vụ';
+
+  @override
+  String get themeRosePink => 'Hồng Đào';
+
+  @override
+  String get themeChampagneGold => 'Vàng Sâm Panh';
+
+  @override
+  String get themeColor => 'Màu chủ đề';
+
+  @override
+  String get nicknameHint => 'Tên hiệu';
+
+  @override
+  String get brandTitle => 'Ming Xi · Kỹ Thuật Viên';
+
+  @override
+  String get technicianLogin => 'TECHNICIAN LOGIN';
+
+  @override
+  String get workbenchTitle => 'Bàn Làm Việc KTV';
+
+  @override
+  String get sanctuaryAwaits => 'Your Sanctuary Awaits';
+
+  @override
+  String get zenTagline => 'Chữa Lành  ·  Dịch Vụ Riêng  ·  An Toàn';
+
+  @override
+  String get privacySafe => 'Bảo Mật';
+
+  @override
+  String get dataSafe => 'An Toàn Dữ Liệu';
+
+  @override
+  String get provenPlatform => 'Nền Tảng Chuyên Nghiệp';
+
+  @override
+  String get themeForestGreen => 'Xanh Rừng';
+
+  @override
+  String get dataUpdated => 'Cập nhật';
+
+  @override
+  String get allFeatures => 'Tất cả';
+
+  @override
+  String get techRanking => 'Xếp hạng';
+
+  @override
+  String get performance => 'Hiệu suất';
+
+  @override
+  String get thisWeek => 'Tuần này';
+
+  @override
+  String get vsYesterday => 'So hôm qua';
+
+  @override
+  String get storeRanking => 'Cửa hàng';
+
+  @override
+  String get weeklyIncome => 'Thu nhập tuần';
+
+  @override
+  String get homeTagline => 'Tập trung · Chữa lành · Trao giá trị';
+
+  @override
+  String get drawerWorkGroup => 'Công việc';
+
+  @override
+  String get drawerDataGroup => 'Doanh thu';
+
+  @override
+  String get drawerProfileGroup => 'Cá nhân';
+
+  @override
+  String get drawerMoreGroup => 'Thêm';
+
+  @override
+  String get drawerBrand => 'CamBook Pro · Trạm làm việc';
 }

@@ -6,6 +6,7 @@ import '../network/api_endpoints.dart';
 import '../network/http_util.dart';
 import '../utils/event_bus_util.dart';
 import '../utils/log_util.dart';
+import 'storage_service.dart';
 import 'user_service.dart';
 
 /// 订单服务 —— 跨页面共享订单数据（全局单例）
@@ -16,6 +17,13 @@ class OrderService extends GetxService {
   final Map<int, DateTime> _serviceStartCache = {}; // 服务开始时间本地缓存，防止 fetchFromApi 丢失
 
   Future<OrderService> init() async {
+    // 若会话已恢复（token 存在），后台预加载订单列表，首页和订单页可直接使用缓存数据
+    if (Get.find<StorageService>().hasToken) {
+      fetchFromApi().catchError((e) {
+        LogUtil.w('[OrderService] init 预加载失败: $e');
+        return null; // ignore error, data will be fetched when needed
+      });
+    }
     return this;
   }
 
@@ -29,15 +37,23 @@ class OrderService extends GetxService {
             .map(OrderModel.fromJson)
             .toList(),
       );
-      // 服务端可能不返回 startTime（如 walkin 未执行 migration），
-      // 用本地缓存补全，保证专注模式计时不归零
+      final storage = Get.find<StorageService>();
+      // 优先级：内存缓存 > 持久化存储（跨重启/登出），保证专注模式计时不归零
       final restored = list.map((o) {
-        if (o.startTime == null && _serviceStartCache.containsKey(o.id)) {
+        if (o.startTime != null) {
+          _serviceStartCache[o.id] = o.startTime!;
+          storage.saveServiceStartMs(o.id, o.startTime!);
+          return o;
+        }
+        if (_serviceStartCache.containsKey(o.id)) {
           return o.copyWith(startTime: _serviceStartCache[o.id]);
         }
-        if (o.startTime != null) {
-          // 服务端有值时同步写入缓存，保持缓存最新
-          _serviceStartCache[o.id] = o.startTime!;
+        // 从持久化存储恢复（登出重登后内存缓存已清空）
+        final ms = storage.getServiceStartMs(o.id);
+        if (ms != null && o.status == OrderStatus.inService) {
+          final t = DateTime.fromMillisecondsSinceEpoch(ms);
+          _serviceStartCache[o.id] = t;
+          return o.copyWith(startTime: t);
         }
         return o;
       }).toList();
@@ -148,7 +164,8 @@ class OrderService extends GetxService {
     final order = getById(id);
     if (order == null) return false;
     final now = DateTime.now();
-    _serviceStartCache[id] = now; // 持久化到缓存，fetchFromApi 时不丢失
+    _serviceStartCache[id] = now;
+    Get.find<StorageService>().saveServiceStartMs(id, now); // 持久化，跨重启/登出不丢失
     _update(id, (o) => o.copyWith(status: OrderStatus.inService, startTime: now));
     try {
       final url = order.orderType == 2
@@ -180,7 +197,8 @@ class OrderService extends GetxService {
       _update(id, (o) => o.copyWith(status: OrderStatus.inService, endTime: null));
       rethrow; // 让调用方感知失败，避免误导航
     }
-    _serviceStartCache.remove(id); // 服务结束，清理缓存
+    _serviceStartCache.remove(id);
+    Get.find<StorageService>().clearServiceStart(id); // 服务结束，清理持久化缓存
     final user = Get.find<UserService>();
     user.addBalance(order.totalAmount);
     final newBal = user.technician.value?.balance ?? 0;

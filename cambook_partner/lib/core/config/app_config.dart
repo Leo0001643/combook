@@ -21,6 +21,7 @@
 /// | MERCHANT_NAME     | 商户显示名称              | CamBook                   |
 /// | API_BASE_URL      | 后端接口根路径            | https://api.cambook.io    |
 /// | APP_NAME          | 应用名称（标题栏）         | CamBook Partner           |
+/// | THEME_VARIANT      | 主题变体（pink / ivory）    | pink                      |
 /// | THEME_COLOR       | 主题主色（十六进制）       | 4F46E5                    |
 /// | BANNER_URL        | 首页 Banner 图片 URL      | https://cdn.../banner.jpg |
 /// | LOGO_URL          | 商户 Logo URL             | https://cdn.../logo.png   |
@@ -52,7 +53,7 @@ abstract class AppConfig {
   /// Android 模拟器用 http://10.0.2.2:8080 代替真实 IP
   /// 正式环境通过 --dart-define=API_BASE_URL=https://api.xxx.com 注入
   static const apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL', defaultValue: 'http://192.168.41.132:8080',
+    'API_BASE_URL', defaultValue: 'http://192.168.21.92:8080',
   );
 
   // ── 应用信息 ────────────────────────────────────────────────────────────────
@@ -63,6 +64,12 @@ abstract class AppConfig {
   );
 
   // ── 品牌视觉 ────────────────────────────────────────────────────────────────
+
+  /// 主题变体（pink | ivory），决定 SPA 认证页风格与全局主色
+  /// 每个商户包对应其品牌色系，默认 pink（玫瑰粉）
+  static const themeVariant = String.fromEnvironment(
+    'THEME_VARIANT', defaultValue: 'pink',
+  );
 
   /// 主题主色（6位十六进制，不含 #），用于动态生成 ColorScheme
   static const themeColorHex = String.fromEnvironment(

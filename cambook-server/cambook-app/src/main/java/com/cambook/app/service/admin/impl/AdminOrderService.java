@@ -1,5 +1,6 @@
 package com.cambook.app.service.admin.impl;
 
+import com.cambook.app.common.event.OrderStatusChangedEvent;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cambook.app.domain.dto.OrderCreateRequest;
@@ -20,6 +21,7 @@ import com.cambook.dao.mapper.CbOrderMapper;
 import com.cambook.dao.mapper.CbServiceCategoryMapper;
 import com.cambook.dao.mapper.CbTechnicianMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,17 +46,20 @@ public class AdminOrderService implements IAdminOrderService {
     private final CbMemberMapper             memberMapper;
     private final CbTechnicianMapper         technicianMapper;
     private final CbServiceCategoryMapper    categoryMapper;
+    private final ApplicationEventPublisher  eventPublisher;
 
     public AdminOrderService(CbOrderMapper orderMapper,
                              CbOrderItemMapper orderItemMapper,
                              CbMemberMapper memberMapper,
                              CbTechnicianMapper technicianMapper,
-                             CbServiceCategoryMapper categoryMapper) {
+                             CbServiceCategoryMapper categoryMapper,
+                             ApplicationEventPublisher eventPublisher) {
         this.orderMapper      = orderMapper;
         this.orderItemMapper  = orderItemMapper;
         this.memberMapper     = memberMapper;
         this.technicianMapper = technicianMapper;
         this.categoryMapper   = categoryMapper;
+        this.eventPublisher   = eventPublisher;
     }
 
     @Override
@@ -155,11 +160,24 @@ public class AdminOrderService implements IAdminOrderService {
         order.setOrderType(1);
         order.setServiceMode(req.getServiceMode());
         order.setMemberId(req.getMemberId() != null ? req.getMemberId() : 0L);
-        order.setTechnicianId(req.getTechnicianId());
+        order.setTechnicianId(req.getTechnicianId() != null ? req.getTechnicianId() : 0L);
+        order.setAddressId(0L);          // 后台手动建单不关联地址簿
         order.setAddressDetail(StringUtils.defaultIfBlank(req.getAddressDetail(), ""));
-        order.setAppointTime(req.getAppointTime());
+        order.setAddressLat(java.math.BigDecimal.ZERO);
+        order.setAddressLng(java.math.BigDecimal.ZERO);
+        order.setAppointTime(req.getAppointTime() != null ? req.getAppointTime() : 0L);
+        order.setStartTime(0L);
+        order.setEndTime(0L);
         order.setRemark(StringUtils.defaultIfBlank(req.getRemark(), ""));
         order.setStatus(1); // 待接单
+        order.setDiscountAmount(java.math.BigDecimal.ZERO);
+        order.setTransportFee(java.math.BigDecimal.ZERO);
+        order.setCouponId(0L);
+        order.setPayType(0);
+        order.setPayTime(0L);
+        order.setTechIncome(java.math.BigDecimal.ZERO);
+        order.setPlatformIncome(java.math.BigDecimal.ZERO);
+        order.setIsReviewed(0);
 
         // 汇总金额
         BigDecimal total = req.getItems().stream()
@@ -170,6 +188,7 @@ public class AdminOrderService implements IAdminOrderService {
 
         // 快照第一项服务名
         OrderCreateRequest.OrderItemReq first = req.getItems().get(0);
+        order.setServiceItemId(first.getServiceItemId() != null ? first.getServiceItemId() : 0L);
         order.setServiceName(StringUtils.defaultIfBlank(first.getServiceName(), ""));
         order.setServiceDuration(first.getServiceDuration() != null ? first.getServiceDuration() : 0);
 
@@ -202,6 +221,13 @@ public class AdminOrderService implements IAdminOrderService {
         if (req.getMemberNickname() != null) vo.setMemberNickname(req.getMemberNickname());
         if (req.getMemberMobile()   != null) vo.setMemberMobile(req.getMemberMobile());
         vo.setOrderItems(items.stream().map(OrderVO.OrderItemVO::from).collect(Collectors.toList()));
+
+        // 发布订单事件 → OrderEventListener 异步推送 WS NEW_ORDER 给技师 + 触发语音播报
+        Long techId = req.getTechnicianId() != null && req.getTechnicianId() > 0 ? req.getTechnicianId() : null;
+        eventPublisher.publishEvent(
+            new OrderStatusChangedEvent(this, orderId, order.getMemberId(), techId, 0, 1)
+        );
+
         return vo;
     }
 
