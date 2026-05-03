@@ -2,6 +2,7 @@ package com.cambook.app.controller.technician;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cambook.app.common.statemachine.OrderStatus;
+import com.cambook.app.common.statemachine.WalkinSessionStatus;
 import com.cambook.common.context.MemberContext;
 import com.cambook.common.exception.BusinessException;
 import com.cambook.common.result.Result;
@@ -119,70 +120,82 @@ public class TechOrderController {
     // 门店散客订单（walkin session，order_type = 2）
     // ──────────────────────────────────────────────────────────────────────────
 
-    /** 接单（门店散客）：session status 0 → 1 */
+    /** 接单（门店散客）：CHECKED_IN → IN_SERVICE */
     @Operation(summary = "接单（门店散客）")
     @PostMapping("/walkin/{sessionId}/accept")
     @Transactional(rollbackFor = Exception.class)
     public Result<Void> acceptWalkin(@PathVariable Long sessionId) {
         CbWalkinSession session = getOwnWalkin(sessionId);
-        if (session.getStatus() != 0) {
+        if (session.getStatus() != WalkinSessionStatus.CHECKED_IN.getCode()) {
             throw new BusinessException("当前门店订单状态不允许接单");
         }
         walkinMapper.update(null, new LambdaUpdateWrapper<CbWalkinSession>()
                 .eq(CbWalkinSession::getId, sessionId)
-                .eq(CbWalkinSession::getStatus, 0)
-                .set(CbWalkinSession::getStatus, 1));
+                .eq(CbWalkinSession::getStatus, WalkinSessionStatus.CHECKED_IN.getCode())
+                .set(CbWalkinSession::getStatus, WalkinSessionStatus.IN_SERVICE.getCode()));
         return Result.success();
     }
 
-    /** 拒单（门店散客）：session status 0 → 4 */
+    /** 拒单（门店散客）：CHECKED_IN → CANCELLED */
     @Operation(summary = "拒单（门店散客）")
     @PostMapping("/walkin/{sessionId}/reject")
     @Transactional(rollbackFor = Exception.class)
     public Result<Void> rejectWalkin(@PathVariable Long sessionId) {
         CbWalkinSession session = getOwnWalkin(sessionId);
-        if (session.getStatus() != 0) {
+        if (session.getStatus() != WalkinSessionStatus.CHECKED_IN.getCode()) {
             throw new BusinessException("当前门店订单状态不允许拒单");
         }
         walkinMapper.update(null, new LambdaUpdateWrapper<CbWalkinSession>()
                 .eq(CbWalkinSession::getId, sessionId)
-                .eq(CbWalkinSession::getStatus, 0)
-                .set(CbWalkinSession::getStatus, 4));
+                .eq(CbWalkinSession::getStatus, WalkinSessionStatus.CHECKED_IN.getCode())
+                .set(CbWalkinSession::getStatus, WalkinSessionStatus.CANCELLED.getCode()));
         return Result.success();
     }
 
-    /** 开始服务（门店散客）：session status 0 or 1 → 1 */
+    /** 开始服务（门店散客）：CHECKED_IN / IN_SERVICE → IN_SERVICE */
     @Operation(summary = "开始服务（门店散客）")
     @PostMapping("/walkin/{sessionId}/start")
     @Transactional(rollbackFor = Exception.class)
     public Result<Void> startWalkin(@PathVariable Long sessionId) {
         CbWalkinSession session = getOwnWalkin(sessionId);
-        if (session.getStatus() != 0 && session.getStatus() != 1) {
+        int st = session.getStatus();
+        if (st != WalkinSessionStatus.CHECKED_IN.getCode()
+                && st != WalkinSessionStatus.IN_SERVICE.getCode()) {
             throw new BusinessException("当前门店订单状态不允许开始服务");
         }
         int rows = walkinMapper.update(null, new LambdaUpdateWrapper<CbWalkinSession>()
                 .eq(CbWalkinSession::getId, sessionId)
-                .in(CbWalkinSession::getStatus, 0, 1)
-                .set(CbWalkinSession::getStatus, 1)
+                .in(CbWalkinSession::getStatus,
+                        WalkinSessionStatus.CHECKED_IN.getCode(),
+                        WalkinSessionStatus.IN_SERVICE.getCode())
+                .set(CbWalkinSession::getStatus, WalkinSessionStatus.IN_SERVICE.getCode())
                 .set(CbWalkinSession::getServiceStartTime, System.currentTimeMillis() / 1000L));
         if (rows == 0) throw new BusinessException("门店订单状态已变更，请刷新后重试");
         return Result.success();
     }
 
-    /** 完成服务（门店散客）：session status 0/1/2 → 3 (已结算/已完成) */
+    /**
+     * 完成服务（门店散客）：任意非终态 → SERVICE_DONE（服务完成/待前台收款）
+     *
+     * <p>技师在 APP 标记完成，session 进入 SERVICE_DONE(2)。
+     * 前台收款后由商户端调用 settle 接口推进至 SETTLED(3)，形成完整收款闭环。
+     */
     @Operation(summary = "完成服务（门店散客）")
     @PostMapping("/walkin/{sessionId}/complete")
     @Transactional(rollbackFor = Exception.class)
     public Result<Void> completeWalkin(@PathVariable Long sessionId) {
         CbWalkinSession session = getOwnWalkin(sessionId);
-        int st = session.getStatus();
-        if (st == 3 || st == 4) {
+        if (WalkinSessionStatus.of(session.getStatus()).map(WalkinSessionStatus::isTerminal).orElse(false)
+                || session.getStatus() == WalkinSessionStatus.SERVICE_DONE.getCode()) {
             throw new BusinessException("门店订单已完成或已取消，无法重复操作");
         }
         int rows = walkinMapper.update(null, new LambdaUpdateWrapper<CbWalkinSession>()
                 .eq(CbWalkinSession::getId, sessionId)
-                .notIn(CbWalkinSession::getStatus, 3, 4)   // 防并发：只要不是终态就允许完成
-                .set(CbWalkinSession::getStatus, 3));       // 3=已结算 → Flutter 映射为 COMPLETED
+                .notIn(CbWalkinSession::getStatus,
+                        WalkinSessionStatus.SERVICE_DONE.getCode(),
+                        WalkinSessionStatus.SETTLED.getCode(),
+                        WalkinSessionStatus.CANCELLED.getCode())
+                .set(CbWalkinSession::getStatus, WalkinSessionStatus.SERVICE_DONE.getCode()));
         if (rows == 0) throw new BusinessException("门店订单状态已变更，请刷新后重试");
         return Result.success();
     }

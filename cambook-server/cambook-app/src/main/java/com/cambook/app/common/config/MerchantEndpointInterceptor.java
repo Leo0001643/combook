@@ -41,16 +41,13 @@ public class MerchantEndpointInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(@NonNull HttpServletRequest request,
-                             @NonNull HttpServletResponse response,
-                             @NonNull Object handler) throws Exception {
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
         String uri = request.getRequestURI();
 
         // ── 规则1：Admin 身份不得访问商户端接口 ──────────────────────────────
         if (uri.startsWith("/merchant/") && !uri.equals("/merchant/auth/login")) {
             if (AdminContext.getUserId() != null) {
-                log.warn("[Security] Admin(id={}) attempted to access merchant endpoint: {}",
-                        AdminContext.getUserId(), uri);
+                log.warn("[Security] Admin(id={}) attempted to access merchant endpoint: {}", AdminContext.getUserId(), uri);
                 writeError(response, 403, "管理员账号不得访问商户端接口");
                 return false;
             }
@@ -64,13 +61,11 @@ public class MerchantEndpointInterceptor implements HandlerInterceptor {
         // ── 规则2：Merchant 身份不得访问管理员接口 ────────────────────────────
         if (uri.startsWith("/admin/")) {
             if (MerchantContext.getMerchantId() != null) {
-                log.warn("[Security] Merchant(id={}) attempted to access admin endpoint: {}",
-                        MerchantContext.getMerchantId(), uri);
+                log.warn("[Security] Merchant(id={}) attempted to access admin endpoint: {}", MerchantContext.getMerchantId(), uri);
                 writeError(response, 403, "商户账号不得访问管理员接口");
                 return false;
             }
         }
-
         return true;
     }
 
@@ -78,7 +73,6 @@ public class MerchantEndpointInterceptor implements HandlerInterceptor {
         response.setStatus(status);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(
-                Map.of("code", status, "message", message, "success", false)));
+        response.getWriter().write(objectMapper.writeValueAsString(Map.of("code", status, "message", message, "success", false)));
     }
 }

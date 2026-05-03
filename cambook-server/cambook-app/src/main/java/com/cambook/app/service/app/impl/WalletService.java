@@ -124,9 +124,7 @@ public class WalletService implements IWalletService {
     // ── 私有 ──────────────────────────────────────────────────────────────────
 
     private CbWallet getOrCreateWallet(Long memberId) {
-        CbWallet wallet = walletMapper.selectOne(
-                new LambdaQueryWrapper<CbWallet>().eq(CbWallet::getMemberId, memberId)
-        );
+        CbWallet wallet = walletMapper.selectOne(new LambdaQueryWrapper<CbWallet>().eq(CbWallet::getMemberId, memberId));
         if (wallet == null) {
             wallet = new CbWallet();
             wallet.setMemberId(memberId);

@@ -1,5 +1,6 @@
 package com.cambook.app.common.event;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -10,16 +11,16 @@ import org.springframework.context.ApplicationEvent;
  *
  * @author CamBook
  */
+@Getter
+@Setter
 public class OrderStatusChangedEvent extends ApplicationEvent {
-
     private final Long   orderId;
     private final Long   memberId;
     private final Long   technicianId;
     private final int    fromStatus;
     private final int    toStatus;
 
-    public OrderStatusChangedEvent(Object source, Long orderId, Long memberId,
-                                   Long technicianId, int fromStatus, int toStatus) {
+    public OrderStatusChangedEvent(Object source, Long orderId, Long memberId, Long technicianId, int fromStatus, int toStatus) {
         super(source);
         this.orderId      = orderId;
         this.memberId     = memberId;
@@ -27,10 +28,4 @@ public class OrderStatusChangedEvent extends ApplicationEvent {
         this.fromStatus   = fromStatus;
         this.toStatus     = toStatus;
     }
-
-    public Long getOrderId()      { return orderId; }
-    public Long getMemberId()     { return memberId; }
-    public Long getTechnicianId() { return technicianId; }
-    public int  getFromStatus()   { return fromStatus; }
-    public int  getToStatus()     { return toStatus; }
 }

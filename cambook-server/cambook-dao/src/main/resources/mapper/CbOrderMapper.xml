@@ -46,7 +46,7 @@
              FROM cb_walkin_session ws
              WHERE ws.technician_id = #{techId}
                AND ws.deleted = 0
-               AND ws.status = 3
+               AND ws.status IN (2, 3)
                AND FROM_UNIXTIME(ws.check_in_time, '%Y-%m-%d') = CURDATE())
     </select>
 

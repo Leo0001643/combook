@@ -55,8 +55,7 @@ public class PermissionAspect {
         };
 
         if (!granted) {
-            log.warn("[Permission] userId={} 无权限 required={} mode={}",
-                    AdminContext.getUserId(), Arrays.toString(required), annotation.mode());
+            log.warn("[Permission] userId={} 无权限 required={} mode={}", AdminContext.getUserId(), Arrays.toString(required), annotation.mode());
             throw new BusinessException(CbCodeEnum.NO_PERMISSION);
         }
     }

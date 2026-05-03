@@ -24,7 +24,7 @@ public abstract class AbstractAuditService<T> {
      * @param rejectReason 拒绝原因（auditStatus=2 时必填）
      */
     @Transactional(rollbackFor = Exception.class)
-    public final void audit(Long id, int auditStatus, String rejectReason) {
+    public void audit(Long id, int auditStatus, String rejectReason) {
         if (auditStatus == 2 && (rejectReason == null || rejectReason.isBlank())) {
             throw new BusinessException(CbCodeEnum.PARAM_ERROR);
         }

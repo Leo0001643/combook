@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cambook.app.websocket.TechWsHandler;
 import com.cambook.app.websocket.TechWsRegistry;
 import com.cambook.app.websocket.WsMessage;
+import com.cambook.app.common.statemachine.OrderStatus;
+import com.cambook.app.common.statemachine.WalkinSessionStatus;
 import com.cambook.common.context.MerchantContext;
 import com.cambook.common.exception.BusinessException;
 import com.cambook.common.result.Result;
@@ -213,7 +215,7 @@ public class MerchantWalkinController {
         session.setTechnicianName(technicianName != null ? technicianName : "");
         session.setTechnicianNo(technicianNo != null ? technicianNo : "");
         session.setTechnicianMobile(technicianMobile != null ? technicianMobile : "");
-        session.setStatus(0);
+        session.setStatus(WalkinSessionStatus.CHECKED_IN.getCode());
         session.setTotalAmount(BigDecimal.ZERO);
         session.setPaidAmount(BigDecimal.ZERO);
         session.setRemark(remark != null ? remark : "");
@@ -259,7 +261,7 @@ public class MerchantWalkinController {
         session.setTechnicianName(technicianName != null ? technicianName : "");
         session.setTechnicianNo(technicianNo != null ? technicianNo : "");
         session.setTechnicianMobile(technicianMobile != null ? technicianMobile : "");
-        session.setStatus(0);
+        session.setStatus(WalkinSessionStatus.CHECKED_IN.getCode());
         session.setTotalAmount(BigDecimal.ZERO);
         session.setPaidAmount(BigDecimal.ZERO);
         session.setRemark(remark != null ? remark : "");
@@ -325,7 +327,8 @@ public class MerchantWalkinController {
             @RequestParam BigDecimal unitPrice) {
 
         CbWalkinSession session = requireSession(id);
-        if (session.getStatus() >= 3) throw new BusinessException("当前接待已结算或已取消，无法新增服务项");
+        if (session.getStatus() >= WalkinSessionStatus.SETTLED.getCode())
+            throw new BusinessException("当前接待已结算或已取消，无法新增服务项");
 
         // 若前端未传或传了 0，自动从服务分类表取真实时长，防止 UI 默认值 60 写入错误数据
         int resolvedDuration = (serviceDuration != null && serviceDuration > 0)
@@ -351,7 +354,7 @@ public class MerchantWalkinController {
         order.setAppointTime(System.currentTimeMillis() / 1000L);
         order.setOriginalAmount(unitPrice);
         order.setPayAmount(unitPrice);
-        order.setStatus(2);   // 已确认，待服务
+        order.setStatus(OrderStatus.ACCEPTED.getCode()); // 已确认，待服务
         orderMapper.insert(order);
 
         refreshSessionTotal(session);
@@ -366,7 +369,7 @@ public class MerchantWalkinController {
     public Result<Void> removeItem(@PathVariable Long id, @PathVariable Long orderId) {
         CbWalkinSession session = requireSession(id);
         CbOrder order = requireOrder(orderId, id);
-        if (order.getStatus() == 5) throw new BusinessException("服务进行中，无法删除");
+        if (order.getStatus() == OrderStatus.IN_SERVICE.getCode()) throw new BusinessException("服务进行中，无法删除");
         orderMapper.deleteById(orderId);
         refreshSessionTotal(session);
         return Result.success();
@@ -382,7 +385,7 @@ public class MerchantWalkinController {
             @RequestParam BigDecimal unitPrice) {
         CbWalkinSession session = requireSession(id);
         CbOrder order = requireOrder(orderId, id);
-        if (order.getStatus() == 6) throw new BusinessException("服务已完成，无法修改价格");
+        if (order.getStatus() == OrderStatus.COMPLETED.getCode()) throw new BusinessException("服务已完成，无法修改价格");
         order.setOriginalAmount(unitPrice);
         order.setPayAmount(unitPrice);
         orderMapper.updateById(order);
@@ -398,16 +401,18 @@ public class MerchantWalkinController {
     public Result<Void> startService(@PathVariable Long id, @PathVariable Long orderId) {
         CbWalkinSession session = requireSession(id);
         CbOrder order = requireOrder(orderId, id);
-        if (order.getStatus() != 2 && order.getStatus() != 1)
+        if (order.getStatus() != OrderStatus.ACCEPTED.getCode()
+                && order.getStatus() != OrderStatus.PENDING_ACCEPT.getCode())
             throw new BusinessException("当前状态无法开始服务");
         long nowSec = System.currentTimeMillis() / 1000L;
-        order.setStatus(5);       // 服务中
+        order.setStatus(OrderStatus.IN_SERVICE.getCode());
         order.setStartTime(nowSec);
         orderMapper.updateById(order);
 
-        if (session.getStatus() == 0 || session.getServiceStartTime() == null) {
-            // 接待中 → 服务中；同时补录首次服务开始时间（历史遗留 null 也一并修复）
-            session.setStatus(1);
+        if (session.getStatus() == WalkinSessionStatus.CHECKED_IN.getCode()
+                || session.getServiceStartTime() == null) {
+            // CHECKED_IN → IN_SERVICE；同时补录首次服务开始时间（历史遗留 null 也一并修复）
+            session.setStatus(WalkinSessionStatus.IN_SERVICE.getCode());
             session.setServiceStartTime(nowSec);
             sessionMapper.updateById(session);
         }
@@ -422,16 +427,18 @@ public class MerchantWalkinController {
     public Result<Void> finishService(@PathVariable Long id, @PathVariable Long orderId) {
         CbWalkinSession session = requireSession(id);
         CbOrder order = requireOrder(orderId, id);
-        if (order.getStatus() != 5) throw new BusinessException("服务未进行中，无法结束");
-        order.setStatus(6);       // 已完成
+        if (order.getStatus() != OrderStatus.IN_SERVICE.getCode())
+            throw new BusinessException("服务未进行中，无法结束");
+        order.setStatus(OrderStatus.COMPLETED.getCode());
         order.setEndTime(System.currentTimeMillis() / 1000L);
         orderMapper.updateById(order);
 
-        // 若所有服务均已完成，session 进入待结算
+        // 若所有服务均已完成，session 进入 SERVICE_DONE（待前台结算）
         List<CbOrder> orders = listSessionOrders(id);
-        boolean allDone = orders.stream().allMatch(o -> o.getStatus() == 6);
-        if (allDone && session.getStatus() == 1) {
-            session.setStatus(2); // 服务中 → 待结算
+        boolean allDone = orders.stream()
+                .allMatch(o -> o.getStatus() == OrderStatus.COMPLETED.getCode());
+        if (allDone && session.getStatus() == WalkinSessionStatus.IN_SERVICE.getCode()) {
+            session.setStatus(WalkinSessionStatus.SERVICE_DONE.getCode());
             sessionMapper.updateById(session);
         }
         return Result.success();
@@ -448,26 +455,28 @@ public class MerchantWalkinController {
             @RequestParam(required = false) String remark) {
 
         CbWalkinSession session = requireSession(id);
-        if (session.getStatus() == 3) throw new BusinessException("已结算，无法重复操作");
-        if (session.getStatus() == 4) throw new BusinessException("已取消");
+        if (session.getStatus() == WalkinSessionStatus.SETTLED.getCode())
+            throw new BusinessException("已结算，无法重复操作");
+        if (session.getStatus() == WalkinSessionStatus.CANCELLED.getCode())
+            throw new BusinessException("已取消");
 
         session.setPaidAmount(paidAmount);
-        session.setStatus(3);     // 已结算
+        session.setStatus(WalkinSessionStatus.SETTLED.getCode());
         session.setCheckOutTime(System.currentTimeMillis() / 1000L);
         if (remark != null) session.setRemark(remark);
         sessionMapper.updateById(session);
 
-        // 更新所有关联订单的 pay_time / status（确保结算状态同步）
+        // 收款完成：同步关联订单 pay_time，未完成的一并标记完成
+        long now = System.currentTimeMillis() / 1000L;
         List<CbOrder> orders = listSessionOrders(id);
         for (CbOrder o : orders) {
-            if (o.getStatus() != 7) {   // 排除已取消
-                if (o.getStatus() != 6) {
-                    o.setStatus(6);
-                    o.setEndTime(System.currentTimeMillis() / 1000L);
-                }
-                o.setPayTime(System.currentTimeMillis() / 1000L);
-                orderMapper.updateById(o);
+            if (o.getStatus() == OrderStatus.CANCELLED.getCode()) continue;
+            if (o.getStatus() != OrderStatus.COMPLETED.getCode()) {
+                o.setStatus(OrderStatus.COMPLETED.getCode());
+                o.setEndTime(now);
             }
+            o.setPayTime(now);
+            orderMapper.updateById(o);
         }
         return Result.success();
     }
@@ -482,23 +491,24 @@ public class MerchantWalkinController {
             @RequestParam(required = false) String reason) {
 
         CbWalkinSession session = requireSession(id);
-        if (session.getStatus() == 3) throw new BusinessException("已结算，无法取消");
-        if (session.getStatus() == 4) throw new BusinessException("已取消");
+        if (session.getStatus() == WalkinSessionStatus.SETTLED.getCode())
+            throw new BusinessException("已结算，无法取消");
+        if (session.getStatus() == WalkinSessionStatus.CANCELLED.getCode())
+            throw new BusinessException("已取消");
 
-        // 只有没有进行中服务项时才允许取消
         List<CbOrder> orders = listSessionOrders(id);
-        boolean hasActive = orders.stream().anyMatch(o -> o.getStatus() == 5);
+        boolean hasActive = orders.stream()
+                .anyMatch(o -> o.getStatus() == OrderStatus.IN_SERVICE.getCode());
         if (hasActive) throw new BusinessException("存在进行中的服务项，无法取消");
 
-        session.setStatus(4);
+        session.setStatus(WalkinSessionStatus.CANCELLED.getCode());
         session.setRemark(reason != null ? reason : "");
         session.setCheckOutTime(System.currentTimeMillis() / 1000L);
         sessionMapper.updateById(session);
 
-        // 取消所有关联待服务订单
         for (CbOrder o : orders) {
-            if (o.getStatus() != 6) {
-                o.setStatus(7);
+            if (o.getStatus() != OrderStatus.COMPLETED.getCode()) {
+                o.setStatus(OrderStatus.CANCELLED.getCode());
                 o.setCancelReason(reason != null ? reason : "接待取消");
                 orderMapper.updateById(o);
             }
@@ -531,10 +541,10 @@ public class MerchantWalkinController {
                 .orderByAsc(CbOrder::getCreateTime));
     }
 
-    /** 重新汇总 session 的 total_amount */
+    /** 重新汇总 session 的 total_amount（排除已取消的服务项） */
     private void refreshSessionTotal(CbWalkinSession session) {
         BigDecimal total = listSessionOrders(session.getId()).stream()
-                .filter(o -> o.getStatus() != 7)
+                .filter(o -> o.getStatus() != OrderStatus.CANCELLED.getCode())
                 .map(CbOrder::getPayAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         session.setTotalAmount(total);
@@ -630,7 +640,7 @@ public class MerchantWalkinController {
         order.setAppointTime(System.currentTimeMillis() / 1000L);
         order.setOriginalAmount(unitPrice);
         order.setPayAmount(unitPrice);
-        order.setStatus(2);   // 已确认，待服务
+        order.setStatus(OrderStatus.ACCEPTED.getCode()); // 已确认，待服务
         return order;
     }
 

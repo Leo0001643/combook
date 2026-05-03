@@ -1,5 +1,7 @@
 package com.cambook.app.common.statemachine;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -25,6 +27,7 @@ import java.util.Optional;
  *
  * @author CamBook
  */
+@Getter
 public enum OrderStatus {
 
     PENDING_PAYMENT(0, "待支付"),
@@ -45,9 +48,6 @@ public enum OrderStatus {
         this.code = code;
         this.desc = desc;
     }
-
-    public int    getCode() { return code; }
-    public String getDesc() { return desc; }
 
     public static Optional<OrderStatus> of(int code) {
         return Arrays.stream(values()).filter(s -> s.code == code).findFirst();

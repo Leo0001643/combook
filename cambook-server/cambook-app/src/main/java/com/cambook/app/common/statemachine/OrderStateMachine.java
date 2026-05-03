@@ -55,31 +55,14 @@ public class OrderStateMachine {
 
     static {
         TRANSITIONS = new EnumMap<>(OrderStatus.class);
-
-        TRANSITIONS.put(OrderStatus.PENDING_PAYMENT,
-                EnumSet.of(OrderStatus.PENDING_ACCEPT, OrderStatus.CANCELLED));
-
-        TRANSITIONS.put(OrderStatus.PENDING_ACCEPT,
-                EnumSet.of(OrderStatus.ACCEPTED, OrderStatus.CANCELLED));
-
-        TRANSITIONS.put(OrderStatus.ACCEPTED,
-                EnumSet.of(OrderStatus.ARRIVING, OrderStatus.CANCELLED));
-
-        TRANSITIONS.put(OrderStatus.ARRIVING,
-                EnumSet.of(OrderStatus.ARRIVED));
-
-        TRANSITIONS.put(OrderStatus.ARRIVED,
-                EnumSet.of(OrderStatus.IN_SERVICE, OrderStatus.CANCELLED));
-
-        TRANSITIONS.put(OrderStatus.IN_SERVICE,
-                EnumSet.of(OrderStatus.COMPLETED));
-
-        TRANSITIONS.put(OrderStatus.COMPLETED,
-                EnumSet.of(OrderStatus.REFUNDING));
-
-        TRANSITIONS.put(OrderStatus.REFUNDING,
-                EnumSet.of(OrderStatus.REFUNDED));
-
+        TRANSITIONS.put(OrderStatus.PENDING_PAYMENT, EnumSet.of(OrderStatus.PENDING_ACCEPT, OrderStatus.CANCELLED));
+        TRANSITIONS.put(OrderStatus.PENDING_ACCEPT, EnumSet.of(OrderStatus.ACCEPTED, OrderStatus.CANCELLED));
+        TRANSITIONS.put(OrderStatus.ACCEPTED, EnumSet.of(OrderStatus.ARRIVING, OrderStatus.CANCELLED));
+        TRANSITIONS.put(OrderStatus.ARRIVING, EnumSet.of(OrderStatus.ARRIVED));
+        TRANSITIONS.put(OrderStatus.ARRIVED, EnumSet.of(OrderStatus.IN_SERVICE, OrderStatus.CANCELLED));
+        TRANSITIONS.put(OrderStatus.IN_SERVICE, EnumSet.of(OrderStatus.COMPLETED));
+        TRANSITIONS.put(OrderStatus.COMPLETED, EnumSet.of(OrderStatus.REFUNDING));
+        TRANSITIONS.put(OrderStatus.REFUNDING, EnumSet.of(OrderStatus.REFUNDED));
         // CANCELLED(7) / REFUNDED(9) 为终态，无后续转换
     }
 
@@ -91,11 +74,8 @@ public class OrderStateMachine {
      * @throws BusinessException 非法转换
      */
     public void transit(int currentCode, int targetCode) {
-        OrderStatus current = OrderStatus.of(currentCode)
-                .orElseThrow(() -> new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL));
-        OrderStatus target  = OrderStatus.of(targetCode)
-                .orElseThrow(() -> new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL));
-
+        OrderStatus current = OrderStatus.of(currentCode).orElseThrow(() -> new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL));
+        OrderStatus target  = OrderStatus.of(targetCode).orElseThrow(() -> new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL));
         Set<OrderStatus> allowed = TRANSITIONS.getOrDefault(current, EnumSet.noneOf(OrderStatus.class));
         if (!allowed.contains(target)) {
             throw new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL);

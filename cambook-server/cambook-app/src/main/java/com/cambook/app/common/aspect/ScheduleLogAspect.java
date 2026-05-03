@@ -39,30 +39,19 @@ public class ScheduleLogAspect {
     // ── 环绕通知 ───────────────────────────────────────────────────────────────
 
     @Around("scheduledMethods()")
-    public Object around(ProceedingJoinPoint pjp) throws Throwable {
+    public Object around(ProceedingJoinPoint pjp) {
         MethodSignature sig    = (MethodSignature) pjp.getSignature();
-        String taskName = pjp.getTarget().getClass().getSimpleName()
-                         + "#" + sig.getName();
+        String taskName = pjp.getTarget().getClass().getSimpleName() + "#" + sig.getName();
         long start = System.currentTimeMillis();
-
         log.info("┌─ TASK START  [{}]", taskName);
-
         try {
             Object result = pjp.proceed();
             long elapsed = System.currentTimeMillis() - start;
-
             log.info("└─ TASK SUCCESS [{}] | elapsed={}ms", taskName, elapsed);
             return result;
-
         } catch (Throwable ex) {
             long elapsed = System.currentTimeMillis() - start;
-
-            log.error("└─ TASK FAILED  [{}] | elapsed={}ms | {} : {}",
-                    taskName, elapsed,
-                    ex.getClass().getSimpleName(),
-                    ex.getMessage(),
-                    ex);
-
+            log.error("└─ TASK FAILED  [{}] | elapsed={}ms | {} : {}", taskName, elapsed, ex.getClass().getSimpleName(), ex.getMessage(),ex);
             // 定时任务异常不向上抛，防止 Spring 取消后续调度
             return null;
         }

@@ -42,11 +42,8 @@ public class OrderEventListener {
     @Async
     @EventListener
     public void onOrderStatusChanged(OrderStatusChangedEvent event) {
-        log.info("[Order Event] orderId={} {} → {}",
-                event.getOrderId(), event.getFromStatus(), event.getToStatus());
-
+        log.info("[Order Event] orderId={} {} → {}", event.getOrderId(), event.getFromStatus(), event.getToStatus());
         int to = event.getToStatus();
-
         if (to == OrderStatus.PENDING_ACCEPT.getCode()) {
             // 订单支付成功 → 推送"派单中"通知给用户，广播给附近技师
             pushToMember(event.getMemberId(), "订单已支付，正在为您匹配技师");
@@ -78,8 +75,7 @@ public class OrderEventListener {
     }
 
     private void broadcastToNearbyTechnicians(Long orderId, Long technicianId) {
-        log.info("[Broadcast] 新订单 WS 推送 orderId={} techId={} 在线人数={}",
-                orderId, technicianId, registry.size());
+        log.info("[Broadcast] 新订单 WS 推送 orderId={} techId={} 在线人数={}", orderId, technicianId, registry.size());
         Map<String, Object> payload = Map.of("orderId", orderId);
 
         if (technicianId != null) {

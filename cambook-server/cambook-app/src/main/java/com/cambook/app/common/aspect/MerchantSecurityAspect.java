@@ -39,16 +39,14 @@ public class MerchantSecurityAspect {
     public void checkMerchantAuth(JoinPoint joinPoint) {
         // 1. Admin 不得调用商户端接口（防止 Admin JWT 越权）
         if (AdminContext.getUserId() != null) {
-            log.warn("[MerchantSecurity] Admin account attempted to access merchant endpoint: {}",
-                    joinPoint.getSignature().toShortString());
+            log.warn("[MerchantSecurity] Admin account attempted to access merchant endpoint: {}", joinPoint.getSignature().toShortString());
             throw new BusinessException("管理员账号不得访问商户端接口");
         }
 
         // 2. 商户 merchantId 必须存在（JWT 解析成功）
         Long merchantId = MerchantContext.getMerchantId();
         if (merchantId == null) {
-            log.warn("[MerchantSecurity] Unauthorized merchant access attempt: {}",
-                    joinPoint.getSignature().toShortString());
+            log.warn("[MerchantSecurity] Unauthorized merchant access attempt: {}", joinPoint.getSignature().toShortString());
             throw new BusinessException("商户身份校验失败，请重新登录");
         }
 
@@ -57,20 +55,16 @@ public class MerchantSecurityAspect {
         if (request != null) {
             String uri = request.getRequestURI();
             if (!uri.startsWith("/merchant/")) {
-                log.error("[MerchantSecurity] Merchant endpoint reached via non-merchant URI: {} by merchantId={}",
-                        uri, merchantId);
+                log.error("[MerchantSecurity] Merchant endpoint reached via non-merchant URI: {} by merchantId={}", uri, merchantId);
                 throw new BusinessException("非法请求路径");
             }
         }
-
-        log.debug("[MerchantSecurity] Auth OK: merchantId={} → {}", merchantId,
-                joinPoint.getSignature().toShortString());
+        log.debug("[MerchantSecurity] Auth OK: merchantId={} → {}", merchantId, joinPoint.getSignature().toShortString());
     }
 
     private HttpServletRequest currentRequest() {
         try {
-            ServletRequestAttributes attrs =
-                    (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             return attrs.getRequest();
         } catch (IllegalStateException e) {
             return null;

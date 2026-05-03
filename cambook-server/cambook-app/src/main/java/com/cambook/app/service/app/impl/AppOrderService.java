@@ -99,8 +99,7 @@ public class AppOrderService implements IAppOrderService {
         // 3. 计算订单总价（各服务项 unitPrice × qty 之和）
         BigDecimal total = dto.getItems().stream()
                 .map(item -> serviceMap.get(item.getServiceItemId())
-                        .getMemberPrice()
-                        .multiply(BigDecimal.valueOf(item.getQty())))
+                        .getMemberPrice().multiply(BigDecimal.valueOf(item.getQty())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // 4. 创建订单主记录（一笔订单属于客户本次 session）
@@ -135,13 +134,13 @@ public class AppOrderService implements IAppOrderService {
 
             // 7. 多技师并行场景：对每位参与的技师单独发布事件（推送接单通知）
             //    使用 distinct() 避免同一技师负责多个服务项时重复通知
-            dto.getItems().stream()
-                    .map(BookingItemDTO::getTechnicianId)
-                    .distinct()
-                    .forEach(techId -> eventPublisher.publishEvent(new OrderStatusChangedEvent(
+            dto.getItems().stream().map(BookingItemDTO::getTechnicianId).distinct()
+                .forEach(techId -> eventPublisher.publishEvent(new OrderStatusChangedEvent(
                             this, order.getId(), memberId, techId,
                             OrderStatus.PENDING_PAYMENT.getCode(), OrderStatus.PENDING_ACCEPT.getCode()
-                    )));
+                    )
+                )
+            );
         }
 
         // 8. 返回含服务项的 OrderVO
@@ -158,11 +157,8 @@ public class AppOrderService implements IAppOrderService {
                 .eq(CbOrder::getMemberId, memberId)
                 .eq(status != null, CbOrder::getStatus, status)
                 .orderByDesc(CbOrder::getCreateTime);
-
         Page<CbOrder> p = orderMapper.selectPage(new Page<>(page, size), wrapper);
-        List<OrderVO> records = p.getRecords().stream()
-                .map(OrderVO::from)
-                .collect(Collectors.toList());
+        List<OrderVO> records = p.getRecords().stream().map(OrderVO::from).collect(Collectors.toList());
         return PageResult.of(records, p.getTotal(), page, size);
     }
 
@@ -171,11 +167,7 @@ public class AppOrderService implements IAppOrderService {
     @Override
     public OrderVO getDetail(Long id) {
         Long memberId = MemberContext.currentId();
-        CbOrder order = orderMapper.selectOne(
-                new LambdaQueryWrapper<CbOrder>()
-                        .eq(CbOrder::getId, id)
-                        .eq(CbOrder::getMemberId, memberId)
-        );
+        CbOrder order = orderMapper.selectOne(new LambdaQueryWrapper<CbOrder>().eq(CbOrder::getId, id).eq(CbOrder::getMemberId, memberId));
         if (order == null) throw new BusinessException(CbCodeEnum.ORDER_NOT_FOUND);
         List<CbOrderItem> items = orderItemMapper.selectActiveByOrderId(id);
         return OrderVO.fromWithItems(order, items);
@@ -187,44 +179,28 @@ public class AppOrderService implements IAppOrderService {
     @Transactional(rollbackFor = Exception.class)
     public void cancel(CancelOrderDTO dto) {
         Long memberId = MemberContext.currentId();
-        CbOrder order = orderMapper.selectOne(
-                new LambdaQueryWrapper<CbOrder>()
-                        .eq(CbOrder::getId, dto.getOrderId())
-                        .eq(CbOrder::getMemberId, memberId)
-        );
+        CbOrder order = orderMapper.selectOne(new LambdaQueryWrapper<CbOrder>().eq(CbOrder::getId, dto.getOrderId()).eq(CbOrder::getMemberId, memberId));
         if (order == null) throw new BusinessException(CbCodeEnum.ORDER_NOT_FOUND);
-
         stateMachine.transit(order.getStatus(), OrderStatus.CANCELLED.getCode());
-        orderMapper.update(null,
-                new LambdaUpdateWrapper<CbOrder>()
-                        .set(CbOrder::getStatus, OrderStatus.CANCELLED.getCode())
-                        .set(CbOrder::getCancelReason, dto.getReason())
-                        .eq(CbOrder::getId, order.getId())
+        orderMapper.update(null,new LambdaUpdateWrapper<CbOrder>()
+        .set(CbOrder::getStatus, OrderStatus.CANCELLED.getCode())
+        .set(CbOrder::getCancelReason, dto.getReason())
+        .eq(CbOrder::getId, order.getId())
         );
-        eventPublisher.publishEvent(new OrderStatusChangedEvent(
-                this, order.getId(), memberId, order.getTechnicianId(),
-                order.getStatus(), OrderStatus.CANCELLED.getCode()
-        ));
+        eventPublisher.publishEvent(new OrderStatusChangedEvent(this, order.getId(), memberId, order.getTechnicianId(), order.getStatus(), OrderStatus.CANCELLED.getCode()));
     }
 
     // ── 私有工具方法 ────────────────────────────────────────────────────────
 
     private CbAddress loadAddress(Long addressId, Long memberId) {
-        CbAddress address = addressMapper.selectOne(
-                new LambdaQueryWrapper<CbAddress>()
-                        .eq(CbAddress::getId, addressId)
-                        .eq(CbAddress::getMemberId, memberId)
-                        .eq(CbAddress::getStatus, 1)
-        );
+        CbAddress address = addressMapper.selectOne(new LambdaQueryWrapper<CbAddress>().eq(CbAddress::getId, addressId).eq(CbAddress::getMemberId, memberId).eq(CbAddress::getStatus, 1));
         if (address == null) throw new BusinessException(CbCodeEnum.DATA_NOT_FOUND);
         return address;
     }
 
     /** 批量从 cb_service_item 查价，防篡改，同时校验服务项存在且上架 */
     private Map<Long, CbServiceItem> loadServiceItems(List<BookingItemDTO> items) {
-        Set<Long> ids = items.stream()
-                .map(BookingItemDTO::getServiceItemId)
-                .collect(Collectors.toSet());
+        Set<Long> ids = items.stream().map(BookingItemDTO::getServiceItemId).collect(Collectors.toSet());
 
         Map<Long, CbServiceItem> map = serviceItemMapper.selectBatchIds(ids)
                 .stream()
@@ -238,8 +214,7 @@ public class AppOrderService implements IAppOrderService {
         return map;
     }
 
-    private CbOrder buildOrder(Long memberId, CbAddress address,
-                               CreateOrderDTO dto, BigDecimal total, Long primaryTechId) {
+    private CbOrder buildOrder(Long memberId, CbAddress address, CreateOrderDTO dto, BigDecimal total, Long primaryTechId) {
         CbOrder order = new CbOrder();
         order.setOrderNo(generateOrderNo());
         order.setOrderType(1);            // 1=在线预约
@@ -276,8 +251,7 @@ public class AppOrderService implements IAppOrderService {
     }
 
     private void transitionToPaid(CbOrder order) {
-        stateMachine.transit(OrderStatus.PENDING_PAYMENT.getCode(),
-                OrderStatus.PENDING_ACCEPT.getCode());
+        stateMachine.transit(OrderStatus.PENDING_PAYMENT.getCode(), OrderStatus.PENDING_ACCEPT.getCode());
         orderMapper.update(null,
                 new LambdaUpdateWrapper<CbOrder>()
                         .set(CbOrder::getStatus, OrderStatus.PENDING_ACCEPT.getCode())
@@ -288,7 +262,6 @@ public class AppOrderService implements IAppOrderService {
     }
 
     private String generateOrderNo() {
-        return "CB" + System.currentTimeMillis()
-                + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        return "CB" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
 }

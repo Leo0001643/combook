@@ -53,10 +53,7 @@ public class AuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
             I18nContext.setLang(request.getHeader(HEADER_LANG));
 
@@ -148,7 +145,6 @@ public class AuthFilter extends OncePerRequestFilter {
         info.setUsername(username);
         info.setPermissions(perms);
         AdminContext.set(info);
-
         log.debug("[Auth] admin={} perms={}", username, perms.size());
     }
 }

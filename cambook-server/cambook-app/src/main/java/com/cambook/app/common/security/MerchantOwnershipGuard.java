@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * @author CamBook
  */
 public final class MerchantOwnershipGuard {
-
     private static final Logger log = LoggerFactory.getLogger(MerchantOwnershipGuard.class);
 
     private MerchantOwnershipGuard() {}
@@ -46,11 +45,8 @@ public final class MerchantOwnershipGuard {
      * @param resourceId         资源主键 ID（用于日志）
      * @throws BusinessException 若记录不存在或不属于当前商户
      */
-    public static void assertOwnership(Long resourceMerchantId,
-                                        String resourceType,
-                                        Object resourceId) {
+    public static void assertOwnership(Long resourceMerchantId, String resourceType, Object resourceId) {
         Long currentMerchantId = requireMerchantId();
-
         if (resourceMerchantId == null || !currentMerchantId.equals(resourceMerchantId)) {
             // 记录安全告警日志（不向客户端暴露内部信息）
             log.warn("[MerchantSecurity] IDOR attempt blocked! merchantId={} tried to access {}[id={}] owned by merchantId={}",
@@ -68,10 +64,7 @@ public final class MerchantOwnershipGuard {
      * @param resourceType       资源类型描述
      * @param resourceId         资源主键 ID
      */
-    public static void assertOwnershipNonNull(Object resource,
-                                              Long resourceMerchantId,
-                                              String resourceType,
-                                              Object resourceId) {
+    public static void assertOwnershipNonNull(Object resource, Long resourceMerchantId, String resourceType, Object resourceId) {
         if (resource == null) {
             throw new BusinessException(resourceType + "不存在");
         }

@@ -4,15 +4,15 @@
 <mapper namespace="com.cambook.dao.mapper.CbWalkinSessionMapper">
 
     <!--
-        技师首页今日安排 — 门店散客接待（Walkin Session）
-
-        walkin session status 映射到在线订单等效状态（Flutter 端统一展示）：
-          session.status 0 (已录入/待技师接单) → 在线等效 1 (待接单, PENDING_ACCEPT)
-          session.status 1 (服务中)           → 在线等效 5 (服务中, IN_SERVICE)
-          session.status 2 (待结算)           → 在线等效 5 (服务中, IN_SERVICE)
-          session.status 3 (已结算)           → 在线等效 6 (已完成, COMPLETED)
-          session.status 4 (已取消)           → 排除
+        walkin session status 语义（已与业务闭环对齐）：
+          0 = 已录入/待技师接单  → Flutter: 1  (PENDING_ACCEPT)
+          1 = 服务中             → Flutter: 5  (IN_SERVICE)
+          2 = 服务完成/待前台结算 → Flutter: 6  (COMPLETED)  ← 技师服务已完成，等待前台收款
+          3 = 已结算（已付款）   → Flutter: 6  (COMPLETED)
+          4 = 已取消             → Flutter: 7  (CANCELLED)
     -->
+
+    <!-- 技师首页今日安排 -->
     <select id="selectTodayByTechId" resultType="map">
         SELECT
             ws.id                                           AS sessionId,
@@ -21,7 +21,7 @@
             CASE ws.status
                 WHEN 0 THEN 1
                 WHEN 1 THEN 5
-                WHEN 2 THEN 5
+                WHEN 2 THEN 6
                 ELSE 6
             END                                             AS status,
             ws.total_amount                                 AS payAmount,
@@ -36,16 +36,7 @@
         ORDER BY ws.check_in_time ASC
     </select>
 
-    <!--
-        技师订单列表 — 门店散客接待（最近 90 天，供订单管理页面使用）
-
-        status 字段返回与在线订单等效的整数值，供 Flutter 端统一解析：
-          session.status 0 (已录入/待技师接单) → 1 (pendingAccept)
-          session.status 1 (服务中)           → 5 (inService)
-          session.status 2 (待结算)           → 5 (inService)
-          session.status 3 (已结算)           → 6 (completed)
-          session.status 4 (已取消)           → 7 (cancelled)
-    -->
+    <!-- 技师订单列表（最近 90 天） -->
     <select id="selectRecentByTechId" resultType="map">
         SELECT
             ws.id                                           AS sessionId,
@@ -55,7 +46,7 @@
             CASE ws.status
                 WHEN 0 THEN 1
                 WHEN 1 THEN 5
-                WHEN 2 THEN 5
+                WHEN 2 THEN 6
                 WHEN 3 THEN 6
                 ELSE 7
             END                                             AS mappedStatus,
@@ -74,7 +65,7 @@
           AND CASE ws.status
                   WHEN 0 THEN 1
                   WHEN 1 THEN 5
-                  WHEN 2 THEN 5
+                  WHEN 2 THEN 6
                   WHEN 3 THEN 6
                   ELSE 7
               END IN
