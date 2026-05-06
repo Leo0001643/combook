@@ -50,12 +50,12 @@ public class ImAckRetryScheduler {
 
         for (ImMessage msg : pending) {
             if (msg.getReceiverType() == null || msg.getReceiverId() == null) continue;
-            long  now     = DateUtils.nowSecond();
-            byte  retry   = (byte) (msg.getRetryCount() + 1);
+            long now = DateUtils.nowSecond();
+            byte retry = (byte) (msg.getRetryCount() + 1);
             boolean pushed = router.route(msg.getReceiverType(), msg.getReceiverId(),
                 retryPacket(msg, retry));
-            byte status = pushed    ? (byte) 2
-                        : retry >= props.getAckMaxRetry() ? (byte) 9 : (byte) 1;
+            byte status = pushed ? (byte) 2
+                : retry >= props.getAckMaxRetry() ? (byte) 9 : (byte) 1;
 
             msgService.lambdaUpdate()
                 .eq(ImMessage::getMsgId, msg.getMsgId())

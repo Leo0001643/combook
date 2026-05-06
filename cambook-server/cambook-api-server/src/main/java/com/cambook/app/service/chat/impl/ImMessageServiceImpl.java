@@ -3,20 +3,24 @@ package com.cambook.app.service.chat.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cambook.app.domain.bo.chat.ImMsgBO;
 import com.cambook.app.domain.dto.chat.ImGroupSendDTO;
 import com.cambook.app.domain.dto.chat.ImSendDTO;
 import com.cambook.app.domain.vo.chat.ImMessageVO;
+import com.cambook.app.service.chat.IImConvMemberService;
 import com.cambook.app.service.chat.IImConversationService;
+import com.cambook.app.service.chat.IImGroupMemberService;
 import com.cambook.app.service.chat.IImMessageService;
+import com.cambook.app.service.chat.IImMsgAckService;
 import com.cambook.chat.protocol.ImCmd;
 import com.cambook.chat.protocol.ImPacket;
 import com.cambook.chat.routing.UserRouter;
 import com.cambook.common.utils.DateUtils;
 import com.cambook.common.utils.SnowflakeGenerator;
 import com.cambook.db.entity.*;
-import com.cambook.db.mapper.*;
+import com.cambook.db.mapper.ImMessageMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,43 +42,41 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage>
     implements IImMessageService {
 
-    @Autowired private SnowflakeGenerator     snowflake;
-    @Autowired private IImConversationService convService;
-    @Autowired private ImConvMemberMapper     convMemberMapper;
-    @Autowired private ImGroupMemberMapper    groupMemberMapper;
-    @Autowired private ImMsgAckMapper         ackMapper;
-    @Autowired private UserRouter             router;
+    private final SnowflakeGenerator snowflake;
+    private final IImConversationService convService;
+    private final IImConvMemberService convMemberService;
+    private final IImGroupMemberService groupMemberService;
+    private final IImMsgAckService ackService;
+    private final UserRouter router;
 
     // ── 单聊 ──────────────────────────────────────────────────────────────────
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long sendMessage(String senderType, Long senderId, ImSendDTO dto) {
+        long now = DateUtils.nowSecond();
+        long msgId = snowflake.nextId();
         Long convId = convService.getOrCreate(senderType, senderId, dto.getReceiverType(), dto.getReceiverId());
-        long now    = DateUtils.nowSecond();
-        long msgId  = snowflake.nextId();
 
-        ImMessage msg = singleMsg(msgId, convId, senderType, senderId,
-            dto.getReceiverType(), dto.getReceiverId(), dto.getMsgType().byteValue(),
-            dto.getContent(), dto.getClientMsgId(), now);
-        save(msg);
+        ImMsgBO bo = ImMsgBO.forSingle(msgId, convId, senderType, senderId, dto, now);
+        save(bo.toEntity());
 
-        String preview = preview(dto.getMsgType(), dto.getContent());
-        convService.updateLastMsg(convId, msgId, preview, now);
+        convService.updateLastMsg(convId, msgId, preview(dto.getMsgType(), dto.getContent()), now);
         incrUnread(convId, dto.getReceiverType(), dto.getReceiverId(), now);
 
-        ImPacket notify    = notifyPacket(msgId, convId, senderType, senderId, dto.getMsgType(), dto.getContent(), now);
-        boolean  delivered = router.route(dto.getReceiverType(), dto.getReceiverId(), notify);
+        ImPacket notify = notifyPacket(bo);
+        boolean delivered = router.route(dto.getReceiverType(), dto.getReceiverId(), notify);
         if (delivered) updateStatus(msgId, (byte) 2, now);
 
         router.route(senderType, senderId, ImPacket.of(ImCmd.MSG_DELIVERED, String.valueOf(msgId),
             Map.of("msgId", msgId, "status", delivered ? 2 : 1)));
 
-        log.info("[Chat] 单聊 msgId={} {}:{} -> {}:{} delivered={}", msgId,
-            senderType, senderId, dto.getReceiverType(), dto.getReceiverId(), delivered);
+        log.info("[Chat] 单聊 msgId={} {}:{} -> {}:{} delivered={}",
+            msgId, senderType, senderId, dto.getReceiverType(), dto.getReceiverId(), delivered);
         return msgId;
     }
 
@@ -83,26 +85,29 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long sendGroupMessage(String senderType, Long senderId, ImGroupSendDTO dto) {
+        long now = DateUtils.nowSecond();
+        long msgId = snowflake.nextId();
         Long convId = convService.getOrCreateGroup(dto.getGroupId());
-        long now    = DateUtils.nowSecond();
-        long msgId  = snowflake.nextId();
 
-        save(groupMsg(msgId, convId, senderType, senderId, dto.getGroupId(),
-            dto.getMsgType().byteValue(), dto.getContent(), dto.getClientMsgId(), now));
+        ImMsgBO bo = ImMsgBO.forGroup(msgId, convId, senderType, senderId, dto, now);
+        save(bo.toEntity());
+
         convService.updateLastMsg(convId, msgId, preview(dto.getMsgType(), dto.getContent()), now);
 
-        List<ImGroupMember> members = groupMemberMapper.selectList(
+        List<ImGroupMember> members = groupMemberService.list(
             new LambdaQueryWrapper<ImGroupMember>()
                 .eq(ImGroupMember::getGroupId, dto.getGroupId())
                 .eq(ImGroupMember::getStatus, 0)
                 .ne(ImGroupMember::getUserId, senderId)
                 .select(ImGroupMember::getUserType, ImGroupMember::getUserId));
 
-        ImPacket notify = groupNotifyPacket(msgId, convId, dto.getGroupId(), senderType, senderId,
-            dto.getMsgType(), dto.getContent(), now);
-        long pushed = members.stream().filter(m -> router.route(m.getUserType(), m.getUserId(), notify)).count();
+        ImPacket notify = groupNotifyPacket(bo);
+        long pushed = members.stream()
+            .filter(m -> router.route(m.getUserType(), m.getUserId(), notify))
+            .count();
 
-        log.info("[Chat] 群消息 msgId={} groupId={} pushed={}/{}", msgId, dto.getGroupId(), pushed, members.size());
+        log.info("[Chat] 群消息 msgId={} groupId={} pushed={}/{}",
+            msgId, dto.getGroupId(), pushed, members.size());
         return msgId;
     }
 
@@ -113,9 +118,12 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     public void handleAck(Long msgId, String userType, Long userId) {
         long now = DateUtils.nowSecond();
         ImMsgAck ack = new ImMsgAck();
-        ack.setMsgId(msgId); ack.setUserType(userType); ack.setUserId(userId);
-        ack.setAckType((byte) 1); ack.setAckTime(now);
-        ackMapper.insertOrIgnore(ack);
+        ack.setMsgId(msgId);
+        ack.setUserType(userType);
+        ack.setUserId(userId);
+        ack.setAckType((byte) 1);
+        ack.setAckTime(now);
+        ackService.insertOrIgnore(ack);
         updateStatus(msgId, (byte) 2, now);
     }
 
@@ -125,7 +133,7 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     @Transactional(rollbackFor = Exception.class)
     public void markRead(Long conversationId, String userType, Long userId, Long lastReadMsgId) {
         long now = DateUtils.nowSecond();
-        convMemberMapper.update(null, new LambdaUpdateWrapper<ImConvMember>()
+        convMemberService.update(null, new LambdaUpdateWrapper<ImConvMember>()
             .eq(ImConvMember::getConversationId, conversationId)
             .eq(ImConvMember::getUserType, userType)
             .eq(ImConvMember::getUserId, userId)
@@ -133,7 +141,7 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
             .set(ImConvMember::getLastReadMsgId, lastReadMsgId)
             .set(ImConvMember::getUpdateTime, now));
 
-        ackMapper.update(null, new LambdaUpdateWrapper<ImMsgAck>()
+        ackService.update(null, new LambdaUpdateWrapper<ImMsgAck>()
             .eq(ImMsgAck::getUserType, userType)
             .eq(ImMsgAck::getUserId, userId)
             .le(ImMsgAck::getMsgId, lastReadMsgId)
@@ -157,7 +165,7 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
             .list().stream().map(this::toVO).collect(Collectors.toList());
     }
 
-    // ── 历史消息（倒序分页）─────────────────────────────────────────────────
+    // ── 历史消息（倒序分页） ──────────────────────────────────────────────────
 
     @Override
     public List<ImMessageVO> history(Long conversationId, Long beforeMsgId, int limit) {
@@ -169,55 +177,41 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
             .list().stream().map(this::toVO).collect(Collectors.toList());
     }
 
-    // ── 构建消息实体 ──────────────────────────────────────────────────────────
+    // ── 私有方法 ──────────────────────────────────────────────────────────────
 
-    private ImMessage singleMsg(long msgId, Long convId, String senderType, Long senderId,
-                                 String receiverType, Long receiverId, byte msgType,
-                                 String content, String clientMsgId, long now) {
-        ImMessage m = new ImMessage();
-        m.setMsgId(msgId); m.setConversationId(convId); m.setClientMsgId(clientMsgId);
-        m.setSenderType(senderType); m.setSenderId(senderId);
-        m.setReceiverType(receiverType); m.setReceiverId(receiverId);
-        m.setIsGroup((byte) 0); m.setMsgType(msgType); m.setContent(content);
-        m.setStatus((byte) 1); m.setRetryCount((byte) 0); m.setCreateTime(now); m.setUpdateTime(now);
-        return m;
+    private ImPacket notifyPacket(ImMsgBO bo) {
+        return ImPacket.of(ImCmd.MSG_NOTIFY, String.valueOf(bo.getMsgId()), Map.of(
+            "msgId", bo.getMsgId(),
+            "conversationId", bo.getConvId(),
+            "senderType", bo.getSenderType(),
+            "senderId", bo.getSenderId(),
+            "msgType", bo.getMsgType(),
+            "content", bo.getContent(),
+            "createTime", bo.getNow()));
     }
 
-    private ImMessage groupMsg(long msgId, Long convId, String senderType, Long senderId,
-                                Long groupId, byte msgType, String content, String clientMsgId, long now) {
-        ImMessage m = new ImMessage();
-        m.setMsgId(msgId); m.setConversationId(convId); m.setClientMsgId(clientMsgId);
-        m.setSenderType(senderType); m.setSenderId(senderId);
-        m.setReceiverId(0L); m.setIsGroup((byte) 1); m.setGroupId(groupId);
-        m.setMsgType(msgType); m.setContent(content);
-        m.setStatus((byte) 1); m.setRetryCount((byte) 0); m.setCreateTime(now); m.setUpdateTime(now);
-        return m;
-    }
-
-    private ImPacket notifyPacket(long msgId, Long convId, String senderType, Long senderId,
-                                   Integer msgType, String content, long createTime) {
-        return ImPacket.of(ImCmd.MSG_NOTIFY, String.valueOf(msgId), Map.of(
-            "msgId", msgId, "conversationId", convId,
-            "senderType", senderType, "senderId", senderId,
-            "msgType", msgType, "content", content, "createTime", createTime));
-    }
-
-    private ImPacket groupNotifyPacket(long msgId, Long convId, Long groupId, String senderType,
-                                        Long senderId, Integer msgType, String content, long createTime) {
-        return ImPacket.of(ImCmd.GROUP_NOTIFY, String.valueOf(msgId), Map.of(
-            "msgId", msgId, "conversationId", convId, "groupId", groupId,
-            "senderType", senderType, "senderId", senderId,
-            "msgType", msgType, "content", content, "createTime", createTime));
+    private ImPacket groupNotifyPacket(ImMsgBO bo) {
+        return ImPacket.of(ImCmd.GROUP_NOTIFY, String.valueOf(bo.getMsgId()), Map.of(
+            "msgId", bo.getMsgId(),
+            "conversationId", bo.getConvId(),
+            "groupId", bo.getGroupId(),
+            "senderType", bo.getSenderType(),
+            "senderId", bo.getSenderId(),
+            "msgType", bo.getMsgType(),
+            "content", bo.getContent(),
+            "createTime", bo.getNow()));
     }
 
     private void updateStatus(long msgId, byte status, long now) {
-        lambdaUpdate().eq(ImMessage::getMsgId, msgId)
+        lambdaUpdate()
+            .eq(ImMessage::getMsgId, msgId)
             .set(ImMessage::getStatus, status)
-            .set(ImMessage::getUpdateTime, now).update();
+            .set(ImMessage::getUpdateTime, now)
+            .update();
     }
 
     private void incrUnread(Long convId, String userType, Long userId, long now) {
-        convMemberMapper.update(null, new LambdaUpdateWrapper<ImConvMember>()
+        convMemberService.update(null, new LambdaUpdateWrapper<ImConvMember>()
             .eq(ImConvMember::getConversationId, convId)
             .eq(ImConvMember::getUserType, userType)
             .eq(ImConvMember::getUserId, userId)
@@ -227,24 +221,29 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
 
     private String preview(Integer msgType, String content) {
         return switch (msgType != null ? msgType : 0) {
-            case 1  -> content != null && content.length() > 100 ? content.substring(0, 100) : content;
-            case 2  -> "[图片]";
-            case 3  -> "[语音]";
-            case 4  -> "[视频]";
-            case 5  -> "[文件]";
-            case 6  -> "[系统通知]";
-            case 7  -> "[通话]";
+            case 1 -> content != null && content.length() > 100 ? content.substring(0, 100) : content;
+            case 2 -> "[图片]";
+            case 3 -> "[语音]";
+            case 4 -> "[视频]";
+            case 5 -> "[文件]";
+            case 6 -> "[系统通知]";
+            case 7 -> "[通话]";
             default -> "[消息]";
         };
     }
 
     private ImMessageVO toVO(ImMessage m) {
         ImMessageVO vo = new ImMessageVO();
-        vo.setMsgId(m.getMsgId()); vo.setConversationId(m.getConversationId());
-        vo.setSenderType(m.getSenderType()); vo.setSenderId(m.getSenderId());
-        vo.setIsGroup(m.getIsGroup()); vo.setGroupId(m.getGroupId());
-        vo.setMsgType(m.getMsgType()); vo.setContent(m.getContent());
-        vo.setStatus(m.getStatus()); vo.setCreateTime(m.getCreateTime());
+        vo.setMsgId(m.getMsgId());
+        vo.setConversationId(m.getConversationId());
+        vo.setSenderType(m.getSenderType());
+        vo.setSenderId(m.getSenderId());
+        vo.setIsGroup(m.getIsGroup());
+        vo.setGroupId(m.getGroupId());
+        vo.setMsgType(m.getMsgType());
+        vo.setContent(m.getContent());
+        vo.setStatus(m.getStatus());
+        vo.setCreateTime(m.getCreateTime());
         return vo;
     }
 }
