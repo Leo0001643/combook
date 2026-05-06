@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -63,6 +64,6 @@ public class MerchantFinanceServiceImpl implements IMerchantFinanceService {
     }
 
     private BigDecimal sum(List<CbOrder> orders, Function<CbOrder, BigDecimal> getter) {
-        return orders.stream().map(getter).filter(v -> v != null).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return orders.stream().map(getter).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

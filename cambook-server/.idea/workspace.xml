@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/chat/ImAckRetryScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/chat/ImAckRetryScheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImConversationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImConversationServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImGroupServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImGroupServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImMessageServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImMessageServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/App.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-db-core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/merchant/impl/MerchantFinanceServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/merchant/impl/MerchantFinanceServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -151,7 +147,7 @@
       <workItem from="1777043880401" duration="18221000" />
       <workItem from="1777216050799" duration="11892000" />
       <workItem from="1777713839218" duration="16180000" />
-      <workItem from="1778000589377" duration="21469000" />
+      <workItem from="1778000589377" duration="22607000" />
     </task>
     <servers />
   </component>
