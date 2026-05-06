@@ -266,11 +266,13 @@ body {
   box-shadow: none !important;
 }
 
-/* ── 全局表格对齐：水平居中（垂直居中由 styledTableComponents.body.cell 的 flex 方案保障）── */
-/* 注意：不加 !important，保留 Ant Design 列级 align 属性（inline style）优先覆盖能力 */
-.ant-table-thead > tr > th,
+/* ── 全局表格对齐：全列水平居中，左对齐列通过 .cb-td-start 覆盖 ── */
 .ant-table-tbody > tr > td {
-  text-align: center;
+  text-align: center !important;
+}
+/* 显式声明 align: 'left' 的列恢复左对齐（更高优先级选择器覆盖上面的 !important） */
+.ant-table-tbody > tr > td.cb-td-start {
+  text-align: start !important;
 }
 
 /*

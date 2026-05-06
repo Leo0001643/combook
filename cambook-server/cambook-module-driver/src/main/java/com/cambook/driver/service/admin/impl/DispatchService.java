@@ -6,12 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cambook.common.enums.CbCodeEnum;
 import com.cambook.common.exception.BusinessException;
 import com.cambook.common.result.PageResult;
-import com.cambook.dao.entity.CbDispatchOrder;
-import com.cambook.dao.entity.CbDriver;
-import com.cambook.dao.entity.CbVehicle;
-import com.cambook.dao.mapper.CbDispatchOrderMapper;
-import com.cambook.dao.mapper.CbDriverMapper;
-import com.cambook.dao.mapper.CbVehicleMapper;
+import com.cambook.db.entity.CbDispatchOrder;
+import com.cambook.db.entity.CbDriver;
+import com.cambook.db.entity.CbVehicle;
+import com.cambook.db.mapper.CbDispatchOrderMapper;
+import com.cambook.db.mapper.CbDriverMapper;
+import com.cambook.db.mapper.CbVehicleMapper;
 import com.cambook.driver.domain.dto.DispatchDTO;
 import com.cambook.driver.domain.dto.DispatchQueryDTO;
 import com.cambook.driver.domain.vo.DispatchVO;
@@ -60,7 +60,7 @@ public class DispatchService implements IDispatchService {
         dispatch.setDestAddress(dto.getDestAddress());
         dispatch.setPickupTime(dto.getPickupTime());
         dispatch.setRemark(dto.getRemark());
-        dispatch.setStatus(0);
+        dispatch.setStatus((byte)0);
 
         // 自动分配司机（如果未手动指定）
         Long driverId = dto.getDriverId();

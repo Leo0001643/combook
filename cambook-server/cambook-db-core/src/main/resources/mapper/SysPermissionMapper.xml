@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cambook.db.mapper.SysPermissionMapper">
+
+    <!-- 查询用户的所有权限码（含按钮级，通过角色关联） -->
+    <select id="selectPermCodesByUserId" resultType="String">
+        SELECT DISTINCT p.code
+        FROM sys_permission p
+        INNER JOIN sys_role_permission rp ON rp.permission_id = p.id
+        INNER JOIN sys_user_role ur ON ur.role_id = rp.role_id
+        WHERE ur.user_id = #{userId} AND p.deleted = 0 AND p.status = 1 AND p.code IS NOT NULL
+    </select>
+
+    <!-- 查询管理端所有可见菜单（portal_type=0） -->
+    <select id="selectAllVisibleMenus" resultType="com.cambook.db.entity.SysPermission">
+        SELECT * FROM sys_permission
+        WHERE deleted = 0 AND status = 1 AND visible = 1 AND type IN (1, 2) AND portal_type = 0
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 查询商户端所有可见菜单（portal_type=1） -->
+    <select id="selectAllVisibleMerchantMenus" resultType="com.cambook.db.entity.SysPermission">
+        SELECT * FROM sys_permission
+        WHERE deleted = 0 AND status = 1 AND visible = 1 AND type IN (1, 2) AND portal_type = 1
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 按门户类型查询完整权限树（含按钮级） -->
+    <select id="selectAllByPortalType" resultType="com.cambook.db.entity.SysPermission">
+        SELECT * FROM sys_permission
+        WHERE deleted = 0 AND portal_type = #{portalType}
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 查询用户可访问菜单的权限标识（type=1,2） -->
+    <select id="selectMenuCodesByUserId" resultType="String">
+        SELECT DISTINCT p.code
+        FROM sys_permission p
+        INNER JOIN sys_role_permission rp ON rp.permission_id = p.id
+        INNER JOIN sys_user_role ur ON ur.role_id = rp.role_id
+        WHERE ur.user_id = #{userId} AND p.deleted = 0 AND p.status = 1 AND p.type IN (1, 2) AND p.code IS NOT NULL
+    </select>
+
+    <!-- 判断用户是否拥有 SUPER_ADMIN 角色 -->
+    <select id="isSuperAdmin" resultType="boolean">
+        <![CDATA[
+        SELECT COUNT(1) > 0
+        FROM sys_user_role ur
+        INNER JOIN sys_role r ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId} AND r.role_code = 'SUPER_ADMIN' AND r.deleted = 0
+        ]]>
+    </select>
+
+</mapper>

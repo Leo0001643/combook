@@ -78,6 +78,8 @@ export function usePortalScope() {
 
     technicianAudit: (params: any) => technicianApi.audit(params),
 
+    technicianForceLogout: (id: number) => technicianApi.forceLogout(id),
+
     // ── 会员管理 ─────────────────────────────────────────────────────────────
     memberList: (params: any) =>
       isMerchant ? merchantPortalApi.members(params) : memberApi.list(params),

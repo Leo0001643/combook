@@ -76,6 +76,47 @@ public enum CbCodeEnum {
     COUPON_USED(40062),
     COUPON_NOT_APPLICABLE(40063),
     COUPON_STOCK_EMPTY(40064),
+
+    // ── 散客接待（Walk-in）────────────────────────────────────────────────────
+    WALKIN_NOT_FOUND(40070),
+    WALKIN_ALREADY_SETTLED(40071),
+    WALKIN_ALREADY_CANCELLED(40072),
+    WALKIN_HAS_ACTIVE_SERVICE(40073),
+    WALKIN_ITEM_NOT_FOUND(40074),
+
+    // ── 技师结算 ───────────────────────────────────────────────────────────────
+    SETTLEMENT_NOT_FOUND(40080),
+    SETTLEMENT_ALREADY_PAID(40081),
+    SETTLEMENT_PERIOD_EXISTS(40082),
+    SETTLEMENT_MODE_INVALID(40083),
+    SETTLEMENT_IDS_EMPTY(40084),
+
+    // ── 部门 ──────────────────────────────────────────────────────────────────
+    DEPT_HAS_CHILDREN(40090),
+
+    // ── 车辆 ──────────────────────────────────────────────────────────────────
+    VEHICLE_NOT_FOUND(40100),
+
+    // ── 币种 ──────────────────────────────────────────────────────────────────
+    CURRENCY_NOT_FOUND(40110),
+    CURRENCY_CODE_EXISTS(40111),
+    CURRENCY_DEFAULT_CONFLICT(40112),
+    CURRENCY_INVALID(40113),
+
+    // ── 系统配置 ───────────────────────────────────────────────────────────────
+    CONFIG_KEY_EXISTS(40120),
+    CONFIG_BUILTIN(40121),
+
+    // ── 服务分类 ───────────────────────────────────────────────────────────────
+    CATEGORY_HAS_CHILDREN(40130),
+
+    // ── 权限菜单树 ─────────────────────────────────────────────────────────────
+    PERM_MOVE_TO_SELF(40140),
+    PERM_MOVE_TO_DESCENDANT(40141),
+    PERM_NODE_PLACEMENT_INVALID(40142),
+
+    // ── 技师定价 ───────────────────────────────────────────────────────────────
+    PRICING_NOT_SPECIAL(40150),
     ;
 
     private final int httpStatus;

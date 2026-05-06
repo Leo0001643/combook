@@ -1,0 +1,78 @@
+package com.cambook.app.controller.technician;
+
+import com.cambook.app.domain.dto.TechLoginDTO;
+import com.cambook.app.domain.dto.TechRegisterDTO;
+import com.cambook.app.domain.vo.TechLoginVO;
+import com.cambook.app.service.technician.ITechnicianAuthService;
+import com.cambook.common.result.Result;
+import com.cambook.db.entity.CbTechnician;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * 技师端 - 认证（登录 / 注册 / 我的信息）
+ *
+ * <p>路径前缀 {@code /tech/auth}，由 AuthFilter 注入 MemberContext（userType=technician）。
+ * 登录 / 注册接口无需鉴权；{@code /me} 须携带有效 Token。
+ *
+ * @author CamBook
+ */
+@Tag(name = "技师端 - 认证")
+@RestController
+@RequestMapping("/tech/auth")
+@RequiredArgsConstructor
+public class TechnicianAuthController {
+
+    private final ITechnicianAuthService authService;
+
+    @Operation(summary  = "技师登录", description = "支持两种方式： - **loginType=techId**：技师编号 + 密码 - **loginType=phone** ：手机号（国际格式）+ 密码, 登录前置校验（任意不满足均返回对应错误码）： 1. 账号存在（逻辑删除自动过滤） 2. 审核状态 = 1（通过） 3. 账号状态 = 1（正常） 4. 密码正确（MD5）")
+    @PostMapping(value="/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<TechLoginVO> login(@Valid @ModelAttribute TechLoginDTO dto, HttpServletRequest request) {
+        String ip = extractClientIp(request);
+        String ua = request.getHeader("User-Agent");
+        return Result.success(authService.login(dto, ip, ua));
+    }
+
+
+    @Operation( summary  = "技师注册", description = "注册校验规则：1. 商户编号必须合法（对应商户存在且状态正常、审核通过） 2. 手机号在技师表中唯一 3. 注册成功后账号处于「待审核」状态，平台审核通过后方可登录")
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<Void> register(@Valid @ModelAttribute TechRegisterDTO dto) {
+        authService.register(dto);
+        return Result.success();
+    }
+
+
+    @Operation(summary = "获取当前登录技师信息", description = "需要携带有效的技师 JWT Token")
+    @GetMapping(value="/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<TechLoginVO> me() {
+        CbTechnician tech = authService.me();
+        TechLoginVO vo = TechLoginVO.of(null, 0, tech);
+        return Result.success(vo);
+    }
+
+    @Operation(summary = "技师登出", description = "使当前 Token 立即失效，所有设备同步下线；调用后须重新登录获取新 Token")
+    @PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Result<Void> logout() {
+        authService.logout();
+        return Result.success();
+    }
+
+    /** 兼容代理/负载均衡场景获取真实客户端 IP */
+    private static String extractClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isBlank() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip.split(",")[0].trim();
+        }
+        ip = request.getHeader("X-Real-IP");
+        return (ip != null && !ip.isBlank()) ? ip : request.getRemoteAddr();
+    }
+}

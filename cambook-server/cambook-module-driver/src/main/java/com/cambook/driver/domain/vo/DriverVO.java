@@ -3,6 +3,8 @@ package com.cambook.driver.domain.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 司机视图
  *
@@ -34,20 +36,20 @@ public class DriverVO {
     private VehicleVO vehicle;
 
     @Schema(description = "在线状态：0离线 1待命 2执行中")
-    private Integer onlineStatus;
+    private Byte onlineStatus;
 
     @Schema(description = "审核状态：0待审 1在职 2停职")
-    private Integer status;
+    private Byte status;
 
     @Schema(description = "当前纬度")
-    private Double currentLat;
+    private BigDecimal currentLat;
 
     @Schema(description = "当前经度")
-    private Double currentLng;
+    private BigDecimal currentLng;
 
     @Schema(description = "累计完成派单数")
     private Integer totalDispatch;
 
     @Schema(description = "综合评分")
-    private Double rating;
+    private BigDecimal rating;
 }

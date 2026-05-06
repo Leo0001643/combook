@@ -15,6 +15,7 @@ import {
   GlobalOutlined, WifiOutlined, TagsOutlined, AuditOutlined, TeamOutlined,
   SafetyCertificateOutlined, SettingOutlined,
   CarryOutOutlined, DollarOutlined, AppstoreOutlined,
+  MobileOutlined, PoweroffOutlined, LoginOutlined,
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { merchantApi, merchantPortalApi, orderApi, type TechnicianVO } from '../../api/api'
@@ -224,7 +225,7 @@ function CurrentServiceTab({ activeOrder, loading, rating, goodReviewRate, order
 
 export default function TechnicianListPage() {
   const { ref, height: tableBodyH } = useTableBodyHeight()
-  const { isAdmin, isMerchant, technicianList, technicianCreate, technicianUpdate, technicianAudit, technicianUpdateStatus, technicianUpdateOnlineStatus, technicianSetFeatured, technicianDelete } = usePortalScope()
+  const { isAdmin, isMerchant, technicianList, technicianCreate, technicianUpdate, technicianAudit, technicianUpdateStatus, technicianUpdateOnlineStatus, technicianSetFeatured, technicianDelete, technicianForceLogout } = usePortalScope()
   const { opts: cityOpts } = useDict('service_city')
   const { items: auditItems }      = useDict('technician_audit')
   const { items: onlineItems }     = useDict('technician_online')
@@ -262,6 +263,7 @@ export default function TechnicianListPage() {
   const [keyword, setKeyword]     = useState('')
   const [auditStatus, setAuditStatus] = useState<number | undefined>()
   const [onlineStatus, setOnlineStatus] = useState<number | undefined>()
+  const [loginStatus, setLoginStatus] = useState<number | undefined>()
   const [serviceCity, setServiceCity] = useState<string | undefined>()
   const [gender, setGender]       = useState<number | undefined>()
   const [nationality, setNationality] = useState<string | undefined>()
@@ -356,7 +358,7 @@ export default function TechnicianListPage() {
     setLoading(true)
     try {
       const res = await technicianList({
-        page: pg, size: pageSize, keyword, auditStatus, onlineStatus, serviceCity, gender, nationality,
+        page: pg, size: pageSize, keyword, auditStatus, onlineStatus, loginStatus, serviceCity, gender, nationality,
         ...(isAdmin && merchantId != null ? { merchantId } : {}),
         ...(contactValue ? { contactType, contactValue } : {}),
       })
@@ -372,13 +374,13 @@ export default function TechnicianListPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, pageSize, keyword, auditStatus, onlineStatus, serviceCity, gender, nationality, merchantId, isAdmin, serviceCatId])
+  }, [page, pageSize, keyword, auditStatus, onlineStatus, loginStatus, serviceCity, gender, nationality, merchantId, isAdmin, serviceCatId])
 
   useEffect(() => { fetchList() }, [fetchList])
 
   const handleSearch = () => { setPage(1); fetchList(1) }
   const handleReset = () => {
-    setKeyword(''); setAuditStatus(undefined); setOnlineStatus(undefined)
+    setKeyword(''); setAuditStatus(undefined); setOnlineStatus(undefined); setLoginStatus(undefined)
     setServiceCity(undefined); setGender(undefined); setNationality(undefined)
     setContactType('telegram'); setContactValue(''); setMerchantId(undefined)
     setServiceCatId(undefined)
@@ -450,17 +452,25 @@ export default function TechnicianListPage() {
     fetchList()
   }
 
+  const handleForceLogout = async (r: TechnicianVO) => {
+    await technicianForceLogout(r.id)
+    message.success(`技师「${r.realName}」已强制下线，其 Token 已失效`)
+    fetchList()
+  }
+
   const stats = {
     total,
-    pending: data.filter(d => d.auditStatus === 0).length,
-    passed:  data.filter(d => d.auditStatus === 1).length,
-    online:  data.filter(d => d.onlineStatus === 1 || d.onlineStatus === 2).length,
+    pending:  data.filter(d => d.auditStatus === 0).length,
+    passed:   data.filter(d => d.auditStatus === 1).length,
+    online:   data.filter(d => d.onlineStatus === 1 || d.onlineStatus === 2).length,
+    loggedIn: data.filter(d => d.loginStatus === 1).length,
   }
 
   const statBadges = [
     { label: '总技师', value: total, color: '#6366f1', bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.25)', icon: '👥' },
     { label: '待审核', value: stats.pending, color: '#fa8c16', bg: 'rgba(250,140,22,0.1)', border: 'rgba(250,140,22,0.25)', icon: '⏳' },
     { label: '在线中', value: stats.online, color: '#10b981', bg: 'rgba(16,185,129,0.1)', border: 'rgba(16,185,129,0.25)', icon: '🟢' },
+    { label: '已登录', value: stats.loggedIn, color: '#6366f1', bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.2)', icon: '📱' },
   ]
 
   const columns: ColumnsType<TechnicianVO> = [
@@ -841,6 +851,46 @@ export default function TechnicianListPage() {
       ),
     },
     {
+      title: col(<LoginOutlined style={{ color: '#6366f1' }} />, 'APP登录状态', 'center'),
+      key: 'loginStatus',
+      align: 'center' as const,
+      width: 160,
+      render: (_: unknown, r: TechnicianVO) => {
+        const online = r.loginStatus === 1
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              padding: '3px 10px', borderRadius: 20,
+              background: online ? 'rgba(99,102,241,0.1)' : 'rgba(0,0,0,0.04)',
+              border: `1.5px solid ${online ? 'rgba(99,102,241,0.25)' : '#e5e7eb'}`,
+            }}>
+              <span style={{
+                display: 'inline-block', width: 7, height: 7, borderRadius: '50%',
+                background: online ? '#6366f1' : '#d1d5db',
+                ...(online ? { boxShadow: '0 0 0 3px rgba(99,102,241,0.2)', animation: 'pulse-dot 2s infinite' } : {}),
+              }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: online ? '#6366f1' : '#9ca3af' }}>
+                {online ? '已登录' : '未登录'}
+              </span>
+            </div>
+            {online && r.lastLoginDevice && (
+              <div style={{ fontSize: 11, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 3 }}>
+                <MobileOutlined style={{ fontSize: 10 }} />
+                {r.lastLoginDevice}
+                {r.lastLoginIp && <span style={{ color: '#9ca3af' }}> · {r.lastLoginIp}</span>}
+              </div>
+            )}
+            {online && r.lastLoginTime && (
+              <div style={{ fontSize: 10, color: '#9ca3af' }}>
+                {fmtTime(r.lastLoginTime)}
+              </div>
+            )}
+          </div>
+        )
+      },
+    },
+    {
       title: col(<SafetyCertificateOutlined style={{ color: '#10b981' }} />, '账号状态', 'center'),
       dataIndex: 'status',
       align: 'center' as const,
@@ -890,6 +940,22 @@ export default function TechnicianListPage() {
                 onClick={() => handleStatusToggle(r)}>启用</Button>
             )}
           </PermGuard>
+          {r.loginStatus === 1 && (
+            <PermGuard code="technician:manage">
+              <Popconfirm
+                title="确认强制该技师下线？"
+                description="技师 Token 将立即失效，需重新登录。"
+                onConfirm={() => handleForceLogout(r)}
+                okText="确认下线" cancelText="取消"
+                okButtonProps={{ danger: true }}
+              >
+                <Button size="small" icon={<PoweroffOutlined />}
+                  style={{ borderRadius: 6, fontSize: 13, fontWeight: 600, color: '#f97316', borderColor: '#fed7aa' }}>
+                  强制下线
+                </Button>
+              </Popconfirm>
+            </PermGuard>
+          )}
           <PermGuard code="technician:delete">
             <Popconfirm
               title="确认删除该技师档案？"
@@ -1024,6 +1090,18 @@ export default function TechnicianListPage() {
               { value: 0, label: <Space size={4}><MinusCircleOutlined style={{ color: '#9ca3af' }} />离线</Space> },
               { value: 1, label: <Space size={4}><CheckCircleOutlined style={{ color: '#10b981' }} />在线</Space> },
               { value: 2, label: <Space size={4}><PlayCircleOutlined style={{ color: '#3b82f6' }} />服务中</Space> },
+            ]}
+          />
+          <Select
+            size="middle"
+            placeholder={<Space size={4}><LoginOutlined style={{ color: '#6366f1', fontSize: 12 }} />登录状态</Space>}
+            allowClear
+            style={{ width: 115 }}
+            value={loginStatus}
+            onChange={setLoginStatus}
+            options={[
+              { value: 1, label: <Space size={4}><LoginOutlined style={{ color: '#6366f1' }} />已登录</Space> },
+              { value: 0, label: <Space size={4}><PoweroffOutlined style={{ color: '#9ca3af' }} />未登录</Space> },
             ]}
           />
           <Select

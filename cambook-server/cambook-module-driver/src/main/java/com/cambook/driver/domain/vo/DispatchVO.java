@@ -54,7 +54,7 @@ public class DispatchVO {
     private Long finishTime;
 
     @Schema(description = "状态：0待接 1接单 2前往 3到达 4服务中 5完成 9取消")
-    private Integer status;
+    private Byte status;
 
     @Schema(description = "备注")
     private String remark;

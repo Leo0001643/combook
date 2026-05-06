@@ -5,11 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.cambook.common.context.MemberContext;
 import com.cambook.common.enums.CbCodeEnum;
 import com.cambook.common.exception.BusinessException;
-import com.cambook.dao.entity.CbDispatchOrder;
-import com.cambook.dao.entity.CbDriver;
-import com.cambook.dao.mapper.CbDispatchOrderMapper;
-import com.cambook.dao.mapper.CbDriverMapper;
-import com.cambook.driver.domain.dto.DispatchDTO;
+import com.cambook.db.entity.CbDispatchOrder;
+import com.cambook.db.entity.CbDriver;
+import com.cambook.db.mapper.CbDispatchOrderMapper;
+import com.cambook.db.mapper.CbDriverMapper;
 import com.cambook.driver.domain.dto.DriverApplyDTO;
 import com.cambook.driver.domain.vo.DispatchVO;
 import com.cambook.driver.domain.vo.DriverVO;
@@ -54,8 +53,8 @@ public class AppDriverService implements IAppDriverService {
         driver.setDrivingLicenseFront(dto.getDrivingLicenseFront());
         driver.setDrivingLicenseBack(dto.getDrivingLicenseBack());
         driver.setLicenseType(dto.getLicenseType());
-        driver.setStatus(0);
-        driver.setOnlineStatus(0);
+        driver.setStatus((byte)0);
+        driver.setOnlineStatus((byte)0);
         driver.setTotalDispatch(0);
         driverMapper.insert(driver);
     }

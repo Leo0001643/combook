@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cambook.db.mapper.CbWalkinSessionMapper">
+
+    <!--
+        walkin session status 语义：
+          0 = 已录入/待技师接单
+          1 = 服务中
+          2 = 服务完成/待前台结算
+          3 = 已结算（已付款）
+          4 = 已取消
+    -->
+
+    <!-- 技师首页今日安排（walkin 部分） -->
+    <select id="selectTodayByTechId" resultType="map">
+        SELECT
+            ws.id                                           AS sessionId,
+            ws.session_no                                   AS orderNo,
+            ws.check_in_time                                AS appointTime,
+            CASE ws.status
+                WHEN 0 THEN 1
+                WHEN 1 THEN 5
+                WHEN 2 THEN 6
+                ELSE 6
+            END                                             AS status,
+            ws.total_amount                                 AS payAmount,
+            0                                               AS techIncome,
+            COALESCE(ws.member_name, '')                    AS memberNickname,
+            NULL                                            AS memberAvatar
+        FROM cb_walkin_session ws
+        WHERE ws.technician_id = #{techId}
+          AND ws.deleted = 0
+          AND ws.status NOT IN (3, 4)
+          AND FROM_UNIXTIME(ws.check_in_time, '%Y-%m-%d') = CURDATE()
+        ORDER BY ws.check_in_time ASC
+    </select>
+
+    <!-- 技师最近 90 天 walkin 订单列表（含状态映射） -->
+    <select id="selectRecentByTechId" resultType="map">
+        SELECT
+            ws.id                                           AS sessionId,
+            ws.session_no                                   AS orderNo,
+            ws.check_in_time                                AS appointTime,
+            ws.check_in_time                                AS createTime,
+            CASE ws.status
+                WHEN 0 THEN 1
+                WHEN 1 THEN 5
+                WHEN 2 THEN 6
+                WHEN 3 THEN 6
+                ELSE 7
+            END                                             AS mappedStatus,
+            ws.status                                       AS rawStatus,
+            ws.total_amount                                 AS payAmount,
+            COALESCE(ws.member_name, '')                    AS memberNickname,
+            COALESCE(ws.member_mobile, '')                  AS memberMobile,
+            ws.wristband_no                                 AS wristbandNo,
+            ws.remark                                       AS remark,
+            ws.service_start_time                           AS startTime
+        FROM cb_walkin_session ws
+        WHERE ws.technician_id = #{techId}
+          AND ws.deleted = 0
+          AND ws.check_in_time &gt;= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 90 DAY))
+        <if test="statuses != null and statuses.size() &gt; 0">
+          AND CASE ws.status
+                  WHEN 0 THEN 1
+                  WHEN 1 THEN 5
+                  WHEN 2 THEN 6
+                  WHEN 3 THEN 6
+                  ELSE 7
+              END IN
+          <foreach item="s" collection="statuses" open="(" separator="," close=")">
+              #{s}
+          </foreach>
+        </if>
+        ORDER BY ws.check_in_time DESC
+        LIMIT 200
+    </select>
+
+</mapper>

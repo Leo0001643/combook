@@ -11,23 +11,11 @@
     <name>CamBook Server</name>
     <description>上门SPA平台 - 服务端（高可用 · 多语言 · RBAC）</description>
 
-    <!--
-        模块说明：
-          cambook-common  基础设施：枚举、DTO、工具类、异常、国际化、Result
-          cambook-dao     数据访问层：Entity、Mapper、IService（MyBatis-Plus Lambda 风格）
-          cambook-app     应用层：Controller + Service + 配置（取代旧 api + service）
-                          内部按 app / admin / open 三个包分层
-          cambook-module-driver  可选：司机派车 + 实时追踪（独立部署给洗浴中心等客户）
-          cambook-module-agent   可选：代理/加盟商体系
-
-        可选模块通过 Maven Profile 控制打包：
-          mvn package -P with-driver -P with-agent
-    -->
-
     <modules>
+        <module>cambook-api-server</module>
         <module>cambook-common</module>
-        <module>cambook-dao</module>
-        <module>cambook-app</module>
+        <module>cambook-db-core</module>
+        <module>cambook-chat-server</module>
     </modules>
 
     <profiles>
@@ -35,12 +23,6 @@
             <id>with-driver</id>
             <modules>
                 <module>cambook-module-driver</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>with-agent</id>
-            <modules>
-                <module>cambook-module-agent</module>
             </modules>
         </profile>
     </profiles>
@@ -51,7 +33,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <spring-boot.version>3.2.4</spring-boot.version>
-        <mybatis-plus.version>3.5.7</mybatis-plus.version>
+        <mybatis-plus.version>3.5.15</mybatis-plus.version>
         <mysql.version>8.3.0</mysql.version>
         <jwt.version>0.12.5</jwt.version>
         <hutool.version>5.8.26</hutool.version>
@@ -61,6 +43,7 @@
         <aliyun-oss.version>3.17.4</aliyun-oss.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <redisson.version>3.28.0</redisson.version>
+        <netty.version>4.1.108.Final</netty.version>
     </properties>
 
     <dependencyManagement>
@@ -80,18 +63,12 @@
             </dependency>
             <dependency>
                 <groupId>com.cambook</groupId>
-                <artifactId>cambook-dao</artifactId>
+                <artifactId>cambook-db-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.cambook</groupId>
                 <artifactId>cambook-module-driver</artifactId>
-                <version>${project.version}</version>
-                <optional>true</optional>
-            </dependency>
-            <dependency>
-                <groupId>com.cambook</groupId>
-                <artifactId>cambook-module-agent</artifactId>
                 <version>${project.version}</version>
                 <optional>true</optional>
             </dependency>
@@ -162,6 +139,18 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
                 <version>${redisson.version}</version>
+            </dependency>
+            <!-- Netty（IM 网关）-->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <!-- cambook-chat-server -->
+            <dependency>
+                <groupId>com.cambook</groupId>
+                <artifactId>cambook-chat-server</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,0 +1,14 @@
+# -------------------------------------------------------
+# MyBatis-Plus 代码生成器 - 数据库连接配置模板
+# 使用说明：复制本文件为 generator.properties 并填写本地配置
+#           generator.properties 已加入 .gitignore，不会提交
+# 优先级：环境变量(DB_URL/DB_USERNAME/DB_PASSWORD) > 本文件 > 默认值
+# -------------------------------------------------------
+
+db.url=jdbc:mysql://127.0.0.1:3306/cambook?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&remarks=true&useInformationSchema=true
+db.username=root
+db.password=Root123456
+
+# 指定要生成的表，多个表用英文逗号分隔，留空则生成整库所有表
+# 示例：generator.tables=cb_user,cb_order,cb_order_item
+generator.tables=

@@ -117,6 +117,11 @@ export interface TechnicianVO {
   commissionRatePct?: number
   commissionCurrency?: string
   createTime: number
+  // 登录会话信息（管理端实时，来自 Redis）
+  loginStatus?: number        // 0=未登录 1=已登录
+  lastLoginTime?: number      // Unix 秒
+  lastLoginDevice?: string    // iOS / Android / Web / Unknown
+  lastLoginIp?: string
 }
 
 export interface OrderVO {
@@ -291,6 +296,9 @@ export const technicianApi = {
 
   delete: (id: number) =>
     request.delete<any>(`/admin/technician/${id}`),
+
+  forceLogout: (id: number) =>
+    request.post<any>(`/admin/technician/${id}/force-logout`, null),
 }
 
 // ──────────────────────────────────────────────────────────────────────────────

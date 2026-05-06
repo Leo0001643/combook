@@ -37,41 +37,28 @@ export const styledTableComponents = {
     },
   },
   body: {
+    /**
+     * AntD 6 的 Cell 把 column.align 转成 style.textAlign 传给自定义组件。
+     * 水平对齐由 index.css 的 !important 规则全局居中，
+     * 仅对 align:'left'/'start' 列添加 cb-td-start 类恢复左对齐。
+     */
     cell: (props: React.TdHTMLAttributes<HTMLTableCellElement>) => {
-      const { children, ...rest } = props as React.TdHTMLAttributes<HTMLTableCellElement> & { children?: React.ReactNode }
-      // Check both HTML `align` attribute and CSS style.textAlign — antd may use either
-      const rawAlign = (rest as any).align ?? rest.style?.textAlign ?? 'left'
-      const justifyContent =
-        rawAlign === 'center' ? 'center' :
-        rawAlign === 'right'  ? 'flex-end' :
-        'flex-start'
-      const textAlign = rawAlign as React.CSSProperties['textAlign']
+      const { children, ...rest } = props as any
+      const textAlign = (rest.style?.textAlign ?? '') as string
+      const isStart = textAlign === 'left' || textAlign === 'start'
+      const cls = [rest.className, isStart ? 'cb-td-start' : ''].filter(Boolean).join(' ')
       return (
         <td
           {...rest}
+          className={cls}
           style={{
             ...rest.style,
-            padding: 0,
-            height: '1px',
+            padding: '8px 10px',
+            verticalAlign: 'middle',
+            height: 52,
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent,
-              textAlign,
-              padding: '8px',
-              height: '100%',
-              minHeight: 52,
-              boxSizing: 'border-box',
-            }}
-          >
-            {/* 让 render 函数返回的 100%-宽容器能正确撑满 */}
-            <div style={{ width: '100%', display: 'flex', alignItems: 'inherit', justifyContent: 'inherit' }}>
-              {children}
-            </div>
-          </div>
+          {children}
         </td>
       )
     },

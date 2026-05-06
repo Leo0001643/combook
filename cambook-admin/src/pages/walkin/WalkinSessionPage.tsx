@@ -632,17 +632,17 @@ export default function WalkinSessionPage() {
     },
     // ⑨ 操作 — 固定右列
     {
-      title: col(<SettingOutlined style={{ color: '#64748b' }} />, '操作', 'center'), key: 'action', fixed: 'right', width: 285,
+      title: col(<SettingOutlined style={{ color: '#64748b' }} />, '操作', 'center'), key: 'action', fixed: 'right', width: 160,
       render: (_, r) => (
-        <Space size={4} style={{ whiteSpace: 'nowrap', flexWrap: 'nowrap' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, width: 136 }}>
           <Button size="small" type="primary" ghost icon={<EditOutlined />}
             style={{ borderRadius: 6, fontSize: 12 }}
             onClick={() => { setDetail(r); setDetailOpen(true) }}>详情</Button>
-          {(r.status === 0 || r.status === 1 || r.status === 2) && (
+          {(r.status === 0 || r.status === 1 || r.status === 2) ? (
             <Button size="small" icon={<ShoppingCartOutlined />}
               style={{ borderRadius: 6, fontSize: 12, color: '#6366f1', borderColor: '#a5b4fc' }}
               onClick={() => openEdit(r)}>修改</Button>
-          )}
+          ) : <span />}
           {r.status !== 3 && r.status !== 4 && (
             <Button size="small" icon={<CreditCardOutlined />}
               style={{ borderRadius: 6, fontSize: 12, color: '#10b981', borderColor: '#6ee7b7' }}
@@ -665,7 +665,7 @@ export default function WalkinSessionPage() {
               <Button size="small" danger icon={<CloseCircleOutlined />} style={{ borderRadius: 6, fontSize: 12 }}>取消</Button>
             </Popconfirm>
           )}
-        </Space>
+        </div>
       ),
     },
   ]

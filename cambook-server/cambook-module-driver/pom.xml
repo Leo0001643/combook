@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>com.cambook</groupId>
-            <artifactId>cambook-dao</artifactId>
+            <artifactId>cambook-db-core</artifactId>
         </dependency>
 
         <!-- Spring Boot Web（provided by cambook-app 的容器，此处 compile 范围） -->
