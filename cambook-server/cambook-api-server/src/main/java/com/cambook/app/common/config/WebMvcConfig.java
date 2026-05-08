@@ -73,7 +73,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<AuthFilter> authFilterRegistration(AuthFilter authFilter) {
         FilterRegistrationBean<AuthFilter> bean = new FilterRegistrationBean<>(authFilter);
-        bean.addUrlPatterns("/app/*", "/admin/*", "/merchant/*", "/tech/*");
+        bean.addUrlPatterns("/app/*", "/admin/*", "/merchant/*", "/tech/*", "/chat/*");
         bean.setOrder(1);
         return bean;
     }

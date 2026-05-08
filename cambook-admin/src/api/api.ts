@@ -1020,3 +1020,129 @@ export const merchantPortalApi = {
     request.post<any>(`/merchant/walkin/${id}/cancel`, null, { params: { reason } }),
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// IM 企业通讯 Types & API
+// ──────────────────────────────────────────────────────────────────────────────
+
+export interface ImContactVO {
+  userType: string
+  userId: number
+  name: string
+  avatar?: string
+  role: string
+  roleLabel: string
+  deptName?: string
+  positionName?: string
+  online: boolean
+  conversationId?: number
+}
+
+export interface ImContactGroupVO {
+  groupName: string
+  sort: number
+  contacts: ImContactVO[]
+}
+
+export interface ImConversationVO {
+  conversationId: number
+  convType: number         // 1=单聊 2=群聊
+  lastMsgId?: number
+  lastMsgPreview?: string
+  lastMsgTime?: number
+  unreadCount: number
+  isPinned?: number
+  isMuted?: number
+  groupId?: number
+  groupName?: string
+  groupAvatar?: string
+  peerType?: string
+  peerId?: number
+}
+
+export interface ImMessageVO {
+  msgId: number
+  conversationId: number
+  senderType: string
+  senderId: number
+  isGroup: number
+  groupId?: number
+  msgType: number          // 1=文字 2=图片 3=语音 4=视频 5=文件 6=系统
+  content: string
+  status: number
+  createTime: number
+}
+
+export interface ImSendDTO {
+  receiverType: string
+  receiverId: number
+  msgType: number
+  content: string
+  clientMsgId?: string
+}
+
+export interface ImMediaVO {
+  id: number
+  fileType: string
+  originalName?: string
+  fileUrl: string
+  fileSize?: number
+  width?: number
+  height?: number
+  duration?: number
+  mimeType?: string
+}
+
+export const imApi = {
+  /** 获取通讯录（按角色分组） */
+  contacts: () =>
+    request.get<ApiResponse<ImContactGroupVO[]>>('/chat/contacts'),
+
+  /** 搜索通讯录 */
+  searchContacts: (keyword: string) =>
+    request.get<ApiResponse<ImContactVO[]>>('/chat/contacts/search', { params: { keyword } }),
+
+  /** 获取会话列表 */
+  conversations: () =>
+    request.get<ApiResponse<ImConversationVO[]>>('/chat/conversations'),
+
+  /** 获取历史消息（倒序分页） */
+  history: (conversationId: number, beforeMsgId?: number, limit = 30) =>
+    request.get<ApiResponse<ImMessageVO[]>>('/chat/messages/history', {
+      params: { conversationId, beforeMsgId, limit },
+    }),
+
+  /** 发送消息 */
+  sendMessage: (dto: ImSendDTO) =>
+    request.post<ApiResponse<number>>('/chat/messages/send', dto, {
+      headers: { 'Content-Type': 'application/json' },
+    }),
+
+  /** 标记已读 */
+  markRead: (conversationId: number, lastReadMsgId: number) =>
+    request.post<ApiResponse<void>>('/chat/messages/read', null, {
+      params: { conversationId, lastReadMsgId },
+    }),
+
+  /** 批量初始化组织成员（幂等） */
+  initOrg: () =>
+    request.post<ApiResponse<number>>('/chat/org/init'),
+
+  /** 上传图片，返回 { url } */
+  uploadImage: (file: File) => {
+    const fd = new FormData(); fd.append('file', file)
+    return request.post<ApiResponse<ImMediaVO>>('/chat/media/image', fd)
+  },
+
+  /** 上传语音，返回 ImMediaVO（fileUrl / duration） */
+  uploadVoice: (blob: Blob, filename = 'voice.webm') => {
+    const fd = new FormData(); fd.append('file', new File([blob], filename, { type: blob.type }))
+    return request.post<ApiResponse<ImMediaVO>>('/chat/media/voice', fd)
+  },
+
+  /** 上传视频，返回 ImMediaVO（fileUrl） */
+  uploadVideo: (file: File) => {
+    const fd = new FormData(); fd.append('file', file)
+    return request.post<ApiResponse<ImMediaVO>>('/chat/media/video', fd)
+  },
+}
+

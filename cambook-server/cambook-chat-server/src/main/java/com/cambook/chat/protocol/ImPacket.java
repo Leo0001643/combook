@@ -29,7 +29,7 @@ public class ImPacket {
 
     private int    cmd;
     private String msgId;
-    private Long   seq;
+    private String seq;   // String to accept both numeric ("12345") and prefixed ("sig-...","auth-...") seqs
     private long   ts;
     private Object body;
 

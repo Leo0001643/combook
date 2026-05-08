@@ -5,6 +5,7 @@ import '../../../core/i18n/l10n_ext.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../../core/network/http_util.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../core/services/message_service.dart';
 import '../../../core/services/storage_service.dart';
 import '../../../core/services/user_service.dart';
 import '../../../core/utils/toast_util.dart';
@@ -65,7 +66,12 @@ class LoginLogic extends GetxController {
       final techInfo  = Map<String, dynamic>.from(data);
 
       Get.find<StorageService>().saveToken(token);
+      // UserService.loginFromApi already (a) saves the technician profile,
+      // (b) connects TechWs + ImWs via _connectWs(), and (c) fetches orders.
+      // Calling those again here causes WS double-connect race that overwrites
+      // _ws while the previous attempt's `ready` future is still pending.
       Get.find<UserService>().loginFromApi(techInfo, token);
+      Get.find<MessageService>().refresh();   // bootstrap conversations
 
       ToastUtil.success(l.loginSuccess);
       Get.offAllNamed(AppRoutes.main);

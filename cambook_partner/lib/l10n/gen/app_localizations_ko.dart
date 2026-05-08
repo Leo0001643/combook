@@ -1154,4 +1154,168 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get drawerBrand => 'CamBook Pro · 워크스테이션';
+
+  @override
+  String get imNoMessages => '아직 메시지가 없습니다. 인사해보세요!';
+
+  @override
+  String get imInputHint => '메시지...';
+
+  @override
+  String get imToday => '오늘';
+
+  @override
+  String get imYesterday => '어제';
+
+  @override
+  String get imSendFailed => '전송 실패. 다시 시도하세요.';
+
+  @override
+  String get imCheckNetwork => '네트워크 연결을 확인하세요';
+
+  @override
+  String get imMicPermission => '마이크 권한이 필요합니다';
+
+  @override
+  String get imImageSendFailed => '이미지 전송 실패';
+
+  @override
+  String get imVoiceSendFailed => '음성 메시지 전송 실패';
+
+  @override
+  String get imPlayFailed => '재생 실패';
+
+  @override
+  String get imHoldToRecord => '길게 눌러 녹음';
+
+  @override
+  String get imReleaseToSend => '손을 떼면 전송';
+
+  @override
+  String get imCancelRecord => '취소';
+
+  @override
+  String get imVoiceCallTitle => '음성 통화';
+
+  @override
+  String get imVoiceInvite => '음성 통화 수신';
+
+  @override
+  String get imConnecting => '연결 중...';
+
+  @override
+  String get imWaiting => '연결 대기 중...';
+
+  @override
+  String get imReject => '거절';
+
+  @override
+  String get imAnswer => '수락';
+
+  @override
+  String get imMute => '음소거';
+
+  @override
+  String get imUnmute => '음소거 해제';
+
+  @override
+  String get imHangUp => '종료';
+
+  @override
+  String get imCancelCall => '취소';
+
+  @override
+  String get imCallEnded => '통화가 종료되었습니다';
+
+  @override
+  String imCallEndedDuration(String dur) {
+    return '통화 시간 $dur';
+  }
+
+  @override
+  String get imImagePreview => '[이미지]';
+
+  @override
+  String get imVoicePreview => '[음성]';
+
+  @override
+  String get imVideoPreview => '[동영상]';
+
+  @override
+  String get imLocationPreview => '📍 위치';
+
+  @override
+  String get imSystemPreview => '[알림]';
+
+  @override
+  String get imNewMessage => '새 메시지';
+
+  @override
+  String get imOnline => '온라인';
+
+  @override
+  String get imTyping => '입력 중...';
+
+  @override
+  String get imUnknownUser => '알 수 없음';
+
+  @override
+  String get imSendImage => '이미지 전송';
+
+  @override
+  String get imVoiceMessage => '음성 메시지';
+
+  @override
+  String get imLoadingMore => '메시지 불러오는 중...';
+
+  @override
+  String get imContacts => '연락처';
+
+  @override
+  String get imNoContacts => '연락처 없음';
+
+  @override
+  String get imMarkRead => '읽음 표시';
+
+  @override
+  String get imMarkAllRead => '모두 읽음 표시';
+
+  @override
+  String get imClearMessages => '지우기';
+
+  @override
+  String get imClearConfirm => '로컬 메시지를 지우시겠습니까? (서버 데이터 유지)';
+
+  @override
+  String get imDelete => '삭제';
+
+  @override
+  String get imDeleteConfirm => '로컬에서 대화를 삭제하시겠습니까? (서버 데이터 유지)';
+
+  @override
+  String get imShare => '공유';
+
+  @override
+  String get imAttachPhotos => '사진';
+
+  @override
+  String get imAttachCamera => '카메라';
+
+  @override
+  String get imAttachLocation => '위치';
+
+  @override
+  String get imAttachPoll => '설문';
+
+  @override
+  String get imAttachEvent => '이벤트';
+
+  @override
+  String get imLocationSearch => '주소 검색…';
+
+  @override
+  String get imLocationNone => '위치 가져오는 중…';
+
+  @override
+  String get imSendLocation => '보내기';
 }

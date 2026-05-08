@@ -63,6 +63,12 @@ dependencies:
   # WebSocket（IM实时通讯）
   web_socket_channel: ^3.0.1
 
+  # IM 媒体：语音录制 / 播放 / WebRTC 通话
+  record: ^5.1.2
+  just_audio: ^0.9.40
+  flutter_webrtc: ^0.10.6
+  path_provider: ^2.1.4
+
   # 二维码
   qr_flutter: ^4.1.0
   mobile_scanner: ^6.0.0

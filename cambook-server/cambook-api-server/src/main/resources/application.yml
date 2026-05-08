@@ -3,12 +3,19 @@ server:
   address: 0.0.0.0   # 监听所有网卡，局域网设备可直接访问
   servlet:
     context-path: /
+  tomcat:
+    max-swallow-size: -1   # 不限制请求体大小（配合 spring.servlet.multipart 生效）
 
 spring:
   application:
     name: cambook-server
   profiles:
     active: dev
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 250MB
+      max-request-size: 260MB
 
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/cambook?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
@@ -66,12 +73,6 @@ knife4j:
     enable-document-manage: true
     swagger-model-name: 实体类列表
 
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 200MB
-      max-request-size: 200MB
-
 cambook:
   jwt:
     secret: cambook_jwt_secret_key_please_change_in_production
@@ -90,6 +91,7 @@ cambook:
     ack-timeout-seconds: 30
     ack-max-retry: 3
     offline-pull-limit: 50
+    media-max-bytes: 262144000   # 250MB
     storage-type: ${IM_STORAGE_TYPE:local}
     local-store-path: ${IM_MEDIA_PATH:${user.home}/cambook-media}
     local-store-url: ${IM_MEDIA_URL:http://localhost:8080/media}

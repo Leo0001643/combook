@@ -3,6 +3,7 @@ package com.cambook.app.service.chat.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cambook.app.common.chat.ImPermissionEngine;
 import com.cambook.app.domain.bo.chat.ImMsgBO;
 import com.cambook.app.domain.dto.chat.ImGroupSendDTO;
 import com.cambook.app.domain.dto.chat.ImSendDTO;
@@ -12,6 +13,8 @@ import com.cambook.app.service.chat.IImConversationService;
 import com.cambook.app.service.chat.IImGroupMemberService;
 import com.cambook.app.service.chat.IImMessageService;
 import com.cambook.app.service.chat.IImMsgAckService;
+import com.cambook.common.context.MerchantContext;
+import com.cambook.common.exception.BusinessException;
 import com.cambook.chat.protocol.ImCmd;
 import com.cambook.chat.protocol.ImPacket;
 import com.cambook.chat.routing.UserRouter;
@@ -52,12 +55,19 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     private final IImGroupMemberService groupMemberService;
     private final IImMsgAckService ackService;
     private final UserRouter router;
+    private final ImPermissionEngine permEngine;
 
     // ── 单聊 ──────────────────────────────────────────────────────────────────
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long sendMessage(String senderType, Long senderId, ImSendDTO dto) {
+        Long merchantId = MerchantContext.getMerchantId();
+        if (!permEngine.canChat(senderType, senderId,
+                                dto.getReceiverType(), dto.getReceiverId(),
+                                merchantId != null ? merchantId : 0L)) {
+            throw new BusinessException("无权限向该用户发送消息");
+        }
         long now = DateUtils.nowSecond();
         long msgId = snowflake.nextId();
         Long convId = convService.getOrCreate(senderType, senderId, dto.getReceiverType(), dto.getReceiverId());
@@ -74,6 +84,19 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
 
         router.route(senderType, senderId, ImPacket.of(ImCmd.MSG_DELIVERED, String.valueOf(msgId),
             Map.of("msgId", msgId, "status", delivered ? 2 : 1)));
+
+        // Push CONV_UPDATE to receiver so their conversation list updates in real-time
+        // without any HTTP polling.  Fire-and-forget; failure is non-critical.
+        try {
+            com.cambook.app.domain.vo.chat.ImConversationVO receiverConv =
+                convService.getConversation(convId, dto.getReceiverType(), dto.getReceiverId());
+            if (receiverConv != null) {
+                router.route(dto.getReceiverType(), dto.getReceiverId(),
+                    ImPacket.of(ImCmd.CONV_UPDATE, receiverConv));
+            }
+        } catch (Exception e) {
+            log.warn("[Chat] CONV_UPDATE 推送失败 convId={}: {}", convId, e.getMessage());
+        }
 
         log.info("[Chat] 单聊 msgId={} {}:{} -> {}:{} delivered={}",
             msgId, senderType, senderId, dto.getReceiverType(), dto.getReceiverId(), delivered);
@@ -134,20 +157,36 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     public void markRead(Long conversationId, String userType, Long userId, Long lastReadMsgId) {
         long now = DateUtils.nowSecond();
         convMemberService.update(null, new LambdaUpdateWrapper<ImConvMember>()
-            .eq(ImConvMember::getConversationId, conversationId)
-            .eq(ImConvMember::getUserType, userType)
-            .eq(ImConvMember::getUserId, userId)
-            .set(ImConvMember::getUnreadCount, 0)
-            .set(ImConvMember::getLastReadMsgId, lastReadMsgId)
-            .set(ImConvMember::getUpdateTime, now));
+        .eq(ImConvMember::getConversationId, conversationId)
+        .eq(ImConvMember::getUserType, userType)
+        .eq(ImConvMember::getUserId, userId)
+        .set(ImConvMember::getUnreadCount, 0)
+        .set(ImConvMember::getLastReadMsgId, lastReadMsgId)
+        .set(ImConvMember::getUpdateTime, now));
 
         ackService.update(null, new LambdaUpdateWrapper<ImMsgAck>()
-            .eq(ImMsgAck::getUserType, userType)
-            .eq(ImMsgAck::getUserId, userId)
-            .le(ImMsgAck::getMsgId, lastReadMsgId)
-            .eq(ImMsgAck::getAckType, 1)
-            .set(ImMsgAck::getAckType, 2)
-            .set(ImMsgAck::getAckTime, now));
+        .eq(ImMsgAck::getUserType, userType)
+        .eq(ImMsgAck::getUserId, userId)
+        .le(ImMsgAck::getMsgId, lastReadMsgId)
+        .eq(ImMsgAck::getAckType, 1)
+        .set(ImMsgAck::getAckType, 2)
+        .set(ImMsgAck::getAckTime, now));
+
+        // Push CONV_UPDATE back so the originating client (and any other
+        // sessions of the same user) sees unread=0 immediately and does not
+        // depend on local-only state.
+        try {
+            com.cambook.app.domain.vo.chat.ImConversationVO updated =
+                convService.getConversation(conversationId, userType, userId);
+            if (updated != null) {
+                router.route(userType, userId, ImPacket.of(ImCmd.CONV_UPDATE, updated));
+                log.debug("[Chat] markRead → CONV_UPDATE conv={} {}:{} unread=0",
+                    conversationId, userType, userId);
+            }
+        } catch (Exception e) {
+            log.warn("[Chat] markRead CONV_UPDATE 推送失败 conv={}: {}",
+                conversationId, e.getMessage());
+        }
     }
 
     // ── 离线消息（上线拉取） ──────────────────────────────────────────────────
@@ -203,11 +242,9 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     }
 
     private void updateStatus(long msgId, byte status, long now) {
-        lambdaUpdate()
-            .eq(ImMessage::getMsgId, msgId)
+        lambdaUpdate().eq(ImMessage::getMsgId, msgId)
             .set(ImMessage::getStatus, status)
-            .set(ImMessage::getUpdateTime, now)
-            .update();
+            .set(ImMessage::getUpdateTime, now).update();
     }
 
     private void incrUnread(Long convId, String userType, Long userId, long now) {

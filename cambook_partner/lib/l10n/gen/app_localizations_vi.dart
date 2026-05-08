@@ -1154,4 +1154,168 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get drawerBrand => 'CamBook Pro · Trạm làm việc';
+
+  @override
+  String get imNoMessages => 'Chưa có tin nhắn. Hãy nói xin chào!';
+
+  @override
+  String get imInputHint => 'Tin nhắn...';
+
+  @override
+  String get imToday => 'Hôm nay';
+
+  @override
+  String get imYesterday => 'Hôm qua';
+
+  @override
+  String get imSendFailed => 'Gửi thất bại. Thử lại.';
+
+  @override
+  String get imCheckNetwork => 'Kiểm tra kết nối mạng';
+
+  @override
+  String get imMicPermission => 'Cần quyền truy cập microphone';
+
+  @override
+  String get imImageSendFailed => 'Gửi ảnh thất bại';
+
+  @override
+  String get imVoiceSendFailed => 'Gửi tin nhắn thoại thất bại';
+
+  @override
+  String get imPlayFailed => 'Phát lại thất bại';
+
+  @override
+  String get imHoldToRecord => 'Giữ để ghi âm';
+
+  @override
+  String get imReleaseToSend => 'Thả để gửi';
+
+  @override
+  String get imCancelRecord => 'Hủy';
+
+  @override
+  String get imVoiceCallTitle => 'Cuộc gọi thoại';
+
+  @override
+  String get imVoiceInvite => 'Cuộc gọi thoại đến';
+
+  @override
+  String get imConnecting => 'Đang kết nối...';
+
+  @override
+  String get imWaiting => 'Đang đổ chuông...';
+
+  @override
+  String get imReject => 'Từ chối';
+
+  @override
+  String get imAnswer => 'Trả lời';
+
+  @override
+  String get imMute => 'Tắt tiếng';
+
+  @override
+  String get imUnmute => 'Bật tiếng';
+
+  @override
+  String get imHangUp => 'Kết thúc';
+
+  @override
+  String get imCancelCall => 'Hủy';
+
+  @override
+  String get imCallEnded => 'Cuộc gọi đã kết thúc';
+
+  @override
+  String imCallEndedDuration(String dur) {
+    return 'Thời lượng $dur';
+  }
+
+  @override
+  String get imImagePreview => '[Hình ảnh]';
+
+  @override
+  String get imVoicePreview => '[Giọng nói]';
+
+  @override
+  String get imVideoPreview => '[Video]';
+
+  @override
+  String get imLocationPreview => '📍 Vị trí';
+
+  @override
+  String get imSystemPreview => '[Thông báo]';
+
+  @override
+  String get imNewMessage => 'Tin nhắn mới';
+
+  @override
+  String get imOnline => 'Trực tuyến';
+
+  @override
+  String get imTyping => 'Đang nhập...';
+
+  @override
+  String get imUnknownUser => 'Không xác định';
+
+  @override
+  String get imSendImage => 'Gửi ảnh';
+
+  @override
+  String get imVoiceMessage => 'Tin nhắn thoại';
+
+  @override
+  String get imLoadingMore => 'Đang tải...';
+
+  @override
+  String get imContacts => 'Danh bạ';
+
+  @override
+  String get imNoContacts => 'Chưa có liên hệ';
+
+  @override
+  String get imMarkRead => 'Đánh dấu đã đọc';
+
+  @override
+  String get imMarkAllRead => 'Đánh dấu tất cả đã đọc';
+
+  @override
+  String get imClearMessages => 'Xóa';
+
+  @override
+  String get imClearConfirm => 'Xóa tin nhắn cục bộ? (Dữ liệu máy chủ giữ nguyên)';
+
+  @override
+  String get imDelete => 'Xóa cuộc trò chuyện';
+
+  @override
+  String get imDeleteConfirm => 'Xóa cục bộ? (Dữ liệu máy chủ giữ nguyên)';
+
+  @override
+  String get imShare => 'Chia sẻ';
+
+  @override
+  String get imAttachPhotos => 'Ảnh';
+
+  @override
+  String get imAttachCamera => 'Máy ảnh';
+
+  @override
+  String get imAttachLocation => 'Vị trí';
+
+  @override
+  String get imAttachPoll => 'Bình chọn';
+
+  @override
+  String get imAttachEvent => 'Sự kiện';
+
+  @override
+  String get imLocationSearch => 'Tìm địa chỉ…';
+
+  @override
+  String get imLocationNone => 'Đang lấy vị trí…';
+
+  @override
+  String get imSendLocation => 'Gửi';
 }

@@ -5,8 +5,122 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bb7c7f44-2a06-4d70-a4d8-6fb1019beacb" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImGroupServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImGroupServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/merchant/impl/MerchantFinanceServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/merchant/impl/MerchantFinanceServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/api/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/api/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook-admin/src/components/layout/MainLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/src/components/layout/MainLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook-admin/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook-admin/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/chat/ImBusinessDispatcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/chat/ImBusinessDispatcher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/chat/ImMediaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/chat/ImMediaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/config/ImRedisConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/config/ImRedisConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/config/WebMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/config/WebMvcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/filter/AuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/common/filter/AuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/controller/chat/ImConversationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/controller/chat/ImConversationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/controller/chat/ImMediaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/controller/chat/ImMediaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/controller/chat/ImMessageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/controller/chat/ImMessageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/admin/impl/AdminMemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/admin/impl/AdminMemberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/IImConversationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/IImConversationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImConversationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImConversationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImMessageServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/chat/impl/ImMessageServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/technician/impl/TechOrderItemServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/technician/impl/TechOrderItemServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/technician/impl/TechOrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/technician/impl/TechOrderServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/technician/impl/TechnicianAuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/java/com/cambook/app/service/technician/impl/TechnicianAuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-api-server/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-api-server/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/handler/ImWsHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/handler/ImWsHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/protocol/ImCmd.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/protocol/ImCmd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/protocol/ImPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/protocol/ImPacket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/registry/ChannelRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/registry/ChannelRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/routing/UserRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/routing/UserRouter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/server/ImNettyServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-chat-server/src/main/java/com/cambook/chat/server/ImNettyServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-chat-server/src/test/java/com/cambook/AppTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/InitDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/InitDB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbAddressServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbAddressServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbBannerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbBannerServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbCommissionRuleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbCommissionRuleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbCouponTemplateServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbCouponTemplateServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbDispatchOrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbDispatchOrderServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbDriverServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbDriverServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbFinanceExpenseServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbFinanceExpenseServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbFinanceSalaryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbFinanceSalaryServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbIconServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbIconServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbLoginLogServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbLoginLogServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMemberCouponServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMemberCouponServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMemberServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMemberServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMerchantCurrencyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMerchantCurrencyServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMerchantServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMerchantServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMerchantStaffServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbMerchantStaffServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbNavServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbNavServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbNotificationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbNotificationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbOrderItemServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbOrderItemServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbOrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbOrderServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbPaymentRecordServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbPaymentRecordServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbPaymentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbPaymentServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbReviewServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbReviewServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbServiceCategoryServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbServiceCategoryServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbServiceItemServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbServiceItemServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTagServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTagServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianScheduleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianScheduleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianServicePriceServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianServicePriceServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianSettlementItemServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianSettlementItemServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianSettlementServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbTechnicianSettlementServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbVehicleDispatchServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbVehicleDispatchServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbVehicleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbVehicleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbWalkinSessionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbWalkinSessionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbWalletRecordServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbWalletRecordServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbWalletServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/CbWalletServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/MerchantAnnouncementReadServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/MerchantAnnouncementReadServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/MerchantAnnouncementServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/MerchantAnnouncementServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysConfigServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysConfigServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysCurrencyRateLogServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysCurrencyRateLogServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysCurrencyServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysCurrencyServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysDeptMenuServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysDeptMenuServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysDeptServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysDeptServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysDictServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysDictServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysDictTypeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysDictTypeServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysI18nServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysI18nServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysNoticeServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysNoticeServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysOperLogServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysOperLogServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysOperationLogServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysOperationLogServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysPermissionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysPermissionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysPositionMenuServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysPositionMenuServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysPositionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysPositionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysRolePermissionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysRolePermissionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysRoleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysRoleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysStaffMenuServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysStaffMenuServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysUserRoleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysUserRoleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysUserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/java/com/cambook/db/service/impl/SysUserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cambook-db-core/src/main/resources/generator.properties.example" beforeDir="false" afterPath="$PROJECT_DIR$/cambook-db-core/src/main/resources/generator.properties.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrate_v5_14_i18n_errors.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrate_v5_16_im_redesign.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrate_v5_17_i18n_supplement.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/ios/Podfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/config/app_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/config/app_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/models/models.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/models/models.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/network/api_endpoints.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/network/api_endpoints.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/network/http_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/network/http_util.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/routes/app_pages.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/routes/app_pages.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/core/services/user_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/core/services/user_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/logic.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/auth/login/logic.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/home/logic.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/home/logic.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/messages/chat/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/messages/chat/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/messages/list/page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/messages/list/page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/shell/main_shell.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/shell/main_shell.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/features/shell/shell_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/features/shell/shell_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_en.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_en.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_ja.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_ja.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_km.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_km.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_ko.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_ko.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_vi.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_vi.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_zh.arb" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/app_zh.arb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_en.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_ja.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_ja.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_km.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_km.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_ko.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_ko.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_vi.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_vi.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_zh.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/l10n/gen/app_localizations_zh.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../cambook_partner/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../cambook_partner/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,20 +199,9 @@
     </key>
   </component>
   <component name="RunManager" selected="Spring Boot.CamBookApplication">
-    <configuration name="CamBookApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.cambook.app.CamBookApplication" />
-      <module name="cambook-app" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.cambook.app.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="InitDB" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="openjdk-23" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="com.cambook.db.InitDB" />
       <module name="cambook-db-core" />
       <extension name="coverage">
@@ -118,10 +221,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Spring Boot.CamBookApplication" />
+      <item itemvalue="应用程序.InitDB" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="应用程序.InitDB" />
-        <item itemvalue="应用程序.CamBookApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -147,7 +253,7 @@
       <workItem from="1777043880401" duration="18221000" />
       <workItem from="1777216050799" duration="11892000" />
       <workItem from="1777713839218" duration="16180000" />
-      <workItem from="1778000589377" duration="22607000" />
+      <workItem from="1778000589377" duration="47866000" />
     </task>
     <servers />
   </component>

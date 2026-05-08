@@ -25,10 +25,8 @@ import com.cambook.common.utils.DateUtils;
 @RequiredArgsConstructor
 public class TechOrderServiceImpl implements ITechOrderService {
 
-    private final ICbOrderService         cbOrderService;
+    private final ICbOrderService cbOrderService;
     private final ICbWalkinSessionService cbWalkinSessionService;
-
-    // ── 在线预约订单 ───────────────────────────────────────────────────────────
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -73,7 +71,6 @@ public class TechOrderServiceImpl implements ITechOrderService {
         if (!updated) throw new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL);
     }
 
-    // ── 门店散客订单 ───────────────────────────────────────────────────────────
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -97,11 +94,12 @@ public class TechOrderServiceImpl implements ITechOrderService {
         CbWalkinSession s = getOwnWalkin(techId, sessionId);
         if (s.getStatus() != WalkinSessionStatus.CHECKED_IN.getCode() && s.getStatus() != WalkinSessionStatus.IN_SERVICE.getCode())
             throw new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL);
+
         boolean updated = cbWalkinSessionService.lambdaUpdate()
-                .set(CbWalkinSession::getStatus, WalkinSessionStatus.IN_SERVICE.getCode())
-                .set(CbWalkinSession::getServiceStartTime, DateUtils.nowSeconds())
-                .in(CbWalkinSession::getStatus, WalkinSessionStatus.CHECKED_IN.getCode(), WalkinSessionStatus.IN_SERVICE.getCode())
-                .eq(CbWalkinSession::getId, sessionId).update();
+        .set(CbWalkinSession::getStatus, WalkinSessionStatus.IN_SERVICE.getCode())
+        .set(CbWalkinSession::getServiceStartTime, DateUtils.nowSeconds())
+        .in(CbWalkinSession::getStatus, WalkinSessionStatus.CHECKED_IN.getCode(), WalkinSessionStatus.IN_SERVICE.getCode())
+        .eq(CbWalkinSession::getId, sessionId).update();
         if (!updated) throw new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL);
     }
 
@@ -113,14 +111,12 @@ public class TechOrderServiceImpl implements ITechOrderService {
                 || s.getStatus() == WalkinSessionStatus.SERVICE_DONE.getCode())
             throw new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL);
         boolean updated = cbWalkinSessionService.lambdaUpdate()
-                .set(CbWalkinSession::getStatus, WalkinSessionStatus.SERVICE_DONE.getCode())
-                .notIn(CbWalkinSession::getStatus, WalkinSessionStatus.SERVICE_DONE.getCode(),
-                        WalkinSessionStatus.SETTLED.getCode(), WalkinSessionStatus.CANCELLED.getCode())
-                .eq(CbWalkinSession::getId, sessionId).update();
+        .set(CbWalkinSession::getStatus, WalkinSessionStatus.SERVICE_DONE.getCode())
+        .notIn(CbWalkinSession::getStatus, WalkinSessionStatus.SERVICE_DONE.getCode(), WalkinSessionStatus.SETTLED.getCode(), WalkinSessionStatus.CANCELLED.getCode())
+        .eq(CbWalkinSession::getId, sessionId).update();
         if (!updated) throw new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL);
     }
 
-    // ── 私有辅助 ──────────────────────────────────────────────────────────────
 
     private CbOrder getOwnOrder(Long techId, Long orderId) {
         CbOrder order = Optional.ofNullable(cbOrderService.getById(orderId))
@@ -132,8 +128,8 @@ public class TechOrderServiceImpl implements ITechOrderService {
 
     private CbWalkinSession getOwnWalkin(Long techId, Long sessionId) {
         CbWalkinSession s = Optional.ofNullable(cbWalkinSessionService.getById(sessionId))
-                .filter(w -> Byte.valueOf((byte) 0).equals(w.getDeleted()))
-                .orElseThrow(() -> new BusinessException(CbCodeEnum.WALKIN_NOT_FOUND));
+        .filter(w -> Byte.valueOf((byte) 0).equals(w.getDeleted()))
+        .orElseThrow(() -> new BusinessException(CbCodeEnum.WALKIN_NOT_FOUND));
         if (!techId.equals(s.getTechnicianId())) throw new BusinessException(CbCodeEnum.NO_PERMISSION);
         return s;
     }

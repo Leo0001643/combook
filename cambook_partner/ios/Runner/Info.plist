@@ -2,6 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is needed to take photos and videos to share in chat.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is needed to record and send voice messages.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is needed to pick images to share in chat.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Needed to save photos received in chat.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location access is needed to share your current location in chat.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location access is needed to share your current location in chat.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

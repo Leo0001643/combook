@@ -169,7 +169,7 @@ export default function AnnouncementBell() {
         trigger="click"
         placement="bottomRight"
         overlayStyle={{ paddingTop: 4 }}
-        overlayInnerStyle={{ padding: 12, borderRadius: 12, boxShadow: '0 8px 32px rgba(99,102,241,0.18)' }}
+        styles={{ container: { padding: 12, borderRadius: 12, boxShadow: '0 8px 32px rgba(99,102,241,0.18)' } }}
         arrow={false}
       >
         <Tooltip title="公告通知" placement="bottom">

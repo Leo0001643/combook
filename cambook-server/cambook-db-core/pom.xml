@@ -18,12 +18,12 @@
 
     <dependencies>
 
-        <!-- 代码生成工具，仅本地使用，不打入运行时包 -->
+        <!-- 代码生成工具（InitDB 运行时需要，optional 防止传递到下游模块） -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
             <version>3.5.15</version>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -39,12 +39,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
-        <!-- 代码生成模板引擎，仅本地使用 -->
+        <!-- 代码生成模板引擎（InitDB 运行时需要，optional 防止传递到下游模块） -->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>2.3.32</version>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
@@ -56,11 +56,18 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- slf4j-api 由上层 Spring Boot 统一管理，此处仅声明作用域 provided 避免版本冲突 -->
+        <!-- slf4j-api：InitDB 运行时需要，optional 防止传递到下游（由 Spring Boot 统一管理版本） -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <!-- slf4j-simple：消除 InitDB 运行时 "No SLF4J providers" 警告，optional 不传递下游 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.12</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

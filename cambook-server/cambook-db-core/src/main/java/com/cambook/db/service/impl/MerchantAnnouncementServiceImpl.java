@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  * @author Baomidou
  * @since 2026-05-05
  */
-@Service("merchantAnnouncementDataService")
+@Service("merchantAnnouncementDbService")
 public class MerchantAnnouncementServiceImpl extends ServiceImpl<MerchantAnnouncementMapper, MerchantAnnouncement> implements IMerchantAnnouncementService {
 
 }

@@ -13,6 +13,8 @@ import '../../features/orders/service_active/binding.dart';
 import '../../features/orders/service_active/page.dart';
 import '../../features/messages/chat/binding.dart';
 import '../../features/messages/chat/page.dart';
+import '../../features/messages/voice_call/binding.dart';
+import '../../features/messages/voice_call/page.dart';
 import '../../features/profile/settings/binding.dart';
 import '../../features/profile/settings/page.dart';
 import '../../features/profile/skills/binding.dart';
@@ -65,6 +67,13 @@ abstract class AppPages {
       page: () => const ChatPage(),
       binding: ChatBinding(),
       middlewares: _auth,
+    ),
+    GetPage(
+      name: AppRoutes.voiceCall,
+      page: () => const VoiceCallPage(),
+      binding: VoiceCallBinding(),
+      middlewares: _auth,
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: AppRoutes.settings,

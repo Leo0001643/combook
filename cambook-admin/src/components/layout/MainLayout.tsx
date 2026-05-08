@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { Layout, Menu, Avatar, Dropdown, Badge, Button, Typography } from 'antd'
+import { Layout, Menu, Avatar, Dropdown, Badge, Button, Typography, Tooltip } from 'antd'
 import type { ItemType } from 'antd/es/menu/interface'
 import {
   DashboardOutlined, UserOutlined, TeamOutlined, ShopOutlined,
@@ -13,6 +13,7 @@ import {
   DatabaseOutlined, StarOutlined, SolutionOutlined, RocketOutlined, SoundOutlined,
   GiftOutlined, HomeOutlined, ReadOutlined, MessageOutlined,
   BarChartOutlined, MinusCircleOutlined, GlobalOutlined,
+  CommentOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '../../store/authStore'
 import { useLangStore, LANG_OPTIONS } from '../../store/langStore'
@@ -20,6 +21,11 @@ import type { PermissionVO } from '../../api/api'
 import { merchantPortalApi, authApi } from '../../api/api'
 import AnnouncementBell from '../common/AnnouncementBell'
 import ErrorBoundary from '../common/ErrorBoundary'
+import ImChatPanel from '../im/ImChatPanel'
+import CallOverlay from '../im/CallOverlay'
+import { useImStore } from '../../store/imStore'
+import { useImWs } from '../../hooks/useImWs'
+import { useVoiceCall } from '../../hooks/useVoiceCall'
 
 const { Sider, Header, Content } = Layout
 const { Text } = Typography
@@ -129,6 +135,11 @@ export default function MainLayout() {
   const { user, merchant, menus, isMerchant, setLogout, setMenus } = useAuthStore()
   const { lang, setLang } = useLangStore()
   const [collapsed, setCollapsed] = useState(false)
+
+  // ── IM 通讯 ────────────────────────────────────────────────────────────────
+  const { unreadTotal, toggleOpen } = useImStore()
+  const { connected, send } = useImWs()
+  const vc = useVoiceCall(send)
 
   // ── 实时时钟（每秒刷新）────────────────────────────────────────────────────
   const [now, setNow] = useState(new Date())
@@ -474,6 +485,39 @@ export default function MainLayout() {
               </Button>
             </Dropdown>
 
+            {/* IM 通讯按钮 */}
+            <Tooltip title="企业通讯">
+              <div style={{ position: 'relative', display: 'inline-flex' }} onClick={toggleOpen}>
+                <Button
+                  type="text"
+                  icon={
+                    <CommentOutlined style={{
+                      fontSize: 18,
+                      color: unreadTotal > 0 ? '#25d366' : 'rgba(255,255,255,0.5)',
+                      filter: unreadTotal > 0 ? 'drop-shadow(0 0 8px rgba(37,211,102,0.7))' : 'none',
+                      transition: 'all 0.3s',
+                    }} />
+                  }
+                />
+                {unreadTotal > 0 && (
+                  <span style={{
+                    position: 'absolute', top: 2, right: 2,
+                    minWidth: 16, height: 16, borderRadius: 8,
+                    background: 'linear-gradient(135deg,#ff4757,#ff2d55)',
+                    color: '#fff', fontSize: 10, fontWeight: 700,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '0 4px', lineHeight: 1,
+                    boxShadow: '0 2px 8px rgba(255,45,85,0.6)',
+                    border: '1.5px solid rgba(255,255,255,0.15)',
+                    animation: 'im-badge-pop 0.3s cubic-bezier(.34,1.56,.64,1)',
+                    pointerEvents: 'none',
+                  }}>
+                    {unreadTotal > 99 ? '99+' : unreadTotal}
+                  </span>
+                )}
+              </div>
+            </Tooltip>
+
             {/* 铃铛 */}
             {isMerchant ? (
               <AnnouncementBell />
@@ -538,6 +582,12 @@ export default function MainLayout() {
           </ErrorBoundary>
         </Content>
       </Layout>
+
+      {/* ── IM 聊天面板（全局浮层）──────────────────────────────────────── */}
+      <ImChatPanel connected={connected} voiceCall={vc} />
+
+      {/* ── 通话浮层（来电弹窗 / 通话中悬浮窗）─────────────────────────── */}
+      <CallOverlay vc={vc} />
     </Layout>
   )
 }

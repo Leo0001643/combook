@@ -1,7 +1,9 @@
 package com.cambook.app.common.chat;
 
 import com.cambook.app.common.chat.handler.ImPacketHandler;
+import com.cambook.app.domain.vo.chat.ImConversationVO;
 import com.cambook.app.domain.vo.chat.ImMessageVO;
+import com.cambook.app.service.chat.IImConversationService;
 import com.cambook.app.service.chat.IImMessageService;
 import com.cambook.chat.config.ImProperties;
 import com.cambook.chat.protocol.ImCmd;
@@ -28,14 +30,19 @@ public class ImBusinessDispatcher implements ImDispatcher {
 
     private final Map<Integer, ImPacketHandler> handlerMap;
     private final IImMessageService             msgService;
+    private final IImConversationService        convService;
     private final ImProperties                  props;
 
-    public ImBusinessDispatcher(List<ImPacketHandler> handlers, IImMessageService msgService, ImProperties props) {
-        this.handlerMap = handlers.stream()
+    public ImBusinessDispatcher(List<ImPacketHandler> handlers,
+                                IImMessageService msgService,
+                                IImConversationService convService,
+                                ImProperties props) {
+        this.handlerMap  = handlers.stream()
             .flatMap(h -> h.cmds().stream().map(cmd -> Map.entry(cmd, h)))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
-        this.msgService = msgService;
-        this.props      = props;
+        this.msgService  = msgService;
+        this.convService = convService;
+        this.props       = props;
         log.info("[Dispatcher] 已注册 {} 个命令处理器，覆盖 cmd: {}", handlers.size(), handlerMap.keySet());
     }
 
@@ -43,11 +50,22 @@ public class ImBusinessDispatcher implements ImDispatcher {
 
     @Override
     public void onUserOnline(ChannelHandlerContext ctx, String userType, Long userId) {
+        // ① Push offline messages (undelivered while client was disconnected)
         List<ImMessageVO> offline = msgService.pullOffline(userType, userId, 0L, props.getOfflinePullLimit());
         if (!offline.isEmpty()) {
             ctx.writeAndFlush(new TextWebSocketFrame(
                 ImPacket.of(ImCmd.OFFLINE_MSGS, Map.of("msgs", offline, "count", offline.size())).toJson()));
             log.info("[Dispatcher] 推送离线消息 {}:{} count={}", userType, userId, offline.size());
+        }
+
+        // ② Push conversation list via WS — client no longer needs HTTP GET /chat/conversations
+        try {
+            List<ImConversationVO> convList = convService.listConversations(userType, userId);
+            ctx.writeAndFlush(new TextWebSocketFrame(
+                ImPacket.of(ImCmd.CONV_LIST, convList).toJson()));
+            log.debug("[Dispatcher] 推送会话列表 {}:{} count={}", userType, userId, convList.size());
+        } catch (Exception e) {
+            log.warn("[Dispatcher] 推送会话列表失败 {}:{}: {}", userType, userId, e.getMessage());
         }
     }
 

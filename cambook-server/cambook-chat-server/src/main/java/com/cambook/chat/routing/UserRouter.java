@@ -66,10 +66,18 @@ public class UserRouter {
      */
     public boolean route(String toUserType, Long toUserId, ImPacket packet) {
         String nodeId = getNodeId(toUserType, toUserId);
-        if (nodeId == null) return false;
+        if (nodeId == null) {
+            log.warn("[Router] route OFFLINE {}:{} (no Redis key)", toUserType, toUserId);
+            return false;
+        }
+
+        log.debug("[Router] route {}:{} nodeId={} myNodeId={} registryOnline={}",
+            toUserType, toUserId, nodeId, props.getNodeId(), registry.isOnline(toUserType, toUserId));
 
         if (props.getNodeId().equals(nodeId)) {
-            return registry.send(toUserType, toUserId, packet);
+            boolean sent = registry.send(toUserType, toUserId, packet);
+            if (!sent) log.warn("[Router] route LOCAL MISS {}:{} — channel not in registry or inactive", toUserType, toUserId);
+            return sent;
         }
         try {
             String payload = mapper.writeValueAsString(

@@ -1154,4 +1154,168 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get drawerBrand => 'CamBook Pro · កន្លែងធ្វើការ';
+
+  @override
+  String get imNoMessages => 'មិនទាន់មានសារ។ ផ្ញើសាររកសួរ!';
+
+  @override
+  String get imInputHint => 'សារ...';
+
+  @override
+  String get imToday => 'ថ្ងៃនេះ';
+
+  @override
+  String get imYesterday => 'ម្សិលមិញ';
+
+  @override
+  String get imSendFailed => 'ផ្ញើបរាជ័យ';
+
+  @override
+  String get imCheckNetwork => 'សូមពិនិត្យការតភ្ជាប់អ៊ីនធឺណិត';
+
+  @override
+  String get imMicPermission => 'ត្រូវការការអនុញ្ញាតមីក';
+
+  @override
+  String get imImageSendFailed => 'ផ្ញើរូបភាពបរាជ័យ';
+
+  @override
+  String get imVoiceSendFailed => 'ផ្ញើសារជាសំឡេងបរាជ័យ';
+
+  @override
+  String get imPlayFailed => 'ចាក់មិនបាន';
+
+  @override
+  String get imHoldToRecord => 'ចុចទ្ងន់ដើម្បីថត';
+
+  @override
+  String get imReleaseToSend => 'លែងដើម្បីផ្ញើ';
+
+  @override
+  String get imCancelRecord => 'បោះបង់';
+
+  @override
+  String get imVoiceCallTitle => 'ការហៅជាសំឡេង';
+
+  @override
+  String get imVoiceInvite => 'ការហៅចូលជាសំឡេង';
+
+  @override
+  String get imConnecting => 'កំពុងភ្ជាប់...';
+
+  @override
+  String get imWaiting => 'កំពុងរង់ចាំ...';
+
+  @override
+  String get imReject => 'បដិសេធ';
+
+  @override
+  String get imAnswer => 'ទទួល';
+
+  @override
+  String get imMute => 'ធ្វើស្ងាត់';
+
+  @override
+  String get imUnmute => 'ដោះការស្ងាត់';
+
+  @override
+  String get imHangUp => 'បញ្ចប់';
+
+  @override
+  String get imCancelCall => 'បោះបង់';
+
+  @override
+  String get imCallEnded => 'ការហៅបានបញ្ចប់';
+
+  @override
+  String imCallEndedDuration(String dur) {
+    return 'រយៈពេល $dur';
+  }
+
+  @override
+  String get imImagePreview => '[រូបភាព]';
+
+  @override
+  String get imVoicePreview => '[សំឡេង]';
+
+  @override
+  String get imVideoPreview => '[វីដេអូ]';
+
+  @override
+  String get imLocationPreview => '📍 ទីតាំង';
+
+  @override
+  String get imSystemPreview => '[ការជូនដំណឹង]';
+
+  @override
+  String get imNewMessage => 'សាថ្មី';
+
+  @override
+  String get imOnline => 'អនឡាញ';
+
+  @override
+  String get imTyping => 'កំពុងវាយ...';
+
+  @override
+  String get imUnknownUser => 'មិនស្គាល់';
+
+  @override
+  String get imSendImage => 'ផ្ញើរូបភាព';
+
+  @override
+  String get imVoiceMessage => 'សារជាសំឡេង';
+
+  @override
+  String get imLoadingMore => 'កំពុងផ្ទុក...';
+
+  @override
+  String get imContacts => 'ទំនាក់ទំនង';
+
+  @override
+  String get imNoContacts => 'គ្មានទំនាក់ទំនង';
+
+  @override
+  String get imMarkRead => 'សម្គាល់ថាបានអាន';
+
+  @override
+  String get imMarkAllRead => 'សម្គាល់ទាំងអស់ថាបានអាន';
+
+  @override
+  String get imClearMessages => 'ជម្រះ';
+
+  @override
+  String get imClearConfirm => 'ជម្រះសារក្នុងស្រុក? (ទិន្នន័យម៉ាស៊ីនមេបន្ត)';
+
+  @override
+  String get imDelete => 'លុប';
+
+  @override
+  String get imDeleteConfirm => 'លុបការសន្ទនាក្នុងស្រុក? (ទិន្នន័យម៉ាស៊ីនមេបន្ត)';
+
+  @override
+  String get imShare => 'ចែករំលែក';
+
+  @override
+  String get imAttachPhotos => 'រូបភាព';
+
+  @override
+  String get imAttachCamera => 'កាមេរ៉ា';
+
+  @override
+  String get imAttachLocation => 'ទីតាំង';
+
+  @override
+  String get imAttachPoll => 'ការស្ទង់មតិ';
+
+  @override
+  String get imAttachEvent => 'ព្រឹត្តិការណ៍';
+
+  @override
+  String get imLocationSearch => 'ស្វែងរកអាសយដ្ឋាន…';
+
+  @override
+  String get imLocationNone => 'កំពុងទទួលទីតាំង…';
+
+  @override
+  String get imSendLocation => 'ផ្ញើ';
 }

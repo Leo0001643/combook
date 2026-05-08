@@ -53,7 +53,6 @@ public class TechnicianAuthServiceImpl implements ITechnicianAuthService {
         this.loginSessionService = loginSessionService;
     }
 
-    // ── 登录 ──────────────────────────────────────────────────────────────────
 
     @Override
     public TechLoginVO login(TechLoginDTO dto, String clientIp, String userAgent) {
@@ -69,7 +68,6 @@ public class TechnicianAuthServiceImpl implements ITechnicianAuthService {
         return TechLoginVO.of(token, expiresAt, tech);
     }
 
-    // ── 登出 ──────────────────────────────────────────────────────────────────
 
     @Override
     public void logout() {
@@ -84,8 +82,7 @@ public class TechnicianAuthServiceImpl implements ITechnicianAuthService {
         tokenKickService.kick(USER_TYPE, techId);
         loginSessionService.remove(USER_TYPE, techId);
     }
-
-    // ── 注册 ──────────────────────────────────────────────────────────────────
+    
 
     @Override
     public void register(TechRegisterDTO dto) {

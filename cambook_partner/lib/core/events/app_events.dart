@@ -28,13 +28,19 @@ class TechStatusChangedEvent {
   const TechStatusChangedEvent(this.oldStatus, this.newStatus);
 }
 
-/// 新消息到达
+/// 新消息到达（WS 推送，全局广播）
 class NewMessageEvent {
   final String conversationId;
   final String senderName;
   final String content;
   final ConversationType type;
   const NewMessageEvent(this.conversationId, this.senderName, this.content, this.type);
+}
+
+/// 未读消息总数变更（任何消息到达 / 已读操作后触发）
+class ImUnreadChangedEvent {
+  final int totalUnread;
+  const ImUnreadChangedEvent(this.totalUnread);
 }
 
 /// 服务计时器事件（每秒触发）

@@ -206,10 +206,12 @@ class HomeLogic extends GetxController with EventBusMixin {
   Future<void> refresh() => _fetchAll();
 
   Future<void> _fetchAll() async {
-    if (_isFetching) return; // 防止并发重入，上一次请求未结束则跳过本次
+    if (_isFetching) return;
     _isFetching = true;
     try {
-      await Future.wait([_fetchStats(), _fetchSchedule(), _fetchPendingCount()]);
+      await Future.wait([
+        _fetchStats(), _fetchSchedule(), _fetchPendingCount(),
+      ]);
     } finally {
       _isFetching = false;
     }

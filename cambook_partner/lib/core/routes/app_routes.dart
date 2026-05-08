@@ -11,4 +11,5 @@ abstract class AppRoutes {
   static const String reviews       = '/reviews';
   static const String schedule      = '/schedule';
   static const String language      = '/language';
+  static const String voiceCall     = '/voice-call';
 }

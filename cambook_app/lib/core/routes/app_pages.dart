@@ -2,6 +2,13 @@ import 'package:get/get.dart';
 
 import 'app_routes.dart';
 
+// ── IM ────────────────────────────────────────────────────────────────────────
+import '../../features/im/im_list/im_list_page.dart';
+import '../../features/im/im_list/im_list_binding.dart';
+import '../../features/im/im_chat/im_chat_page.dart';
+import '../../features/im/im_chat/im_chat_binding.dart';
+import '../../features/im/voice_call/voice_call_page.dart';
+
 // ── Auth ──────────────────────────────────────────────────────────────────────
 import '../../features/auth/splash/splash_page.dart';
 import '../../features/auth/splash/splash_binding.dart';
@@ -66,10 +73,6 @@ import '../../features/profile/withdraw/withdraw_page.dart';
 // ── Search / Notification ────────────────────────────────────────────────────
 import '../../features/search/search/search_page.dart';
 import '../../features/notification/notification/notification_page.dart';
-
-// ── IM ────────────────────────────────────────────────────────────────────────
-import '../../features/im/im_list/im_list_page.dart';
-import '../../features/im/im_chat/im_chat_page.dart';
 
 // ── Common ────────────────────────────────────────────────────────────────────
 import '../../features/common/not_found/not_found_page.dart';
@@ -256,13 +259,19 @@ class AppPages {
     GetPage(name: AppRoutes.withdraw, page: () => const WithdrawPage()),
 
     // ── IM ──────────────────────────────────────────────────────────
-    GetPage(name: AppRoutes.imList, page: () => const ImListPage()),
     GetPage(
-      name: AppRoutes.imChat,
-      page: () {
-        final args = Get.arguments as Map<String, dynamic>?;
-        return ImChatPage(targetUserId: args?['userId'] as String? ?? '');
-      },
+      name:    AppRoutes.imList,
+      page:    () => const ImListPage(),
+      binding: ImListBinding(),
+    ),
+    GetPage(
+      name:    AppRoutes.imChat,
+      page:    () => const ImChatPage(),
+      binding: ImChatBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.imVoiceCall,
+      page: () => const VoiceCallPage(),
     ),
 
     // ── 搜索 / 通知 ──────────────────────────────────────────────────

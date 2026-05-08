@@ -38,8 +38,16 @@ public class ChannelRegistry {
 
     /** 推送消息，返回是否成功（用户离线返回 false） */
     public boolean send(String userType, Long userId, ImPacket packet) {
-        Channel ch = channels.get(key(userType, userId));
-        if (ch == null || !ch.isActive()) return false;
+        String  key = key(userType, userId);
+        Channel ch  = channels.get(key);
+        if (ch == null) {
+            log.warn("[Registry] send MISS key={} registryKeys={}", key, channels.keySet());
+            return false;
+        }
+        if (!ch.isActive()) {
+            log.warn("[Registry] send INACTIVE key={} channelId={}", key, ch.id());
+            return false;
+        }
         ch.writeAndFlush(new TextWebSocketFrame(packet.toJson()));
         return true;
     }

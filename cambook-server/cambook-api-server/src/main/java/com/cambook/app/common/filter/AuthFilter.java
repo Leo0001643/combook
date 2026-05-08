@@ -68,18 +68,15 @@ public class AuthFilter extends OncePerRequestFilter {
                     String uri = request.getRequestURI();
 
                     if ("merchant".equals(userType)) {
-                        // 商户 JWT：只允许填充商户 Context，禁止携带商户 Token 访问 admin 接口
-                        // （即使 URI=/admin/**，也不能获得 AdminContext，防止纵向越权）
-                        if (uri.startsWith("/merchant/")) {
+                        // /merchant/** 和共享路径 /chat/** 均需要商户 Context
+                        if (uri.startsWith("/merchant/") || uri.startsWith("/chat/")) {
                             fillMerchantContext(claims);
                         }
-                        // merchant 访问 /admin/** 时不填充任何 Context → 拦截器会拒绝
                     } else if ("admin".equals(userType) || "ADMIN".equals(userType)) {
-                        // 管理员 JWT：只允许填充 Admin Context
-                        if (uri.startsWith("/admin/")) {
+                        // /admin/** 和共享路径 /chat/** 均需要管理员 Context
+                        if (uri.startsWith("/admin/") || uri.startsWith("/chat/")) {
                             fillAdminContext(claims);
                         }
-                        // admin 访问 /merchant/** 时不填充 MerchantContext → 拦截器会拒绝
                     } else {
                         // App 用户 JWT（member）
                         fillMemberContext(claims);

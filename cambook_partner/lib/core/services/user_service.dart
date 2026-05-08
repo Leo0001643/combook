@@ -7,6 +7,8 @@ import '../network/api_endpoints.dart';
 import '../network/http_util.dart';
 import '../utils/event_bus_util.dart';
 import '../utils/log_util.dart';
+import 'im_ws_service.dart';
+import 'message_service.dart';
 import 'order_service.dart';
 import 'storage_service.dart';
 import 'tech_ws_service.dart';
@@ -134,8 +136,21 @@ class UserService extends GetxService {
     Get.find<StorageService>().clear(); // 清除 token + 技师缓存 + 所有存储
   }
 
-  void _connectWs()    => Get.find<TechWsService>().connect();
-  void _disconnectWs() => Get.find<TechWsService>().disconnect();
+  void _connectWs() {
+    Get.find<TechWsService>().connect();
+    // ImWsService / MessageService 在 main.dart 中注册于 UserService 之后，
+    // 需用 isRegistered 保护，避免冷启动 init() 时取不到服务崩溃。
+    if (Get.isRegistered<ImWsService>())    Get.find<ImWsService>().connectIfNeeded();
+    if (Get.isRegistered<MessageService>()) {
+      // 登录后立即拉取最新会话列表
+      Future.microtask(() => Get.find<MessageService>().refresh());
+    }
+  }
+
+  void _disconnectWs() {
+    Get.find<TechWsService>().disconnect();
+    if (Get.isRegistered<ImWsService>()) Get.find<ImWsService>().disconnectManual();
+  }
   void _fetchOrders()  => Get.find<OrderService>().fetchFromApi();
 
   void setStatus(TechStatus newStatus) {

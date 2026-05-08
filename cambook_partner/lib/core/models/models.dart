@@ -1,3 +1,5 @@
+import '../config/app_config.dart';
+import '../i18n/l10n_ext.dart';
 import '../utils/date_util.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,7 +50,9 @@ class TechnicianModel {
   });
 
   factory TechnicianModel.fromJson(Map<String, dynamic> j) => TechnicianModel(
-    id:              JsonUtil.intFrom(j['id']),
+    // Backend `/tech/auth/me` returns `techId`; local cache (`toJson`) uses `id`.
+    // Accept both so warm-start (cache) and login response both populate id.
+    id:              JsonUtil.intFrom(j['techId'] ?? j['id']),
     nickname:        JsonUtil.strFrom(j['nickname']),
     techNo:          JsonUtil.strFrom(j['techNo']),
     phone:           JsonUtil.strFrom(j['phone']),
@@ -290,10 +294,26 @@ class IncomeTrendModel {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// IM 通讯录联系人（运营 / 营销人员）
+// ─────────────────────────────────────────────────────────────────────────────
+class ImContactModel {
+  final String  id;
+  final String  name;
+  final String? avatar;
+  final String  role;   // e.g. "customer_service" / "marketing"
+  final String? userType;
+  const ImContactModel({
+    required this.id, required this.name, this.avatar,
+    required this.role, this.userType,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 消息 / 聊天模型
 // ─────────────────────────────────────────────────────────────────────────────
 enum ConversationType { system, customer, order }
-enum MessageType      { text, image, location, system }
+// msgType 1=文本 2=图片 3=语音 4=视频
+enum MessageType { text, image, voice, video, location, system }
 
 class ConversationModel {
   final String           id;
@@ -305,33 +325,164 @@ class ConversationModel {
   final int              unread;
   final int?             customerId;
   final String?          phone;
+  // 后端字段（peerType 用于发送消息时指定 receiverType）
+  final String?          peerType;
+  final int?             peerId;
 
   const ConversationModel({
     required this.id, required this.type, required this.name, this.avatar,
     required this.lastMessage, required this.lastTime,
     required this.unread, this.customerId, this.phone,
+    this.peerType, this.peerId,
   });
 
-  ConversationModel copyWithUnread(int u) => ConversationModel(
+  factory ConversationModel.fromImJson(Map<String, dynamic> j) {
+    // Null-safe name: peer nickname → group name → localised fallback
+    final peerName = (j['peerNickname'] as String?)
+        ?? (j['groupName']   as String?)
+        ?? _safeName();
+
+    final rawTime = j['lastMsgTime'];
+    return ConversationModel(
+      id:          '${j['conversationId']}',
+      type:        ConversationType.customer,
+      name:        peerName,
+      avatar:      (j['peerAvatar'] as String?) ?? (j['groupAvatar'] as String?),
+      lastMessage: j['lastMsgPreview'] as String? ?? '',
+      lastTime:    rawTime != null
+          ? DateTime.fromMillisecondsSinceEpoch(JsonUtil.intFrom(rawTime) * 1000)
+          : DateTime.now(),
+      unread:      JsonUtil.intFrom(j['unreadCount']),
+      peerType:    j['peerType']  as String?,
+      peerId:      j['peerId']    != null ? JsonUtil.intFrom(j['peerId']) : null,
+    );
+  }
+
+  static String _safeName() {
+    try { return gL10n.imUnknownUser; } catch (_) { return 'Unknown'; }
+  }
+
+  ConversationModel copyWith({
+    int?      unread,
+    String?   lastMessage,
+    DateTime? lastTime,
+  }) => ConversationModel(
     id: id, type: type, name: name, avatar: avatar,
-    lastMessage: lastMessage, lastTime: lastTime, unread: u,
-    customerId: customerId, phone: phone,
+    lastMessage: lastMessage ?? this.lastMessage,
+    lastTime:    lastTime    ?? this.lastTime,
+    unread:      unread      ?? this.unread,
+    customerId:  customerId, phone: phone,
+    peerType:    peerType, peerId: peerId,
   );
+
+  // kept for callers that haven't migrated yet
+  ConversationModel copyWithUnread(int u) => copyWith(unread: u);
+  ConversationModel copyWithLastMsg(String msg, DateTime t) =>
+      copyWith(lastMessage: msg, lastTime: t);
 }
 
 class ChatMessageModel {
   final String      id;
   final String      conversationId;
   final bool        isMe;
-  final String      content;
+  final String      content;   // 文本内容 / 图片URL / 语音"url|秒数" / 系统通知
   final MessageType type;
   final DateTime    time;
-  final String?     imageUrl;
+  final int         status;    // 1=已发 2=已送达 3=已读
+  // 语音专用
+  final int?        voiceDurSec;
+  final String?     voiceUrl;
 
   const ChatMessageModel({
     required this.id, required this.conversationId, required this.isMe,
-    required this.content, required this.type, required this.time, this.imageUrl,
+    required this.content, required this.type, required this.time,
+    this.status = 1, this.voiceDurSec, this.voiceUrl,
   });
+
+  factory ChatMessageModel.fromImJson(Map<String, dynamic> j, {
+    required String myType, required int myId,
+  }) {
+    final senderType = j['senderType'] as String? ?? '';
+    // senderId may arrive as int or String from different serialisers
+    final senderId   = JsonUtil.intFrom(j['senderId'] ?? 0);
+    final isMe       = senderType == myType && senderId == myId;
+    final msgType    = j['msgType'] as int? ?? 1;
+    final content    = j['content'] as String? ?? '';
+    final convId     = '${j['conversationId']}';
+
+    String? voiceUrl; int? voiceDur;
+    if (msgType == 3 && content.contains('|')) {
+      final parts = content.split('|');
+      voiceUrl = _fixMediaUrl(parts[0]);
+      voiceDur = int.tryParse(parts[1]);
+    }
+
+    // Rewrite localhost URLs in image content so they load on real devices
+    final fixedContent = (msgType == 2) ? _fixMediaUrl(content) : content;
+
+    return ChatMessageModel(
+      // Null/missing msgId falls back to a timestamp-based local ID
+      id:             j['msgId'] != null ? '${j['msgId']}' : '${DateTime.now().millisecondsSinceEpoch}',
+      conversationId: convId,
+      isMe:           isMe,
+      content:        fixedContent,
+      type:           _mapType(msgType),
+      time:           DateTime.fromMillisecondsSinceEpoch(
+                          JsonUtil.intFrom(j['createTime']) * 1000),
+      status:         JsonUtil.intFrom(j['status'] ?? 1),
+      voiceUrl:       voiceUrl,
+      voiceDurSec:    voiceDur,
+    );
+  }
+
+  /// Rewrites media URLs stored as `http://localhost:port/…` to use the
+  /// actual API server host so they are reachable from real devices on LAN.
+  static String _fixMediaUrl(String url) {
+    if (!url.startsWith('http://localhost') &&
+        !url.startsWith('http://127.0.0.1')) return url;
+    try {
+      final server  = Uri.parse(AppConfig.apiBaseUrl);
+      final media   = Uri.parse(url);
+      return media
+          .replace(scheme: server.scheme, host: server.host, port: server.port)
+          .toString();
+    } catch (_) {
+      return url;
+    }
+  }
+
+  static MessageType _mapType(int t) => switch (t) {
+    2 => MessageType.image,
+    3 => MessageType.voice,
+    4 => MessageType.video,
+    5 => MessageType.location,
+    6 => MessageType.system,
+    _ => MessageType.text,
+  };
+
+  /// Localized preview text. Falls back to English tags when context unavailable.
+  String get preview {
+    try {
+      final l = gL10n;
+      return switch (type) {
+        MessageType.image    => l.imImagePreview,
+        MessageType.voice    => l.imVoicePreview,
+        MessageType.video    => l.imVideoPreview,
+        MessageType.location => l.imLocationPreview,
+        MessageType.system   => l.imSystemPreview,
+        _                    => content,
+      };
+    } catch (_) {
+      return switch (type) {
+        MessageType.image    => '[Image]',
+        MessageType.voice    => '[Voice]',
+        MessageType.video    => '[Video]',
+          MessageType.location => '[📍 Location]',
+        MessageType.system   => '[Notice]',
+        _                    => content,
+      };
+    }
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

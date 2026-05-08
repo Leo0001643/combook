@@ -1,96 +1,161 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../l10n/app_localizations.dart';
+import 'package:get/get.dart';
+import '../../../core/services/im_service.dart';
+import '../../../core/routes/app_routes.dart';
+import '../models/im_models.dart';
+import 'im_list_logic.dart';
+import '../_shared/im_theme.dart';
+import '../_shared/im_avatar.dart';
+import '../_shared/im_time_util.dart';
 
-/// IM 聊天列表页 — 全部 i18n
+/// IM 会话列表页 — WhatsApp 暗色风格
 class ImListPage extends StatelessWidget {
   const ImListPage({super.key});
 
-  // nameKey: 'service' / 'system' => resolve via l; others are real names from backend
-  static const _sessions = [
-    {'id': '1', 'nameKey': null, 'name': 'Chen Xiuling', 'lastMsg': 'Ok I will be there on time', 'timeKey': null, 'time': '14:32', 'unread': 2, 'type': 'tech'},
-    {'id': '2', 'nameKey': 'service', 'name': '', 'lastMsg': 'Your order has been accepted', 'timeKey': null, 'time': '10:05', 'unread': 0, 'type': 'service'},
-    {'id': '3', 'nameKey': null, 'name': 'Cai Qing', 'lastMsg': 'I will be there on time', 'timeKey': 'yesterday', 'time': '', 'unread': 0, 'type': 'tech'},
-    {'id': '4', 'nameKey': 'system', 'name': '', 'lastMsg': 'Welcome to CamBook!', 'timeKey': 'yesterday', 'time': '', 'unread': 1, 'type': 'system'},
-  ];
+  @override
+  Widget build(BuildContext context) {
+    Get.find<ImListLogic>();
+    return Scaffold(
+      backgroundColor: ImTheme.bg,
+      appBar: _buildAppBar(context),
+      body: Obx(() {
+        final list = ImService.to.conversations;
+        if (list.isEmpty) return _buildEmpty();
+        return ListView.builder(
+          itemCount: list.length,
+          itemBuilder: (_, i) => _ConvTile(conv: list[i]),
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: ImTheme.accent,
+        onPressed: () {},   // TODO: 新建会话（通讯录）
+        child: const Icon(Icons.chat_bubble_outline, color: Colors.white),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) => AppBar(
+    backgroundColor: ImTheme.header,
+    elevation: 0,
+    title: const Text('消息', style: TextStyle(color: ImTheme.textPrimary, fontWeight: FontWeight.w700, fontSize: 18)),
+    actions: [
+      IconButton(
+        icon: const Icon(Icons.search, color: ImTheme.textSub),
+        onPressed: () {},
+      ),
+      IconButton(
+        icon: const Icon(Icons.more_vert, color: ImTheme.textSub),
+        onPressed: () {},
+      ),
+    ],
+  );
+
+  Widget _buildEmpty() => Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.chat_bubble_outline, size: 64, color: ImTheme.textMuted.withValues(alpha: 0.4)),
+        const SizedBox(height: 16),
+        const Text('暂无消息', style: TextStyle(color: ImTheme.textMuted, fontSize: 15)),
+      ],
+    ),
+  );
+}
+
+// ── 会话列表项 ─────────────────────────────────────────────────────────────
+
+class _ConvTile extends StatelessWidget {
+  final ImConversation conv;
+  const _ConvTile({required this.conv});
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
-      appBar: AppBar(
-        backgroundColor: Colors.white, elevation: 0,
-        title: Text(l.messages, style: const TextStyle(color: AppTheme.gray900, fontWeight: FontWeight.w700)),
-        centerTitle: true,
-        actions: [IconButton(icon: const Icon(Icons.edit_outlined, color: AppTheme.gray600), onPressed: () {})],
-      ),
-      body: ListView.separated(
-        itemCount: _sessions.length,
-        separatorBuilder: (_, __) => const Divider(height: 1, indent: 72),
-        itemBuilder: (_, i) => _buildSessionTile(context, l, _sessions[i]),
-      ),
-    );
-  }
-
-  Widget _buildSessionTile(BuildContext context, AppLocalizations l, Map<String, dynamic> session) {
-    final isService = session['type'] == 'service';
-    final isSystem = session['type'] == 'system';
-    final unread = session['unread'] as int;
-    final displayName = session['nameKey'] == 'service'
-        ? l.customerService
-        : session['nameKey'] == 'system'
-            ? l.sysNotifTitle
-            : session['name'] as String;
-    final displayTime = session['timeKey'] == 'yesterday'
-        ? l.yesterday
-        : session['time'] as String;
-
-    return ListTile(
-      onTap: () => Get.toNamed('/im/chat/${session['id']}'),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Stack(
-        children: [
-          Container(
-            width: 50, height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: isSystem
-                  ? LinearGradient(colors: [Colors.grey.shade300, Colors.grey.shade200])
-                  : isService
-                      ? const LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)])
-                      : LinearGradient(colors: [AppTheme.primaryColor.withOpacity(0.7), AppTheme.primaryColor]),
-            ),
-            child: Center(child: Icon(
-              isSystem ? Icons.notifications_outlined : isService ? Icons.support_agent : Icons.person,
-              color: Colors.white, size: 24,
-            )),
+    final hasUnread = conv.unreadCount > 0;
+    return InkWell(
+      onTap: () => Get.toNamed(AppRoutes.imChat, arguments: {
+        'conversationId': conv.conversationId,
+        'peerName':       conv.peerName ?? '未知',
+        'peerType':       conv.peerType ?? 'member',
+        'peerId':         conv.peerId ?? 0,
+      }),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: ImTheme.divider, width: 0.5)),
+        ),
+        child: Row(children: [
+          ImAvatar(
+            name:   conv.peerName ?? '?',
+            url:    conv.peerAvatar,
+            size:   50,
+            userId: conv.peerId,
           ),
-          if (unread > 0)
-            Positioned(
-              right: 0, top: 0,
-              child: Container(
-                width: 18, height: 18,
-                decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                child: Center(child: Text('$unread', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700))),
+          const SizedBox(width: 12),
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: Text(
+                    conv.peerName ?? '未知',
+                    style: TextStyle(
+                      color: ImTheme.textPrimary,
+                      fontSize: 15,
+                      fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  )),
+                  Text(
+                    ImTimeUtil.fmtConvTime(conv.lastMsgTime),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: hasUnread ? ImTheme.accent : ImTheme.textMuted,
+                    ),
+                  ),
+                ],
               ),
-            ),
-        ],
-      ),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(displayName, style: TextStyle(fontSize: 15, fontWeight: unread > 0 ? FontWeight.w700 : FontWeight.w500, color: AppTheme.gray900)),
-          Text(displayTime, style: TextStyle(fontSize: 11, color: unread > 0 ? AppTheme.primaryColor : AppTheme.gray400)),
-        ],
-      ),
-      subtitle: Text(
-        session['lastMsg'] as String,
-        style: TextStyle(fontSize: 13, color: unread > 0 ? AppTheme.gray700 : AppTheme.gray400, fontWeight: unread > 0 ? FontWeight.w500 : FontWeight.normal),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+              const SizedBox(height: 3),
+              Row(children: [
+                Expanded(child: Text(
+                  conv.lastMsgPreview ?? '暂无消息',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: hasUnread ? ImTheme.textSub : ImTheme.textMuted,
+                    fontWeight: hasUnread ? FontWeight.w500 : FontWeight.normal,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )),
+                if (hasUnread) ...[
+                  const SizedBox(width: 6),
+                  _UnreadBadge(count: conv.unreadCount),
+                ],
+              ]),
+            ],
+          )),
+        ]),
       ),
     );
   }
+}
+
+class _UnreadBadge extends StatelessWidget {
+  final int count;
+  const _UnreadBadge({required this.count});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+    decoration: BoxDecoration(
+      color: ImTheme.accent,
+      borderRadius: BorderRadius.circular(12),
+    ),
+    constraints: const BoxConstraints(minWidth: 20),
+    child: Text(
+      count > 99 ? '99+' : '$count',
+      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+      textAlign: TextAlign.center,
+    ),
+  );
 }

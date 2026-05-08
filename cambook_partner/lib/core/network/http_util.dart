@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
-import 'package:get/get.dart' hide Response;
+import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import '../config/app_config.dart';
 import '../services/storage_service.dart';
 import '../services/user_service.dart';
@@ -78,6 +78,19 @@ class HttpUtil {
     T Function(dynamic)? fromJson,
   }) => _call(
     () => _dio.patch(path, data: _encodeBody(data)),
+    fromJson,
+  );
+
+  // ── POST MULTIPART ────────────────────────────────────────────
+  /// 发送 multipart/form-data（文件上传）
+  static Future<T> postMultipart<T>(String path, {
+    required FormData formData,
+    T Function(dynamic)? fromJson,
+  }) => _call(
+    () => _dio.post(path,
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    ),
     fromJson,
   );
 

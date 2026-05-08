@@ -7,11 +7,13 @@ import 'core/routes/app_pages.dart';
 import 'core/routes/app_routes.dart';
 import 'core/services/auth_guard_service.dart';
 import 'core/services/global_notification_service.dart';
+import 'core/services/im_ws_service.dart';
 import 'core/services/message_service.dart';
 import 'core/services/order_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/services/tech_ws_service.dart';
 import 'core/services/user_service.dart';
+import 'features/messages/voice_call/logic.dart';
 import 'core/theme/app_theme_controller.dart';
 import 'l10n/gen/app_localizations.dart';
 
@@ -27,8 +29,10 @@ Future<void> _initServices() async {
   await Get.putAsync<StorageService>(() => StorageService().init());
   await Get.putAsync<UserService>(() => UserService().init());
   await Get.putAsync<OrderService>(() => OrderService().init());
+  await Get.putAsync<ImWsService>(() => ImWsService().init());
   await Get.putAsync<MessageService>(() => MessageService().init());
   await Get.putAsync<TechWsService>(() => TechWsService().init());
+  Get.put(VoiceCallLogic(), permanent: true);
   await Get.putAsync<GlobalNotificationService>(() => GlobalNotificationService().init());
   await Get.putAsync<AuthGuardService>(() => AuthGuardService().init());
   // 全局主题控制器 — 所有路由共享，读取本地存储的主题色

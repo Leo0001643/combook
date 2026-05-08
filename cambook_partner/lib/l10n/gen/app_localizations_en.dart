@@ -1154,4 +1154,168 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get drawerBrand => 'CamBook Pro · Workstation';
+
+  @override
+  String get imNoMessages => 'No messages yet. Say hi!';
+
+  @override
+  String get imInputHint => 'Message...';
+
+  @override
+  String get imToday => 'Today';
+
+  @override
+  String get imYesterday => 'Yesterday';
+
+  @override
+  String get imSendFailed => 'Failed to send. Try again.';
+
+  @override
+  String get imCheckNetwork => 'Check your network connection';
+
+  @override
+  String get imMicPermission => 'Microphone permission required';
+
+  @override
+  String get imImageSendFailed => 'Failed to send image';
+
+  @override
+  String get imVoiceSendFailed => 'Failed to send voice message';
+
+  @override
+  String get imPlayFailed => 'Playback failed';
+
+  @override
+  String get imHoldToRecord => 'Hold to record';
+
+  @override
+  String get imReleaseToSend => 'Release to send';
+
+  @override
+  String get imCancelRecord => 'Cancel';
+
+  @override
+  String get imVoiceCallTitle => 'Voice Call';
+
+  @override
+  String get imVoiceInvite => 'Incoming voice call';
+
+  @override
+  String get imConnecting => 'Connecting...';
+
+  @override
+  String get imWaiting => 'Ringing...';
+
+  @override
+  String get imReject => 'Decline';
+
+  @override
+  String get imAnswer => 'Accept';
+
+  @override
+  String get imMute => 'Mute';
+
+  @override
+  String get imUnmute => 'Unmute';
+
+  @override
+  String get imHangUp => 'End';
+
+  @override
+  String get imCancelCall => 'Cancel';
+
+  @override
+  String get imCallEnded => 'Call ended';
+
+  @override
+  String imCallEndedDuration(String dur) {
+    return 'Call duration $dur';
+  }
+
+  @override
+  String get imImagePreview => '[Image]';
+
+  @override
+  String get imVoicePreview => '[Voice]';
+
+  @override
+  String get imVideoPreview => '[Video]';
+
+  @override
+  String get imLocationPreview => '📍 Location';
+
+  @override
+  String get imSystemPreview => '[Notice]';
+
+  @override
+  String get imNewMessage => 'New message';
+
+  @override
+  String get imOnline => 'Online';
+
+  @override
+  String get imTyping => 'Typing...';
+
+  @override
+  String get imUnknownUser => 'Unknown';
+
+  @override
+  String get imSendImage => 'Send image';
+
+  @override
+  String get imVoiceMessage => 'Voice message';
+
+  @override
+  String get imLoadingMore => 'Loading messages...';
+
+  @override
+  String get imContacts => 'Staff Contacts';
+
+  @override
+  String get imNoContacts => 'No contacts yet';
+
+  @override
+  String get imMarkRead => 'Mark read';
+
+  @override
+  String get imMarkAllRead => 'Mark all read';
+
+  @override
+  String get imClearMessages => 'Clear';
+
+  @override
+  String get imClearConfirm => 'Clear all local messages? (Server records are kept)';
+
+  @override
+  String get imDelete => 'Delete';
+
+  @override
+  String get imDeleteConfirm => 'Delete this conversation locally? (Server records are kept)';
+
+  @override
+  String get imShare => 'Share';
+
+  @override
+  String get imAttachPhotos => 'Photos';
+
+  @override
+  String get imAttachCamera => 'Camera';
+
+  @override
+  String get imAttachLocation => 'Location';
+
+  @override
+  String get imAttachPoll => 'Poll';
+
+  @override
+  String get imAttachEvent => 'Event';
+
+  @override
+  String get imLocationSearch => 'Search address…';
+
+  @override
+  String get imLocationNone => 'Fetching location…';
+
+  @override
+  String get imSendLocation => 'Send';
 }

@@ -22,10 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * 技师端订单服务项管理实现
- *
- * <p>一单多项的核心逻辑：追加/取消服务项，自动重新计算订单总金额。
- *
- * @author CamBook
+ * 一单多项的核心逻辑：追加/取消服务项，自动重新计算订单总金额。
  */
 @Service
 @RequiredArgsConstructor
@@ -37,8 +34,6 @@ public class TechOrderItemServiceImpl implements ITechOrderItemService {
             OrderStatus.ARRIVED.getCode(),  OrderStatus.IN_SERVICE.getCode()
     );
 
-    private static final int SVC_STATUS_PENDING = 0;
-
     private final ICbOrderService     cbOrderService;
     private final ICbOrderItemService cbOrderItemService;
 
@@ -47,7 +42,7 @@ public class TechOrderItemServiceImpl implements ITechOrderItemService {
     public List<OrderVO.OrderItemVO> addItem(Long orderId, AddOrderItemDTO dto) {
         CbOrder order = requireOwnOrder(orderId);
 
-        if (!ADDABLE_STATUSES.contains(order.getStatus())) {
+        if (!ADDABLE_STATUSES.contains(order.getStatus().intValue())) {
             throw new BusinessException(CbCodeEnum.ORDER_STATUS_ILLEGAL);
         }
 
@@ -72,7 +67,10 @@ public class TechOrderItemServiceImpl implements ITechOrderItemService {
     public void removeItem(Long orderId, Long itemId) {
         requireOwnOrder(orderId);
 
-        CbOrderItem item = Optional.ofNullable(cbOrderItemService.lambdaQuery().eq(CbOrderItem::getId, itemId).eq(CbOrderItem::getOrderId, orderId).eq(CbOrderItem::getDeleted, Boolean.FALSE).one()).orElseThrow(() -> new BusinessException(CbCodeEnum.DATA_NOT_FOUND));
+        CbOrderItem item = Optional.ofNullable(cbOrderItemService.lambdaQuery().eq(CbOrderItem::getId, itemId)
+        .eq(CbOrderItem::getOrderId, orderId).eq(CbOrderItem::getDeleted, Boolean.FALSE).one())
+        .orElseThrow(() -> new BusinessException(CbCodeEnum.DATA_NOT_FOUND));
+
         if (Boolean.TRUE.equals(item.getSvcStatus())) {
             throw new BusinessException(CbCodeEnum.ORDER_CANNOT_CANCEL);
         }
@@ -87,7 +85,6 @@ public class TechOrderItemServiceImpl implements ITechOrderItemService {
         return loadItems(orderId);
     }
 
-    // ── 私有工具 ─────────────────────────────────────────────────────────────
 
     private List<OrderVO.OrderItemVO> loadItems(Long orderId) {
         return cbOrderItemService.lambdaQuery().eq(CbOrderItem::getOrderId, orderId).list()
@@ -97,12 +94,12 @@ public class TechOrderItemServiceImpl implements ITechOrderItemService {
     private void recalcOrderAmount(CbOrder order) {
         List<CbOrderItem> items = cbOrderItemService.lambdaQuery().eq(CbOrderItem::getOrderId, order.getId()).list();
         BigDecimal total = items.stream()
-                .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQty())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQty())))
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         order.setOriginalAmount(total);
-        BigDecimal discount  = order.getDiscountAmount()  != null ? order.getDiscountAmount()  : BigDecimal.ZERO;
-        BigDecimal transport = order.getTransportFee()    != null ? order.getTransportFee()    : BigDecimal.ZERO;
+        BigDecimal discount = order.getDiscountAmount() != null ? order.getDiscountAmount() : BigDecimal.ZERO;
+        BigDecimal transport = order.getTransportFee() != null ? order.getTransportFee() : BigDecimal.ZERO;
         order.setPayAmount(total.subtract(discount).add(transport).max(BigDecimal.ZERO));
         cbOrderService.updateById(order);
     }
@@ -121,8 +118,8 @@ public class TechOrderItemServiceImpl implements ITechOrderItemService {
         CbOrder order = cbOrderService.lambdaQuery().eq(CbOrder::getId, orderId).eq(CbOrder::getDeleted, Boolean.FALSE).one();
         Optional.ofNullable(order).orElseThrow(() -> new BusinessException(CbCodeEnum.ORDER_NOT_FOUND));
 
-        boolean isPrimaryTech = techId.equals(order.getTechnicianId());
-        boolean isItemTech    = !isPrimaryTech && cbOrderItemService.lambdaQuery().eq(CbOrderItem::getOrderId,      orderId)
+        boolean isPrimaryTech = order.getTechnicianId().equals(techId);
+        boolean isItemTech = !isPrimaryTech && cbOrderItemService.lambdaQuery().eq(CbOrderItem::getOrderId,      orderId)
                 .eq(CbOrderItem::getTechnicianId, techId).eq(CbOrderItem::getDeleted, Boolean.FALSE).exists();
         if (!isPrimaryTech && !isItemTech) throw new BusinessException(CbCodeEnum.ORDER_NOT_FOUND);
         return order;

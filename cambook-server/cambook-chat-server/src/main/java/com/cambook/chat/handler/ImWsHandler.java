@@ -12,6 +12,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
@@ -45,11 +46,27 @@ public class ImWsHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) {
+        // Fallback: if HandshakeComplete was missed but URL token is present, auto-auth now
+        if (ctx.channel().attr(ATTR_USER).get() == null) {
+            String urlToken = ctx.channel().attr(ImTokenExtractorHandler.ATTR_URL_TOKEN).get();
+            if (urlToken != null && !urlToken.isBlank()) {
+                log.info("[WsHandler] 首帧触发 URL token 鉴权 channelId={}", ctx.channel().id());
+                handleAuthToken(ctx, urlToken);
+            }
+        }
+
         String text = frame.text().trim();
         if (text.isEmpty()) return;
 
         ImPacket packet = ImPacket.fromJson(text);
-        if (packet == null) { write(ctx, ImPacket.error("invalid packet")); return; }
+        if (packet == null) {
+            log.warn("[WsHandler] 无法解析的报文 channelId={} text={}", ctx.channel().id(), text);
+            write(ctx, ImPacket.error("invalid packet"));
+            return;
+        }
+
+        log.info("[WsHandler] ◀ cmd={} channelId={} user={}",
+            packet.getCmd(), ctx.channel().id(), ctx.channel().attr(ATTR_USER).get());
 
         switch (packet.getCmd()) {
             case ImCmd.PING -> handlePing(ctx);
@@ -58,11 +75,32 @@ public class ImWsHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
         }
     }
 
-    // ── 心跳超时（关键修复：IdleStateHandler 触发 userEventTriggered）────────
+    // ── 连接打开 / 握手完成 / 心跳超时 ────────────────────────────────────────
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        log.info("[WsHandler] ✓ TCP 连接建立 channelId={} remote={}",
+            ctx.channel().id(), ctx.channel().remoteAddress());
+        super.channelActive(ctx);
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent idle && idle.state() == IdleState.READER_IDLE) {
+        // Log every user-event so we can diagnose missing HandshakeComplete in production
+        log.info("[WsHandler] userEvent={} channelId={}",
+            evt.getClass().getSimpleName(), ctx.channel().id());
+        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete handshake) {
+            String urlToken = ctx.channel().attr(ImTokenExtractorHandler.ATTR_URL_TOKEN).get();
+            log.info("[WsHandler] ✓ WebSocket 握手完成 channelId={} reqUri={} urlTokenPresent={}",
+                ctx.channel().id(), handshake.requestUri(),
+                urlToken != null && !urlToken.isBlank());
+            if (urlToken != null && !urlToken.isBlank()) {
+                handleAuthToken(ctx, urlToken);
+            } else {
+                log.warn("[WsHandler] 握手完成但 URL 未携带 token，等待 AUTH 帧 channelId={}",
+                    ctx.channel().id());
+            }
+        } else if (evt instanceof IdleStateEvent idle && idle.state() == IdleState.READER_IDLE) {
             String user = ctx.channel().attr(ATTR_USER).get();
             log.warn("[WsHandler] 心跳超时，强制断开 user={} channelId={}", user, ctx.channel().id());
             write(ctx, ImPacket.error("heartbeat timeout"));
@@ -77,6 +115,7 @@ public class ImWsHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         String user = ctx.channel().attr(ATTR_USER).get();
+        log.info("[WsHandler] ✗ 连接关闭 channelId={} user={}", ctx.channel().id(), user);
         if (user == null) return;
         String[] p = user.split(":", 2);
         String userType = p[0];
@@ -84,7 +123,6 @@ public class ImWsHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
         registry.unregister(userType, userId, ctx.channel());
         router.offline(userType, userId);
         dispatcher.onUserOffline(userType, userId);
-        log.info("[WsHandler] 断开下线 user={}", user);
     }
 
     @Override
@@ -118,6 +156,21 @@ public class ImWsHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
         if (token == null || token.isBlank()) {
             write(ctx, ImPacket.error("token required")); ctx.close(); return;
         }
+        handleAuthToken(ctx, token);
+    }
+
+    /**
+     * 统一鉴权逻辑（供 AUTH 数据帧和 URL token 自动鉴权共用）。
+     *
+     * <p>JWT claim 兼容两种 key：
+     * <ul>
+     *   <li>{@code "uid"} — 技师/会员 JWT（TechnicianAuthServiceImpl 使用）</li>
+     *   <li>{@code "userId"} — 预留兼容其他来源</li>
+     * </ul>
+     */
+    private void handleAuthToken(ChannelHandlerContext ctx, String token) {
+        // 已鉴权则跳过（握手完成事件可能重复触发）
+        if (ctx.channel().attr(ATTR_USER).get() != null) return;
 
         Claims claims = jwtUtils.parseToken(token);
         if (claims == null) {
@@ -125,7 +178,11 @@ public class ImWsHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
         }
 
         String userType = claims.get("userType", String.class);
-        Long   userId   = claims.get("userId", Long.class);
+        // 兼容 "uid"（技师/会员 JWT）和 "userId"（其他来源）
+        Object rawUid = claims.get("uid");
+        if (rawUid == null) rawUid = claims.get("userId");
+        Long userId = rawUid instanceof Number n ? n.longValue() : null;
+
         if (userType == null || userId == null) {
             write(ctx, ImPacket.error("bad token payload")); ctx.close(); return;
         }

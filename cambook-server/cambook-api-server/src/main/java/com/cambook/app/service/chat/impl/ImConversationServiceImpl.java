@@ -6,9 +6,13 @@ import com.cambook.app.domain.vo.chat.ImConversationVO;
 import com.cambook.app.service.chat.IImConvMemberService;
 import com.cambook.app.service.chat.IImConversationService;
 import com.cambook.common.utils.DateUtils;
+import com.cambook.db.entity.CbMember;
+import com.cambook.db.entity.CbTechnician;
 import com.cambook.db.entity.ImConvMember;
 import com.cambook.db.entity.ImConversation;
 import com.cambook.db.entity.ImGroup;
+import com.cambook.db.mapper.CbMemberMapper;
+import com.cambook.db.mapper.CbTechnicianMapper;
 import com.cambook.db.mapper.ImConversationMapper;
 import com.cambook.db.mapper.ImGroupMapper;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +38,9 @@ public class ImConversationServiceImpl extends ServiceImpl<ImConversationMapper,
      * 直接注入 Mapper 而非 IImGroupService，避免与 ImGroupServiceImpl 产生循环依赖
      * （ImGroupServiceImpl → IImConversationService → IImGroupService → ImGroupServiceImpl）
      */
-    private final ImGroupMapper groupMapper;
+    private final ImGroupMapper        groupMapper;
+    private final CbTechnicianMapper   technicianMapper;
+    private final CbMemberMapper       memberMapper;
 
     // ── 获取/创建会话 ─────────────────────────────────────────────────────────
 
@@ -113,19 +119,24 @@ public class ImConversationServiceImpl extends ServiceImpl<ImConversationMapper,
             .filter(c -> c.getConvType() == 1)
             .map(ImConversation::getId)
             .collect(Collectors.toList());
+        // 正确的 NOT(type=? AND id=?) → AND(type!=? OR id!=?)，必须用 .and() 包裹避免 SQL 优先级问题
         Map<Long, List<ImConvMember>> peerMap = singleConvIds.isEmpty() ? Collections.emptyMap()
             : convMemberService.list(new LambdaQueryWrapper<ImConvMember>()
                 .in(ImConvMember::getConversationId, singleConvIds)
-                .ne(ImConvMember::getUserType, userType).or()
-                .ne(ImConvMember::getUserId, userId))
+                .and(w -> w.ne(ImConvMember::getUserType, userType)
+                            .or()
+                            .ne(ImConvMember::getUserId, userId)))
               .stream().collect(Collectors.groupingBy(ImConvMember::getConversationId));
 
-        return members.stream()
+        List<ImConversationVO> result = members.stream()
             .map(m -> buildVO(m, convMap, groupMap, peerMap, userType, userId))
             .filter(Objects::nonNull)
             .sorted(Comparator.comparingLong(
                 (ImConversationVO v) -> v.getLastMsgTime() != null ? v.getLastMsgTime() : 0L).reversed())
             .collect(Collectors.toList());
+
+        populatePeerInfo(result);
+        return result;
     }
 
     @Override
@@ -146,12 +157,15 @@ public class ImConversationServiceImpl extends ServiceImpl<ImConversationMapper,
         List<ImConvMember> peers = conv.getConvType() == 1
             ? convMemberService.list(new LambdaQueryWrapper<ImConvMember>()
                 .eq(ImConvMember::getConversationId, conversationId)
-                .ne(ImConvMember::getUserType, userType).or()
-                .ne(ImConvMember::getUserId, userId))
+                .and(w -> w.ne(ImConvMember::getUserType, userType)
+                            .or()
+                            .ne(ImConvMember::getUserId, userId)))
             : Collections.emptyList();
         Map<Long, List<ImConvMember>> peerMap = Map.of(conversationId, peers);
 
-        return buildVO(member, Map.of(conversationId, conv), groupMap, peerMap, userType, userId);
+        ImConversationVO vo = buildVO(member, Map.of(conversationId, conv), groupMap, peerMap, userType, userId);
+        if (vo != null) populatePeerInfo(Collections.singletonList(vo));
+        return vo;
     }
 
     // ── 私有方法 ──────────────────────────────────────────────────────────────
@@ -194,6 +208,44 @@ public class ImConversationServiceImpl extends ServiceImpl<ImConversationMapper,
         return vo;
     }
 
+    /**
+     * 批量填充会话列表中的对方昵称和头像（避免 N+1 查询）。
+     * 支持 technician / member 两种对方类型。
+     */
+    private void populatePeerInfo(List<ImConversationVO> vos) {
+        List<Long> techIds = vos.stream()
+            .filter(v -> "technician".equals(v.getPeerType()) && v.getPeerId() != null)
+            .map(ImConversationVO::getPeerId).distinct().collect(Collectors.toList());
+
+        List<Long> memberIds = vos.stream()
+            .filter(v -> "member".equals(v.getPeerType()) && v.getPeerId() != null)
+            .map(ImConversationVO::getPeerId).distinct().collect(Collectors.toList());
+
+        Map<Long, CbTechnician> techMap = techIds.isEmpty() ? Collections.emptyMap()
+            : technicianMapper.selectBatchIds(techIds).stream()
+                .collect(Collectors.toMap(CbTechnician::getId, t -> t));
+
+        Map<Long, CbMember> memberMap = memberIds.isEmpty() ? Collections.emptyMap()
+            : memberMapper.selectBatchIds(memberIds).stream()
+                .collect(Collectors.toMap(CbMember::getId, m -> m));
+
+        vos.forEach(v -> {
+            if ("technician".equals(v.getPeerType()) && v.getPeerId() != null) {
+                CbTechnician t = techMap.get(v.getPeerId());
+                if (t != null) {
+                    v.setPeerNickname(t.getNickname() != null ? t.getNickname() : t.getRealName());
+                    v.setPeerAvatar(t.getAvatar());
+                }
+            } else if ("member".equals(v.getPeerType()) && v.getPeerId() != null) {
+                CbMember m = memberMap.get(v.getPeerId());
+                if (m != null) {
+                    v.setPeerNickname(m.getNickname() != null ? m.getNickname() : m.getRealName());
+                    v.setPeerAvatar(m.getAvatar());
+                }
+            }
+        });
+    }
+
     private void insertMember(Long convId, String userType, Long userId, long now) {
         ImConvMember m = new ImConvMember();
         m.setConversationId(convId);
@@ -205,6 +257,13 @@ public class ImConversationServiceImpl extends ServiceImpl<ImConversationMapper,
         m.setJoinedAt(now);
         m.setUpdateTime(now);
         convMemberService.save(m);
+    }
+
+    @Override
+    public Long findExisting(String userTypeA, Long userIdA, String userTypeB, Long userIdB) {
+        String key = convKey(userTypeA, userIdA, userTypeB, userIdB);
+        ImConversation conv = lambdaQuery().eq(ImConversation::getConvKey, key).one();
+        return conv != null ? conv.getId() : null;
     }
 
     /** 单聊 key：字典序排序后拼接，保证同一对话者唯一 */

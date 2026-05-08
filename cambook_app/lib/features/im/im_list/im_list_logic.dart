@@ -1,6 +1,12 @@
 import 'package:get/get.dart';
-import 'im_list_state.dart';
+import '../../../core/services/im_service.dart';
 
 class ImListLogic extends GetxController {
-  final state = ImListState();
+  ImService get im => ImService.to;
+
+  @override
+  void onInit() {
+    super.onInit();
+    im.loadConversations();
+  }
 }

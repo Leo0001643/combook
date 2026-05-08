@@ -1154,4 +1154,168 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get drawerBrand => 'CamBook Pro · 技师工作台';
+
+  @override
+  String get imNoMessages => '暂无消息，发送第一条消息吧';
+
+  @override
+  String get imInputHint => '消息...';
+
+  @override
+  String get imToday => '今天';
+
+  @override
+  String get imYesterday => '昨天';
+
+  @override
+  String get imSendFailed => '发送失败，请重试';
+
+  @override
+  String get imCheckNetwork => '请检查网络连接';
+
+  @override
+  String get imMicPermission => '需要麦克风权限';
+
+  @override
+  String get imImageSendFailed => '图片发送失败';
+
+  @override
+  String get imVoiceSendFailed => '语音发送失败';
+
+  @override
+  String get imPlayFailed => '播放失败';
+
+  @override
+  String get imHoldToRecord => '按住录音';
+
+  @override
+  String get imReleaseToSend => '松开发送';
+
+  @override
+  String get imCancelRecord => '取消录音';
+
+  @override
+  String get imVoiceCallTitle => '语音通话';
+
+  @override
+  String get imVoiceInvite => '邀请您语音通话';
+
+  @override
+  String get imConnecting => '连接中...';
+
+  @override
+  String get imWaiting => '等待接听...';
+
+  @override
+  String get imReject => '拒绝';
+
+  @override
+  String get imAnswer => '接听';
+
+  @override
+  String get imMute => '静音';
+
+  @override
+  String get imUnmute => '取消静音';
+
+  @override
+  String get imHangUp => '挂断';
+
+  @override
+  String get imCancelCall => '取消';
+
+  @override
+  String get imCallEnded => '通话已结束';
+
+  @override
+  String imCallEndedDuration(String dur) {
+    return '通话时长 $dur';
+  }
+
+  @override
+  String get imImagePreview => '[图片]';
+
+  @override
+  String get imVoicePreview => '[语音]';
+
+  @override
+  String get imVideoPreview => '[视频]';
+
+  @override
+  String get imLocationPreview => '📍 位置';
+
+  @override
+  String get imSystemPreview => '[通知]';
+
+  @override
+  String get imNewMessage => '新消息';
+
+  @override
+  String get imOnline => '在线';
+
+  @override
+  String get imTyping => '正在输入...';
+
+  @override
+  String get imUnknownUser => '未知用户';
+
+  @override
+  String get imSendImage => '发送图片';
+
+  @override
+  String get imVoiceMessage => '语音消息';
+
+  @override
+  String get imLoadingMore => '加载更多消息...';
+
+  @override
+  String get imContacts => '通讯录';
+
+  @override
+  String get imNoContacts => '暂无联系人';
+
+  @override
+  String get imMarkRead => '已读';
+
+  @override
+  String get imMarkAllRead => '全部已读';
+
+  @override
+  String get imClearMessages => '清空';
+
+  @override
+  String get imClearConfirm => '清空本地消息记录？（服务器数据不受影响）';
+
+  @override
+  String get imDelete => '删除';
+
+  @override
+  String get imDeleteConfirm => '从本地删除此会话？（服务器数据不受影响）';
+
+  @override
+  String get imShare => '分享';
+
+  @override
+  String get imAttachPhotos => '照片';
+
+  @override
+  String get imAttachCamera => '相机';
+
+  @override
+  String get imAttachLocation => '位置';
+
+  @override
+  String get imAttachPoll => '投票';
+
+  @override
+  String get imAttachEvent => '活动';
+
+  @override
+  String get imLocationSearch => '搜索地址…';
+
+  @override
+  String get imLocationNone => '正在获取位置…';
+
+  @override
+  String get imSendLocation => '发送';
 }

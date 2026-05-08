@@ -53,6 +53,10 @@ public final class ImCmd {
     public static final int PULL_OFFLINE   = 4001;
     /** 离线消息响应 */
     public static final int OFFLINE_MSGS   = 4002;
+    /** 服务端推送完整会话列表（上线时推送，取代 HTTP GET /chat/conversations） */
+    public static final int CONV_LIST      = 4003;
+    /** 服务端推送单个会话更新（收到新消息时实时推送给接收方，取代客户端轮询） */
+    public static final int CONV_UPDATE    = 4004;
 
     // ── WebRTC 信令 ───────────────────────────────────────────────────────────
     /** 发起通话邀请 */

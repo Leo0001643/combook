@@ -2352,6 +2352,330 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'CamBook Pro · 技师工作台'**
   String get drawerBrand;
+
+  /// No description provided for @imNoMessages.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无消息，发送第一条消息吧'**
+  String get imNoMessages;
+
+  /// No description provided for @imInputHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'消息...'**
+  String get imInputHint;
+
+  /// No description provided for @imToday.
+  ///
+  /// In zh, this message translates to:
+  /// **'今天'**
+  String get imToday;
+
+  /// No description provided for @imYesterday.
+  ///
+  /// In zh, this message translates to:
+  /// **'昨天'**
+  String get imYesterday;
+
+  /// No description provided for @imSendFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'发送失败，请重试'**
+  String get imSendFailed;
+
+  /// No description provided for @imCheckNetwork.
+  ///
+  /// In zh, this message translates to:
+  /// **'请检查网络连接'**
+  String get imCheckNetwork;
+
+  /// No description provided for @imMicPermission.
+  ///
+  /// In zh, this message translates to:
+  /// **'需要麦克风权限'**
+  String get imMicPermission;
+
+  /// No description provided for @imImageSendFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'图片发送失败'**
+  String get imImageSendFailed;
+
+  /// No description provided for @imVoiceSendFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'语音发送失败'**
+  String get imVoiceSendFailed;
+
+  /// No description provided for @imPlayFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'播放失败'**
+  String get imPlayFailed;
+
+  /// No description provided for @imHoldToRecord.
+  ///
+  /// In zh, this message translates to:
+  /// **'按住录音'**
+  String get imHoldToRecord;
+
+  /// No description provided for @imReleaseToSend.
+  ///
+  /// In zh, this message translates to:
+  /// **'松开发送'**
+  String get imReleaseToSend;
+
+  /// No description provided for @imCancelRecord.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消录音'**
+  String get imCancelRecord;
+
+  /// No description provided for @imVoiceCallTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'语音通话'**
+  String get imVoiceCallTitle;
+
+  /// No description provided for @imVoiceInvite.
+  ///
+  /// In zh, this message translates to:
+  /// **'邀请您语音通话'**
+  String get imVoiceInvite;
+
+  /// No description provided for @imConnecting.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接中...'**
+  String get imConnecting;
+
+  /// No description provided for @imWaiting.
+  ///
+  /// In zh, this message translates to:
+  /// **'等待接听...'**
+  String get imWaiting;
+
+  /// No description provided for @imReject.
+  ///
+  /// In zh, this message translates to:
+  /// **'拒绝'**
+  String get imReject;
+
+  /// No description provided for @imAnswer.
+  ///
+  /// In zh, this message translates to:
+  /// **'接听'**
+  String get imAnswer;
+
+  /// No description provided for @imMute.
+  ///
+  /// In zh, this message translates to:
+  /// **'静音'**
+  String get imMute;
+
+  /// No description provided for @imUnmute.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消静音'**
+  String get imUnmute;
+
+  /// No description provided for @imHangUp.
+  ///
+  /// In zh, this message translates to:
+  /// **'挂断'**
+  String get imHangUp;
+
+  /// No description provided for @imCancelCall.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get imCancelCall;
+
+  /// No description provided for @imCallEnded.
+  ///
+  /// In zh, this message translates to:
+  /// **'通话已结束'**
+  String get imCallEnded;
+
+  /// No description provided for @imCallEndedDuration.
+  ///
+  /// In zh, this message translates to:
+  /// **'通话时长 {dur}'**
+  String imCallEndedDuration(String dur);
+
+  /// No description provided for @imImagePreview.
+  ///
+  /// In zh, this message translates to:
+  /// **'[图片]'**
+  String get imImagePreview;
+
+  /// No description provided for @imVoicePreview.
+  ///
+  /// In zh, this message translates to:
+  /// **'[语音]'**
+  String get imVoicePreview;
+
+  /// No description provided for @imVideoPreview.
+  ///
+  /// In zh, this message translates to:
+  /// **'[视频]'**
+  String get imVideoPreview;
+
+  /// No description provided for @imLocationPreview.
+  ///
+  /// In zh, this message translates to:
+  /// **'📍 位置'**
+  String get imLocationPreview;
+
+  /// No description provided for @imSystemPreview.
+  ///
+  /// In zh, this message translates to:
+  /// **'[通知]'**
+  String get imSystemPreview;
+
+  /// No description provided for @imNewMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'新消息'**
+  String get imNewMessage;
+
+  /// No description provided for @imOnline.
+  ///
+  /// In zh, this message translates to:
+  /// **'在线'**
+  String get imOnline;
+
+  /// No description provided for @imTyping.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在输入...'**
+  String get imTyping;
+
+  /// No description provided for @imUnknownUser.
+  ///
+  /// In zh, this message translates to:
+  /// **'未知用户'**
+  String get imUnknownUser;
+
+  /// No description provided for @imSendImage.
+  ///
+  /// In zh, this message translates to:
+  /// **'发送图片'**
+  String get imSendImage;
+
+  /// No description provided for @imVoiceMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'语音消息'**
+  String get imVoiceMessage;
+
+  /// No description provided for @imLoadingMore.
+  ///
+  /// In zh, this message translates to:
+  /// **'加载更多消息...'**
+  String get imLoadingMore;
+
+  /// No description provided for @imContacts.
+  ///
+  /// In zh, this message translates to:
+  /// **'通讯录'**
+  String get imContacts;
+
+  /// No description provided for @imNoContacts.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无联系人'**
+  String get imNoContacts;
+
+  /// No description provided for @imMarkRead.
+  ///
+  /// In zh, this message translates to:
+  /// **'已读'**
+  String get imMarkRead;
+
+  /// No description provided for @imMarkAllRead.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部已读'**
+  String get imMarkAllRead;
+
+  /// No description provided for @imClearMessages.
+  ///
+  /// In zh, this message translates to:
+  /// **'清空'**
+  String get imClearMessages;
+
+  /// No description provided for @imClearConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'清空本地消息记录？（服务器数据不受影响）'**
+  String get imClearConfirm;
+
+  /// No description provided for @imDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get imDelete;
+
+  /// No description provided for @imDeleteConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'从本地删除此会话？（服务器数据不受影响）'**
+  String get imDeleteConfirm;
+
+  /// No description provided for @imShare.
+  ///
+  /// In zh, this message translates to:
+  /// **'分享'**
+  String get imShare;
+
+  /// No description provided for @imAttachPhotos.
+  ///
+  /// In zh, this message translates to:
+  /// **'照片'**
+  String get imAttachPhotos;
+
+  /// No description provided for @imAttachCamera.
+  ///
+  /// In zh, this message translates to:
+  /// **'相机'**
+  String get imAttachCamera;
+
+  /// No description provided for @imAttachLocation.
+  ///
+  /// In zh, this message translates to:
+  /// **'位置'**
+  String get imAttachLocation;
+
+  /// No description provided for @imAttachPoll.
+  ///
+  /// In zh, this message translates to:
+  /// **'投票'**
+  String get imAttachPoll;
+
+  /// No description provided for @imAttachEvent.
+  ///
+  /// In zh, this message translates to:
+  /// **'活动'**
+  String get imAttachEvent;
+
+  /// No description provided for @imLocationSearch.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索地址…'**
+  String get imLocationSearch;
+
+  /// No description provided for @imLocationNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在获取位置…'**
+  String get imLocationNone;
+
+  /// No description provided for @imSendLocation.
+  ///
+  /// In zh, this message translates to:
+  /// **'发送'**
+  String get imSendLocation;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

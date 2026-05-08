@@ -39,7 +39,9 @@ public class ImMediaService extends ServiceImpl<ImMediaMapper, ImMedia> {
     /** 各类型允许的 MIME 前缀 */
     private static final Map<String, Set<String>> ALLOWED_MIMES = Map.of(
         "image", Set.of("image/jpeg", "image/png", "image/gif", "image/webp"),
-        "voice", Set.of("audio/mpeg", "audio/mp4", "audio/aac", "audio/ogg", "audio/wav", "audio/amr"),
+        // audio/webm：Chrome/Firefox MediaRecorder 默认格式；audio/ogg：Firefox 备选；其余移动端格式
+        "voice", Set.of("audio/mpeg", "audio/mp4", "audio/aac", "audio/ogg",
+                        "audio/wav", "audio/amr", "audio/webm", "audio/3gpp"),
         "video", Set.of("video/mp4", "video/quicktime", "video/x-msvideo", "video/webm"),
         "file",  Set.of()   // file 类型不限 MIME
     );
@@ -63,7 +65,11 @@ public class ImMediaService extends ServiceImpl<ImMediaMapper, ImMedia> {
 
         Set<String> allowed = ALLOWED_MIMES.getOrDefault(fileType, Set.of());
         String mime = file.getContentType();
-        if (!allowed.isEmpty() && (mime == null || !allowed.contains(mime.toLowerCase())))
+        // 截取分号前的基础类型（如 "audio/webm;codecs=opus" → "audio/webm"）
+        String baseMime = mime != null && mime.contains(";")
+            ? mime.substring(0, mime.indexOf(';')).trim().toLowerCase()
+            : (mime != null ? mime.toLowerCase() : null);
+        if (!allowed.isEmpty() && (baseMime == null || !allowed.contains(baseMime)))
             throw new BusinessException("不支持的文件类型: " + mime + "，允许: " + allowed);
     }
 

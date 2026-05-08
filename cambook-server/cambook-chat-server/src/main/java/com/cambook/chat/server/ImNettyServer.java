@@ -1,6 +1,7 @@
 package com.cambook.chat.server;
 
 import com.cambook.chat.config.ImProperties;
+import com.cambook.chat.handler.ImTokenExtractorHandler;
 import com.cambook.chat.handler.ImWsHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -9,6 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolConfig;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -55,9 +57,17 @@ public class ImNettyServer {
                     ch.pipeline()
                         .addLast(new HttpServerCodec())
                         .addLast(new HttpObjectAggregator(65536))
+                        // 在 WebSocket 升级前提取 URL 中的 ?token= 参数
+                        .addLast(new ImTokenExtractorHandler())
                         .addLast(new ChunkedWriteHandler())
                         .addLast(new IdleStateHandler(props.getHeartbeatSeconds() * 2, 0, 0, TimeUnit.SECONDS))
-                        .addLast(new WebSocketServerProtocolHandler(props.getPath()))
+                        // checkStartsWith=true: match /ws/im?token=… as well as /ws/im
+                        .addLast(new WebSocketServerProtocolHandler(
+                            WebSocketServerProtocolConfig.newBuilder()
+                                .websocketPath(props.getPath())
+                                .checkStartsWith(true)
+                                .maxFramePayloadLength(65536)
+                                .build()))
                         .addLast(wsHandler);
                 }
             })

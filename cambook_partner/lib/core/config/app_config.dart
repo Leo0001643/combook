@@ -53,8 +53,19 @@ abstract class AppConfig {
   /// Android 模拟器用 http://10.0.2.2:8080 代替真实 IP
   /// 正式环境通过 --dart-define=API_BASE_URL=https://api.xxx.com 注入
   static const apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL', defaultValue: 'http://192.168.21.92:8080',
+    'API_BASE_URL', defaultValue: 'http://127.0.0.1:8080',
   );
+
+  /// IM WebSocket 根路径（Netty 独立端口，默认 9090）
+  /// 与 API_BASE_URL 同 host，仅端口不同。
+  /// 生产环境若通过 nginx 代理统一到 443/80，直接设 IM_WS_URL 即可。
+  static const _imWsPort = int.fromEnvironment('IM_WS_PORT', defaultValue: 9090);
+
+  static String get imWsBaseUrl {
+    final uri = Uri.tryParse(apiBaseUrl);
+    if (uri == null) return apiBaseUrl;
+    return uri.replace(port: _imWsPort).toString();
+  }
 
   // ── 应用信息 ────────────────────────────────────────────────────────────────
 

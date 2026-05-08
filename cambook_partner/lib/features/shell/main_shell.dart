@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:badges/badges.dart' as bdg;
 import '../../core/constants/app_colors.dart';
 import '../../core/i18n/l10n_ext.dart';
-import '../../core/services/message_service.dart';
 import '../../core/theme/app_theme_controller.dart';
 import '../../core/widgets/common_widgets.dart';
 import '../home/page.dart';
@@ -182,10 +181,10 @@ class _BottomNavState extends State<_BottomNav> with TickerProviderStateMixin {
 // _NavTab — single regular tab item
 // ═════════════════════════════════════════════════════════════════════════════
 class _NavTab extends StatelessWidget {
-  final _TabDesc          desc;
+  final _TabDesc            desc;
   final AnimationController ctrl;
-  final VoidCallback       onTap;
-  final double             safePad;
+  final VoidCallback         onTap;
+  final double               safePad;
 
   const _NavTab({
     required this.desc,
@@ -210,7 +209,9 @@ class _NavTab extends StatelessWidget {
               children: [
                 Transform.scale(
                   scale: 1.0 + t * 0.12,
-                  child: _buildIcon(color),
+                  child: desc.isMsgTab
+                      ? _MsgTabIcon(color: color)           // ← dedicated widget
+                      : _RegularTabIcon(icon: desc.icon, color: color),
                 ),
                 const SizedBox(height: 3),
                 Text(desc.label(context),
@@ -221,8 +222,6 @@ class _NavTab extends StatelessWidget {
                     fontWeight: t > 0.5 ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
-                // safePad keeps the content visually centred in the white area
-                // on both regular and edge-to-edge devices.
                 SizedBox(height: 8 + safePad),
               ],
             );
@@ -231,36 +230,47 @@ class _NavTab extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildIcon(Color color) {
-    Widget icon = desc.isMsgTab
-        ? WeChatBubbleIcon(color: color, size: _kIconSz)
-        : Icon(desc.icon, color: color, size: _kIconSz);
-    if (!desc.isMsgTab) {
-      // Glow-behind-icon 3-D effect: radial gradient halo, no visible circle
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: _kIconSz + 16,
-            height: _kIconSz + 16,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  color.withValues(alpha: .22),
-                  color.withValues(alpha: .0),
-                ],
-              ),
-            ),
-          ),
-          Icon(desc.icon, color: color, size: _kIconSz),
-        ],
-      );
-    }
+/// Regular (non-message) tab icon with radial glow halo.
+class _RegularTabIcon extends StatelessWidget {
+  final IconData icon;
+  final Color    color;
+  const _RegularTabIcon({required this.icon, required this.color});
 
+  @override
+  Widget build(BuildContext context) => Stack(
+    alignment: Alignment.center,
+    children: [
+      Container(
+        width: _kIconSz + 16, height: _kIconSz + 16,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(colors: [
+            color.withValues(alpha: .22),
+            color.withValues(alpha: .0),
+          ]),
+        ),
+      ),
+      Icon(icon, color: color, size: _kIconSz),
+    ],
+  );
+}
+
+/// Message tab icon — WeChatBubble + unread badge.
+/// Receives the animated [color] as a parameter so the icon colour always
+/// matches the animation frame, regardless of the Obx rebuild cycle.
+class _MsgTabIcon extends StatelessWidget {
+  final Color color;
+  const _MsgTabIcon({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = WeChatBubbleIcon(color: color, size: _kIconSz);
     return Obx(() {
-      final n = Get.find<MessageService>().totalUnread;
+      // ShellController.messageUnreadCount is pushed via ImUnreadChangedEvent
+      // (EventBus) — the lowest-latency path: WS push → MessageService → EventBus → badge.
+      final n = Get.find<ShellController>().messageUnreadCount.value;
       if (n == 0) return icon;
       return bdg.Badge(
         showBadge: true,

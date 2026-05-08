@@ -111,6 +111,12 @@ class AudioUtil {
     await _playSfx();
   }
 
+  /// Play alert tone for incoming voice calls (same sfx as new-order).
+  static Future<void> playAlert() async {
+    LogUtil.i('[AudioUtil] ▶ playAlert');
+    await _playSfx();
+  }
+
   static Future<void> _playSfx() async {
     // ── L0: iOS 原生 AVAudioPlayer（最优先）──────────────────────────────
     // 把 Dart 已提取的 temp 文件路径传给 Swift，Swift 用 AVAudioPlayer 播放。

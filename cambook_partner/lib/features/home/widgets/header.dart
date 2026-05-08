@@ -1,5 +1,6 @@
 part of '../page.dart';
 
+
 // ════════════════════════════════════════════════════════════════════════════
 // HEADER WIDGET — fixed, transparent overlay on background image
 // ════════════════════════════════════════════════════════════════════════════
@@ -105,13 +106,10 @@ class _HomeHeaderWidget extends StatelessWidget {
               ]),
             ),
 
-            // ── Action icons: bell · scan · ··· ─────────────────────
+            // ── Action icons: announce-bell · ··· ───────────────────
             Row(mainAxisSize: MainAxisSize.min, children: [
-              _HeaderIcon(icon: Icons.notifications_outlined,
-                  onTap: () => AppToast.info(l.comingSoon)),
+              _AnnounceBell(logic: logic),
               const SizedBox(width: 6),
-              _HeaderIcon(icon: Icons.crop_free_rounded,
-                  onTap: () => AppToast.info(l.comingSoon)),
               const SizedBox(width: 6),
               _HeaderIcon(icon: Icons.more_horiz_rounded, size: 24,
                   onTap: () => _showMoreDrawer(context)),
@@ -131,6 +129,24 @@ String _greeting(BuildContext context, int h) {
   if (h < 12) return l.greetingMorning;
   if (h < 18) return l.greetingAfternoon;
   return l.greetingEvening;
+}
+
+// ── Announcement bell (static for now — no merchant endpoint for technicians) ──
+class _AnnounceBell extends StatelessWidget {
+  final HomeLogic logic;
+  const _AnnounceBell({required this.logic});
+
+  @override
+  Widget build(BuildContext context) => BounceTap(
+    pressScale: 0.78,
+    onTap: () => AppToast.info(context.l10n.announcements),
+    child: const Padding(
+      padding: EdgeInsets.all(6),
+      child: Icon(Icons.campaign_rounded,
+          color: Colors.white, size: 23,
+          shadows: [Shadow(color: Colors.black38, blurRadius: 6)]),
+    ),
+  );
 }
 
 // ── Compact icon button ───────────────────────────────────────────────────

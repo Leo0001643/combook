@@ -51,8 +51,8 @@ public class InitDB {
                     builder.mapperBuilder()
                             .enableFileOverride();
 
-                    // Service / ServiceImpl：不覆盖 —— 含业务逻辑，首次生成后手动维护
-                    builder.serviceBuilder();
+                    // Service / ServiceImpl：禁止生成 —— api-server 中有专属实现，db-core 只做数据层
+                    builder.serviceBuilder().disable();
 
                     builder.controllerBuilder().disable();
                 })

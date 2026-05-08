@@ -11,8 +11,10 @@ import 'core/auth/auth_controller.dart';
 import 'core/routes/app_pages.dart';
 import 'core/services/device_service.dart';
 import 'core/services/geocoding_service.dart';
+import 'core/services/im_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
+import 'features/im/voice_call/voice_call_logic.dart';
 import 'l10n/app_localizations.dart';
 import 'firebase_options.dart';
 
@@ -42,7 +44,9 @@ void main() async {
   Get.put(GeocodingService(), permanent: true);
 
   // ── 注册全局 Controller（permanent，不随路由销毁） ────────────────
-  Get.put(AuthController(), permanent: true);
+  Get.put(AuthController(),   permanent: true);
+  Get.put(ImService(),        permanent: true);
+  Get.put(VoiceCallLogic(),   permanent: true);
 
   runApp(const CamBookApp());
 }

@@ -61,8 +61,9 @@ abstract class AppRoutes {
   static const withdraw = '/wallet/withdraw';
 
   // ── IM ────────────────────────────────────────────────────────────
-  static const imList = '/im';
-  static const imChat = '/im/chat';
+  static const imList      = '/im';
+  static const imChat      = '/im/chat';
+  static const imVoiceCall = '/im/voice-call';
 
   // ── 搜索 / 通知 ───────────────────────────────────────────────────
   static const search       = '/search';

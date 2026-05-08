@@ -53,6 +53,14 @@ abstract class ApiEndpoints {
   static const String conversations = '$_base/partner/conversations';
   static String chatMessages(String id) => '$_base/partner/conversations/$id/messages';
 
+  // ── IM（真实后端 /chat/*）─────────────────────────────────────────
+  static const String imConversations   = '/chat/conversations';
+  static const String imMessagesHistory = '/chat/messages/history';
+  static const String imMessagesSend    = '/chat/messages/send';
+  static const String imMessagesRead    = '/chat/messages/read';   // POST ?conversationId=&lastReadMsgId=
+  static const String imMediaImage      = '/chat/media/image';
+  static const String imMediaVoice      = '/chat/media/voice';
+
   // ── 排班 ──────────────────────────────────────────────────────────
   static const String schedule     = '$_base/partner/schedule';
   static const String appointments = '$_base/partner/appointments';

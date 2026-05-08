@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,36 +42,34 @@ public class AdminMemberService implements IAdminMemberService {
         // 商户视角：仅显示在该商户下有过订单的会员
         if (query.getMerchantId() != null) {
             Set<Long> memberIds = cbOrderService.lambdaQuery().eq(CbOrder::getMerchantId, query.getMerchantId()).select(CbOrder::getMemberId).list()
-                    .stream().map(CbOrder::getMemberId).filter(id -> id != null).collect(Collectors.toSet());
+                    .stream().map(CbOrder::getMemberId).filter(Objects::nonNull).collect(Collectors.toSet());
             if (memberIds.isEmpty()) {
                 return PageResult.of(Collections.emptyList(), 0L, query.getPage(), query.getSize());
             }
             IPage<CbMember> page = cbMemberService.lambdaQuery()
-                    .in(CbMember::getId, memberIds)
-                    .and(StringUtils.hasText(query.getKeyword()), w -> w
-                            .like(CbMember::getMobile,   query.getKeyword())
-                            .or()
-                            .like(CbMember::getNickname, query.getKeyword()))
-                    .eq(CbMember::getDeleted, 0)
-                    .orderByDesc(CbMember::getCreateTime)
-                    .page(new Page<>(query.getPage(), query.getSize()));
+            .in(CbMember::getId, memberIds)
+            .and(StringUtils.hasText(query.getKeyword()), w -> w
+            .like(CbMember::getMobile,   query.getKeyword()).or().like(CbMember::getNickname, query.getKeyword()))
+            .eq(CbMember::getDeleted, 0)
+            .orderByDesc(CbMember::getCreateTime)
+            .page(new Page<>(query.getPage(), query.getSize()));
             List<MemberVO> vos = page.getRecords().stream().map(MemberVO::from).toList();
             return PageResult.of(page, vos);
         }
 
         IPage<CbMember> page = cbMemberService.lambdaQuery()
-                .and(StringUtils.hasText(query.getKeyword()), w -> w.like(CbMember::getMobile,   query.getKeyword()).or().like(CbMember::getNickname, query.getKeyword()))
-                .like(StringUtils.hasText(query.getTelegram()), CbMember::getTelegram, query.getTelegram())
-                .like(StringUtils.hasText(query.getAddress()),  CbMember::getAddress,  query.getAddress())
-                .eq(query.getStatus() != null, CbMember::getStatus, query.getStatus())
-                .eq(query.getGender() != null, CbMember::getGender, query.getGender())
-                .eq(query.getLevel()  != null, CbMember::getLevel,  query.getLevel())
-                .eq(StringUtils.hasText(query.getLang()), CbMember::getLang, query.getLang())
-                .ge(query.getStartDate() != null, CbMember::getRegisterTime, query.getStartDate())
-                .le(query.getEndDate()   != null, CbMember::getRegisterTime, query.getEndDate())
-                .eq(CbMember::getDeleted, 0)
-                .orderByDesc(CbMember::getCreateTime)
-                .page(new Page<>(query.getPage(), query.getSize()));
+        .and(StringUtils.hasText(query.getKeyword()), w -> w.like(CbMember::getMobile,   query.getKeyword()).or().like(CbMember::getNickname, query.getKeyword()))
+        .like(StringUtils.hasText(query.getTelegram()), CbMember::getTelegram, query.getTelegram())
+        .like(StringUtils.hasText(query.getAddress()),  CbMember::getAddress,  query.getAddress())
+        .eq(query.getStatus() != null, CbMember::getStatus, query.getStatus())
+        .eq(query.getGender() != null, CbMember::getGender, query.getGender())
+        .eq(query.getLevel()  != null, CbMember::getLevel,  query.getLevel())
+        .eq(StringUtils.hasText(query.getLang()), CbMember::getLang, query.getLang())
+        .ge(query.getStartDate() != null, CbMember::getRegisterTime, query.getStartDate())
+        .le(query.getEndDate()   != null, CbMember::getRegisterTime, query.getEndDate())
+        .eq(CbMember::getDeleted, 0)
+        .orderByDesc(CbMember::getCreateTime)
+        .page(new Page<>(query.getPage(), query.getSize()));
         List<MemberVO> vos = page.getRecords().stream().map(MemberVO::from).toList();
         return PageResult.of(page, vos);
     }
@@ -90,13 +85,12 @@ public class AdminMemberService implements IAdminMemberService {
     public void update(MemberUpdateDTO dto) {
         Optional.ofNullable(cbMemberService.getById(dto.getId())).orElseThrow(() -> new BusinessException(CbCodeEnum.MEMBER_NOT_FOUND));
         cbMemberService.lambdaUpdate()
-                .set(dto.getNickname() != null, CbMember::getNickname, dto.getNickname())
-                .set(dto.getAvatar()   != null, CbMember::getAvatar,   dto.getAvatar())
-                .set(dto.getGender()   != null, CbMember::getGender,   dto.getGender())
-                .set(dto.getTelegram() != null, CbMember::getTelegram, dto.getTelegram())
-                .set(dto.getAddress()  != null, CbMember::getAddress,  dto.getAddress())
-                .eq(CbMember::getId, dto.getId())
-                .update();
+        .set(dto.getNickname() != null, CbMember::getNickname, dto.getNickname())
+        .set(dto.getAvatar()   != null, CbMember::getAvatar,   dto.getAvatar())
+        .set(dto.getGender()   != null, CbMember::getGender,   dto.getGender())
+        .set(dto.getTelegram() != null, CbMember::getTelegram, dto.getTelegram())
+        .set(dto.getAddress()  != null, CbMember::getAddress,  dto.getAddress())
+        .eq(CbMember::getId, dto.getId()).update();
     }
 
     @Override

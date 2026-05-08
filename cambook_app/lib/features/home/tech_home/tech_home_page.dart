@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/auth/auth_controller.dart';
+import '../../../core/routes/app_routes.dart';
+import '../../../core/services/im_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/language_switcher_button.dart';
 import '../../../l10n/app_localizations.dart';
@@ -141,6 +143,9 @@ class _DashboardTab extends StatelessWidget {
                   ),
                   const LanguageSwitcherButton(showLabel: true),
                   const SizedBox(width: 8),
+                  // IM 消息按钮 + 未读红点
+                  _ImBell(),
+                  const SizedBox(width: 4),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
@@ -1332,4 +1337,47 @@ class _QuickActionItem extends StatelessWidget {
       ),
     );
   }
+}
+
+// ── IM 消息入口（顶部导航栏）─────────────────────────────────────────────────
+
+class _ImBell extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Obx(() {
+    final unread = ImService.to.unreadTotal.value;
+    return GestureDetector(
+      onTap: () => Get.toNamed(AppRoutes.imList),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.all(8),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white70, size: 22),
+            if (unread > 0)
+              Positioned(
+                top: -4, right: -6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  constraints: const BoxConstraints(minWidth: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF1A1F2E), width: 1.5),
+                  ),
+                  child: Text(
+                    unread > 99 ? '99+' : '$unread',
+                    style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w700),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  });
 }

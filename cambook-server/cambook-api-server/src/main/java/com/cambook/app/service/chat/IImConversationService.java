@@ -23,4 +23,12 @@ public interface IImConversationService {
 
     /** 获取单个会话详情 */
     ImConversationVO getConversation(Long conversationId, String userType, Long userId);
+
+    /**
+     * 查询已存在的单聊会话 ID，不创建新会话。
+     * 用于通讯录展示，避免提前为所有联系人建会话（N+1）。
+     *
+     * @return 会话 ID，不存在则返回 null
+     */
+    Long findExisting(String userTypeA, Long userIdA, String userTypeB, Long userIdB);
 }

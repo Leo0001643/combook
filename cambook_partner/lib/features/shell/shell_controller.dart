@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import '../../core/events/app_events.dart';
 import '../../core/routes/app_routes.dart';
+import '../../core/services/message_service.dart';
 import '../../core/services/user_service.dart';
+import '../../core/utils/event_bus_util.dart';
 
 /// 主 Shell 全局控制器 —— 允许任意模块跳转到指定底部导航 Tab
 /// 用法：Get.find<ShellController>().switchTab(1) → 切换到订单页
@@ -15,13 +20,37 @@ class ShellController extends GetxController {
   static const int tabIncome   = 3;
   static const int tabProfile  = 4;
 
-  final currentIdx = 0.obs;
-
+  final currentIdx        = 0.obs;
   /// 待执行预约订单数（用于底部导航 FAB 角标）
-  final orderBadgeCount = 0.obs;
+  final orderBadgeCount   = 0.obs;
+  /// IM 未读消息总数（由事件总线 [ImUnreadChangedEvent] 驱动，零延迟）
+  final messageUnreadCount = 0.obs;
+
+  StreamSubscription<dynamic>? _unreadSub;
 
   // 各 Tab 的静默刷新回调（切换时自动触发，不显示 toast）
   final _refreshCallbacks = <int, VoidCallback>{};
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Seed from MessageService's current state so the badge is correct
+    // even before the next WS event fires (e.g. on warm launch).
+    if (Get.isRegistered<MessageService>()) {
+      messageUnreadCount.value = Get.find<MessageService>().totalUnread;
+    }
+    // Subscribe to all future changes via event bus:
+    // WS push → MessageService → ImUnreadChangedEvent → here → Obx badge.
+    _unreadSub = EventBusUtil.listen<ImUnreadChangedEvent>((e) {
+      messageUnreadCount.value = e.totalUnread;
+    });
+  }
+
+  @override
+  void onClose() {
+    _unreadSub?.cancel();
+    super.onClose();
+  }
 
   /// 注册 Tab 切换时的刷新回调（在对应 Logic.onInit 中调用）
   void registerRefresh(int tabIdx, VoidCallback callback) {

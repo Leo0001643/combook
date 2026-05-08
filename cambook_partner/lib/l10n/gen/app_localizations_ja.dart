@@ -1154,4 +1154,168 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get drawerBrand => 'CamBook Pro · ワークステーション';
+
+  @override
+  String get imNoMessages => 'まだメッセージはありません。挨拶してみましょう！';
+
+  @override
+  String get imInputHint => 'メッセージ...';
+
+  @override
+  String get imToday => '今日';
+
+  @override
+  String get imYesterday => '昨日';
+
+  @override
+  String get imSendFailed => '送信に失敗しました。再試行してください。';
+
+  @override
+  String get imCheckNetwork => 'ネットワーク接続を確認してください';
+
+  @override
+  String get imMicPermission => 'マイクの権限が必要です';
+
+  @override
+  String get imImageSendFailed => '画像の送信に失敗しました';
+
+  @override
+  String get imVoiceSendFailed => '音声メッセージの送信に失敗しました';
+
+  @override
+  String get imPlayFailed => '再生に失敗しました';
+
+  @override
+  String get imHoldToRecord => '長押しで録音';
+
+  @override
+  String get imReleaseToSend => '離して送信';
+
+  @override
+  String get imCancelRecord => 'キャンセル';
+
+  @override
+  String get imVoiceCallTitle => '音声通話';
+
+  @override
+  String get imVoiceInvite => '音声通話の着信';
+
+  @override
+  String get imConnecting => '接続中...';
+
+  @override
+  String get imWaiting => '呼び出し中...';
+
+  @override
+  String get imReject => '拒否';
+
+  @override
+  String get imAnswer => '応答';
+
+  @override
+  String get imMute => 'ミュート';
+
+  @override
+  String get imUnmute => 'ミュート解除';
+
+  @override
+  String get imHangUp => '終了';
+
+  @override
+  String get imCancelCall => 'キャンセル';
+
+  @override
+  String get imCallEnded => '通話が終了しました';
+
+  @override
+  String imCallEndedDuration(String dur) {
+    return '通話時間 $dur';
+  }
+
+  @override
+  String get imImagePreview => '[画像]';
+
+  @override
+  String get imVoicePreview => '[音声]';
+
+  @override
+  String get imVideoPreview => '[動画]';
+
+  @override
+  String get imLocationPreview => '📍 位置';
+
+  @override
+  String get imSystemPreview => '[お知らせ]';
+
+  @override
+  String get imNewMessage => '新しいメッセージ';
+
+  @override
+  String get imOnline => 'オンライン';
+
+  @override
+  String get imTyping => '入力中...';
+
+  @override
+  String get imUnknownUser => '不明';
+
+  @override
+  String get imSendImage => '画像を送信';
+
+  @override
+  String get imVoiceMessage => '音声メッセージ';
+
+  @override
+  String get imLoadingMore => 'メッセージを読み込み中...';
+
+  @override
+  String get imContacts => '連絡先';
+
+  @override
+  String get imNoContacts => '連絡先なし';
+
+  @override
+  String get imMarkRead => '既読';
+
+  @override
+  String get imMarkAllRead => 'すべて既読';
+
+  @override
+  String get imClearMessages => '消去';
+
+  @override
+  String get imClearConfirm => 'ローカルメッセージを消去しますか？（サーバーは保持）';
+
+  @override
+  String get imDelete => '削除';
+
+  @override
+  String get imDeleteConfirm => 'このトークを削除しますか？（サーバーは保持）';
+
+  @override
+  String get imShare => '共有';
+
+  @override
+  String get imAttachPhotos => '写真';
+
+  @override
+  String get imAttachCamera => 'カメラ';
+
+  @override
+  String get imAttachLocation => '位置';
+
+  @override
+  String get imAttachPoll => '投票';
+
+  @override
+  String get imAttachEvent => 'イベント';
+
+  @override
+  String get imLocationSearch => '住所を検索…';
+
+  @override
+  String get imLocationNone => '位置を取得中…';
+
+  @override
+  String get imSendLocation => '送信';
 }

@@ -11,4 +11,4 @@ db.password=Root123456
 
 # 指定要生成的表，多个表用英文逗号分隔，留空则生成整库所有表
 # 示例：generator.tables=cb_user,cb_order,cb_order_item
-generator.tables=
+generator.tables=im_org_member,im_chat_rule
